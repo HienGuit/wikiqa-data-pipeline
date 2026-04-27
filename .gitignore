@@ -1,0 +1,30 @@
+# ========================================
+# Môi trường ảo (Virtual Environments)
+# ========================================
+venv/
+env/
+.env
+
+# ========================================
+# File rác của Python & Hệ điều hành
+# ========================================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.DS_Store
+Thumbs.db
+
+# ========================================
+# Dữ liệu & Logs (KHÔNG PUSH LÊN GIT)
+# ========================================
+pipeline.log
+*.log
+
+# Bỏ qua toàn bộ nội dung trong thư mục data/
+data/*
+
+# NHƯNG giữ lại file taxonomy.json (Cấu hình)
+!data/taxonomy.json
+!data/.gitkeep
