@@ -72,6 +72,7 @@ class Chunk:
     url:          str
     domain:       str
     scope:        str
+    context_above: str = ""   # Text của chunk liền trước (cùng bài), dùng cho context retrieval
 
 
 # ──────────────────────────────────────────────
@@ -84,6 +85,23 @@ def _clean_text(text: str) -> str:
     text = text.replace('\t', ' ').replace('\r', '')
     # Loại bỏ dòng chỉ toàn dấu gạch ngang (divider)
     text = re.sub(r'^\s*[-=]{5,}\s*$', '', text, flags=re.MULTILINE)
+    return text.strip()
+
+
+def pre_clean_text(text: str) -> str:
+    """Loại bỏ bảng biểu, hình ảnh, tham chiếu Wikitext còn sót lại."""
+    # Loại bảng Wikitext {| ... |}
+    text = re.sub(r'\{\|.*?\|\}', '', text, flags=re.DOTALL)
+    # Loại dòng ký hiệu bảng | hoặc !
+    text = re.sub(r'^\s*[|!].*$', '', text, flags=re.MULTILINE)
+    # Loại tham chiếu hình ảnh [[File:...]] [[Image:...]] [[Hình:...]] [[Tập tin:...]]
+    text = re.sub(r'\[\[(File|Image|Hình|Tập\s*tin):.*?\]\]', '', text, flags=re.IGNORECASE | re.DOTALL)
+    # Loại template Wikitext {{...}}
+    text = re.sub(r'\{\{.*?\}\}', '', text, flags=re.DOTALL)
+    # Loại thẻ HTML còn sót
+    text = re.sub(r'<[^>]+>', '', text)
+    # Chuẩn hoá lại khoảng trắng sau khi xoá
+    text = _MULTI_BLANK.sub('\n\n', text)
     return text.strip()
 
 
@@ -112,6 +130,25 @@ def _hard_split(text: str, max_size: int) -> List[str]:
     if current:
         chunks.append(' '.join(current))
     return chunks
+
+
+def _fix_chunk_ending(text: str) -> str:
+    """Đảm bảo chunk kết thúc tại ranh giới câu hoàn chỉnh (dấu . ! ? …)."""
+    text = text.rstrip()
+    if not re.search(r'[.!?…]$', text):
+        # Tìm dấu câu gần nhất từ cuối lùi về
+        match = re.search(r'[.!?…](?=[^.!?…]*$)', text)
+        if match:
+            text = text[:match.end()].rstrip()
+    return text
+
+
+def _is_noisy_chunk(text: str, max_special_ratio: float = 0.15) -> bool:
+    """Trả True nếu chunk có tỷ lệ ký tự đặc biệt vượt ngưỡng (mặc định 15%)."""
+    # Ký tự hợp lệ: chữ cái, số, khoảng trắng, tiếng Việt, dấu câu cơ bản
+    normal = len(re.findall(r'[\w\sÀ-ỹ.,!?;:()\-\'""]', text))
+    special = len(text) - normal
+    return (special / max(len(text), 1)) > max_special_ratio
 
 
 # ──────────────────────────────────────────────
@@ -182,14 +219,14 @@ class VietnameseWikiChunker:
             # Nếu một mảnh đơn lẻ đã vượt max → hard-split nó
             if len(piece) > cfg.max_chunk_size:
                 if current_parts:
-                    raw_chunks.append(prefix + ' '.join(current_parts))
+                    raw_chunks.append(_fix_chunk_ending(prefix + ' '.join(current_parts)))
                     current_parts, current_len = [], len(prefix)
                 for sub in _hard_split(piece, cfg.chunk_size):
-                    raw_chunks.append(prefix + sub)
+                    raw_chunks.append(_fix_chunk_ending(prefix + sub))
                 continue
 
             if current_len + piece_len > cfg.chunk_size and current_parts:
-                raw_chunks.append(prefix + ' '.join(current_parts))
+                raw_chunks.append(_fix_chunk_ending(prefix + ' '.join(current_parts)))
                 # Overlap: giữ lại một số mảnh cuối
                 overlap_parts, overlap_len = [], 0
                 for part in reversed(current_parts):
@@ -204,7 +241,7 @@ class VietnameseWikiChunker:
             current_len += piece_len
 
         if current_parts:
-            raw_chunks.append(prefix + ' '.join(current_parts))
+            raw_chunks.append(_fix_chunk_ending(prefix + ' '.join(current_parts)))
 
         return raw_chunks
 
@@ -233,6 +270,7 @@ class VietnameseWikiChunker:
         """
         cfg      = self.cfg
         text     = record.get("text", "")
+        text     = pre_clean_text(text)
         pageid   = record.get("pageid", 0)
         title    = record.get("title", "")
         url      = record.get("url", "")
@@ -257,6 +295,9 @@ class VietnameseWikiChunker:
             char_count = len(chunk_text)
             if char_count < cfg.min_chunk_size:
                 continue
+            if _is_noisy_chunk(chunk_text):
+                self.log.debug(f"Bỏ qua chunk nhiễu ký tự đặc biệt: '{chunk_text[:60]}...'")
+                continue
 
             chunks.append(Chunk(
                 chunk_id     = f"{pageid}_{idx:04d}",
@@ -277,6 +318,9 @@ class VietnameseWikiChunker:
         real_total = len(chunks)
         for c in chunks:
             c.total_chunks = real_total
+        # Gán context_above: text của chunk liền trước (cùng bài viết)
+        for i, chunk in enumerate(chunks):
+            chunk.context_above = chunks[i - 1].text if i > 0 else ""
 
         return chunks
 
