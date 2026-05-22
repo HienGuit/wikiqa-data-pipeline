@@ -44,6 +44,7 @@ class ChunkConfig:
 # ──────────────────────────────────────────────
 # Tiêu đề section Wikipedia (dòng == … == hoặc === … ===)
 _SECTION_RE   = re.compile(r'^(={2,4})\s*(.+?)\s*\1\s*$', re.MULTILINE)
+_PLAIN_SECTION_LINE_RE = re.compile(r'^[^\W\d_].{0,79}$', re.UNICODE)
 
 # Câu kết thúc: . ! ? … theo sau bởi dấu cách hoặc xuống dòng hoặc EOF
 _SENTENCE_END = re.compile(r'(?<=[.!?…])\s+(?=[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝĂĐƠƯẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼẾỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴỶỸ\"\'])', re.UNICODE)
@@ -53,6 +54,16 @@ _MULTI_BLANK  = re.compile(r'\n{3,}')
 
 # Loại bỏ dòng chỉ có dấu = (header markers sót lại)
 _HEADER_LINE  = re.compile(r'^={2,}.*={2,}$', re.MULTILINE)
+
+# Các section low-signal, thường chỉ là danh sách tham chiếu/liên kết
+_SKIP_SECTION_NAMES = {
+    "xem thêm",
+    "đọc thêm",
+    "liên kết ngoài",
+    "tham khảo",
+    "chú thích",
+    "ghi chú",
+}
 
 
 # ──────────────────────────────────────────────
@@ -85,6 +96,45 @@ def _clean_text(text: str) -> str:
     text = text.replace('\t', ' ').replace('\r', '')
     # Loại bỏ dòng chỉ toàn dấu gạch ngang (divider)
     text = re.sub(r'^\s*[-=]{5,}\s*$', '', text, flags=re.MULTILINE)
+    return text.strip()
+
+
+def _looks_like_plaintext_section_header(line: str) -> bool:
+    """Heuristic cho heading plain text của Wikipedia sau khi dùng extracts API."""
+    line = line.strip()
+    if not line:
+        return False
+    if not _PLAIN_SECTION_LINE_RE.match(line):
+        return False
+    if len(line.split()) > 8:
+        return False
+    if re.search(r'[.!?…:;]$', line):
+        return False
+    if re.search(r'^\W', line):
+        return False
+    return True
+
+
+def _normalize_section_name(section: str) -> str:
+    """Chuẩn hoá tên section để so sánh nhất quán."""
+    return re.sub(r'\s+', ' ', section.strip().lower())
+
+
+def _should_skip_section(section: str) -> bool:
+    """Bỏ qua các section low-signal, chủ yếu là mục tham chiếu/liên kết."""
+    return _normalize_section_name(section) in _SKIP_SECTION_NAMES
+
+
+def _clean_chunk_text(text: str) -> str:
+    """Dọn tiền tố section low-signal còn sót ở đầu chunk text."""
+    text = text.strip()
+    text = re.sub(
+        r'^(Xem thêm|Đọc thêm|Liên kết ngoài|Tham khảo|Chú thích|Ghi chú)\s*[:\-–—]?\s*',
+        '',
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = _MULTI_BLANK.sub('\n\n', text)
     return text.strip()
 
 
@@ -178,22 +228,62 @@ class VietnameseWikiChunker:
         Trả về list of {"header": str, "body": str}.
         Phần đầu bài (trước section đầu tiên) có header = "".
         """
+        cleaned_text = _clean_text(text)
         sections = []
-        matches = list(_SECTION_RE.finditer(text))
+        matches = list(_SECTION_RE.finditer(cleaned_text))
 
         if not matches:
-            return [{"header": "", "body": _clean_text(text)}]
+            paragraphs = _split_into_paragraphs(cleaned_text)
+            if not paragraphs:
+                return []
+
+            current_header = ""
+            current_parts: List[str] = []
+
+            def flush_section() -> None:
+                body = _clean_text('\n\n'.join(current_parts))
+                if body:
+                    sections.append({"header": current_header, "body": body})
+
+            for idx, para in enumerate(paragraphs):
+                lines = [line.strip() for line in para.splitlines() if line.strip()]
+                if not lines:
+                    continue
+
+                first_line = lines[0]
+                inline_header = _looks_like_plaintext_section_header(first_line) and len(lines) > 1
+                standalone_header = (
+                    _looks_like_plaintext_section_header(first_line)
+                    and len(lines) == 1
+                    and idx + 1 < len(paragraphs)
+                )
+
+                if inline_header or standalone_header:
+                    flush_section()
+                    current_header = first_line
+                    current_parts = []
+
+                    if inline_header:
+                        remainder = '\n'.join(lines[1:]).strip()
+                        if remainder:
+                            current_parts.append(remainder)
+                    continue
+
+                current_parts.append(para)
+
+            flush_section()
+            return sections
 
         # Phần intro (trước section đầu)
-        intro = text[:matches[0].start()].strip()
+        intro = cleaned_text[:matches[0].start()].strip()
         if intro:
             sections.append({"header": "", "body": _clean_text(intro)})
 
         for i, m in enumerate(matches):
             header = m.group(2).strip()
             start  = m.end()
-            end    = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-            body   = _clean_text(text[start:end])
+            end    = matches[i + 1].start() if i + 1 < len(matches) else len(cleaned_text)
+            body   = _clean_text(cleaned_text[start:end])
             if body:
                 sections.append({"header": header, "body": body})
 
@@ -207,7 +297,7 @@ class VietnameseWikiChunker:
         Áp dụng overlap giữa các chunk liên tiếp.
         """
         cfg = self.cfg
-        prefix = f"[{section_header}] " if section_header and cfg.include_section_headers else ""
+        prefix = ""
 
         raw_chunks: List[str] = []
         current_parts: List[str] = []
@@ -285,6 +375,9 @@ class VietnameseWikiChunker:
         raw_texts: List[tuple] = []  # (section_header, chunk_text)
 
         for sec in sections:
+            if _should_skip_section(sec["header"]):
+                self.log.debug(f"Bỏ qua section low-signal: '{sec['header']}'")
+                continue
             for chunk_text in self._chunk_section(sec["header"], sec["body"]):
                 raw_texts.append((sec["header"], chunk_text))
 
@@ -292,6 +385,7 @@ class VietnameseWikiChunker:
         total  = len(raw_texts)
 
         for idx, (sec_header, chunk_text) in enumerate(raw_texts):
+            chunk_text = _clean_chunk_text(chunk_text)
             char_count = len(chunk_text)
             if char_count < cfg.min_chunk_size:
                 continue
