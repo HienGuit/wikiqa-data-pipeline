@@ -1,6 +1,6 @@
 import logging
 import json
-from src import Config, WikipediaCrawler, ContentPipeline, load_taxonomy
+from src import Config, WikipediaCrawler, ContentPipeline, load_taxonomy, ChunkConfig, run_chunking
 
 # Cấu hình log hiển thị ra màn hình cực kỳ chuyên nghiệp
 logging.basicConfig(
@@ -49,6 +49,15 @@ def main():
     # 5. CHẠY PIPELINE (Tải Plain Text & Làm sạch)
     pipeline = ContentPipeline(Config)
     pipeline.process(raw_records)
+
+    # 6. CHẠY CHUNKER (Tạo semantic chunks trong thư mục data/)
+    log.info("=" * 50)
+    log.info("PHASE 3: Khởi động Chunker...")
+    run_chunking(
+        input_path=Config.CLEAN_DATA_PATH,
+        output_path=Config.CHUNK_DATA_PATH,
+        config=ChunkConfig(),
+    )
     
     log.info("=" * 50)
     log.info("Hoàn tất!")

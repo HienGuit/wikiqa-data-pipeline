@@ -9,7 +9,7 @@ Chiến lược chunking theo thứ tự ưu tiên:
   2. Fallback: ranh giới câu (dấu . ! ? …)
   3. Fallback cuối: ranh giới từ
 
-Khi chạy: python chunker.py --input wiki_pages_content.jsonl --output wiki_chunks.jsonl
+Khi chạy: python chunker.py --input data/wiki_pages_content.jsonl --output data/wiki_chunks.jsonl
 Mỗi chunk được làm giàu metadata: domain, scope, url, tiêu đề,
 vị trí tương đối, độ phủ toàn bài.
 """
@@ -266,7 +266,7 @@ class VietnameseWikiChunker:
 
     def chunk_record(self, record: Dict[str, Any]) -> List[Chunk]:
         """
-        Nhận một record từ wiki_pages_content.jsonl, trả về list[Chunk].
+        Nhận một record từ data/wiki_pages_content.jsonl, trả về list[Chunk].
         """
         cfg      = self.cfg
         text     = record.get("text", "")
@@ -352,8 +352,8 @@ def run_chunking(
     Pipeline chính: đọc JSONL bài viết → chunk → ghi JSONL chunk.
 
     Args:
-        input_path:  Đường dẫn file wiki_pages_content.jsonl
-        output_path: Đường dẫn file output (wiki_chunks.jsonl)
+        input_path:  Đường dẫn file data/wiki_pages_content.jsonl
+        output_path: Đường dẫn file output (data/wiki_chunks.jsonl)
         config:      ChunkConfig tùy chỉnh; dùng mặc định nếu None
         log_every:   Tần suất ghi log tiến độ
     """

@@ -15,6 +15,7 @@ class Config:
     TAXONOMY_FILE = os.path.join(DATA_DIR, "taxonomy.json")
     RAW_DATA_PATH = os.path.join(DATA_DIR, "wiki_pages_raw.jsonl")
     CLEAN_DATA_PATH = os.path.join(DATA_DIR, "wiki_pages_content.jsonl")
+    CHUNK_DATA_PATH = os.path.join(DATA_DIR, "wiki_chunks.jsonl")
     CHECKPOINT_PATH = os.path.join(DATA_DIR, "checkpoint.json")
     
     # Crawler Settings
