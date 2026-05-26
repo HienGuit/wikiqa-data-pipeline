@@ -1,0 +1,37 @@
+# ==========================================================================
+# filter_config.yaml
+# Nguong loc chunk duoc xac dinh tu EDA
+#
+# EDA Key Findings:
+#   - Tong: 60,277 chunks, 8 domains
+#   - median char_count = 810, mean = 721
+#   - 90th percentile char_count = 972  -> dat max = 1500 de co buffer
+#   - Chunk ngan <300 chars: tat ca domain deu <10%  -> nguong an toan
+#   - ends_with_punct rate = 98.25%  -> 1.75% chunk bi cat giua cau can loai
+#   - has_html = 0  -> HTML da sach, giu rule phong ngua
+#   - wiki_artifact = 29 chunks  -> loai khoi pool thay vi fix pipeline
+#   - Intro ratio toan tap = 12.65% (lanh manh, <40% nguong canh bao)
+#   - Domain co intro cao: medicine 16.56%, economics 14.85%, technology 14.19%
+#   - Domain co intro thap: history 8.15%
+#   - Max chunks/bai: 125 (median 7) -> can cap per title
+#   - Median char tang theo vi tri: bucket 0 = 745, bucket 8+ = 833
+# ==========================================================================
+
+hard_filter:
+  min_char_count: 300
+  max_char_count: 1500
+  min_sentences: 2
+  ends_with_punct: true
+  block_wiki_artifact: true
+  block_html_tags: true
+
+quality_filter:
+  max_digit_ratio: 0.30
+
+sampling:
+  target_per_domain: 400
+  max_chunks_per_title: 5
+  priority_sections: [1, 2, 3]
+  max_intro_ratio_per_domain: 0.15
+  soft_min_char_count: 200
+  short_chunk_priority: 0

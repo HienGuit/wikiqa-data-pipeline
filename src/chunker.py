@@ -14,13 +14,15 @@ Mỗi chunk được làm giàu metadata: domain, scope, url, tiêu đề,
 vị trí tương đối, độ phủ toàn bài.
 """
 
-import json
-import re
-import os
-import logging
 import argparse
-from typing import List, Dict, Generator, Any
-from dataclasses import dataclass, asdict
+import json
+import logging
+import re
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Any, Dict, Generator, List
+
+from src.config import RAW_CHUNKS, RAW_PAGES, ensure_dirs
 
 # ──────────────────────────────────────────────
 # Cấu hình mặc định
@@ -423,9 +425,10 @@ class VietnameseWikiChunker:
 # I/O: Đọc JSONL → Chunk → Ghi JSONL
 # ──────────────────────────────────────────────
 
-def iter_records(path: str) -> Generator[Dict, None, None]:
+def iter_records(path: str | Path) -> Generator[Dict, None, None]:
     """Đọc từng dòng JSONL, yield dict."""
-    with open(path, "r", encoding="utf-8") as f:
+    path = Path(path)
+    with path.open("r", encoding="utf-8") as f:
         for lineno, line in enumerate(f, 1):
             line = line.strip()
             if not line:
@@ -437,8 +440,8 @@ def iter_records(path: str) -> Generator[Dict, None, None]:
 
 
 def run_chunking(
-    input_path:  str,
-    output_path: str,
+    input_path: str | Path,
+    output_path: str | Path,
     config:      ChunkConfig = None,
     log_every:   int = 500,
 ):
@@ -451,6 +454,10 @@ def run_chunking(
         config:      ChunkConfig tùy chỉnh; dùng mặc định nếu None
         log_every:   Tần suất ghi log tiến độ
     """
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
     log     = logging.getLogger("Runner")
     chunker = VietnameseWikiChunker(config)
     cfg     = chunker.cfg
@@ -459,12 +466,12 @@ def run_chunking(
     log.info(f"Config: chunk_size={cfg.chunk_size}, overlap={cfg.chunk_overlap}, "
              f"min={cfg.min_chunk_size}, max={cfg.max_chunk_size}")
 
-    tmp_path       = output_path + ".tmp"
+    tmp_path       = output_path.with_suffix(output_path.suffix + ".tmp")
     total_articles = 0
     total_chunks   = 0
     skipped        = 0
 
-    with open(tmp_path, "w", encoding="utf-8") as out_f:
+    with tmp_path.open("w", encoding="utf-8") as out_f:
         for record in iter_records(input_path):
             total_articles += 1
             chunks = chunker.chunk_record(record)
@@ -483,7 +490,7 @@ def run_chunking(
                 )
 
     # Atomic replace
-    os.replace(tmp_path, output_path)
+    tmp_path.replace(output_path)
 
     log.info("=" * 55)
     log.info(f"Hoàn tất chunking!")
@@ -508,9 +515,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         description="Vietnamese Wikipedia Semantic Chunker",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    p.add_argument("--input",   default="data/wiki_pages_content.jsonl",
+    p.add_argument("--input",   default=str(RAW_PAGES),
                    help="Đường dẫn file JSONL đầu vào")
-    p.add_argument("--output",  default="data/wiki_chunks.jsonl",
+    p.add_argument("--output",  default=str(RAW_CHUNKS),
                    help="Đường dẫn file JSONL đầu ra")
     p.add_argument("--chunk-size",    type=int, default=1000)
     p.add_argument("--chunk-overlap", type=int, default=150)
@@ -523,6 +530,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
 
 if __name__ == "__main__":
+    ensure_dirs()
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",

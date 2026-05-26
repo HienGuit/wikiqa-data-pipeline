@@ -1,24 +1,27 @@
 import json
-import os
-import logging
+from pathlib import Path
+from typing import Any
 
-def load_taxonomy(filepath: str, config_class) -> dict:
+
+def load_taxonomy(filepath: str | Path, config_module: Any) -> dict:
     """
-    Đọc file taxonomy.json và tự động cập nhật Blacklist vào Config.
-    Trả về dictionary chứa danh sách các domains.
+    Đọc taxonomy và cập nhật blacklist/prefix trực tiếp vào config module.
     """
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Không tìm thấy file cấu hình tại: {filepath}")
-        
-    with open(filepath, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        
-    # Cập nhật tự động blacklist từ file JSON vào class Config
+    path = Path(filepath)
+    if not path.exists():
+        raise FileNotFoundError(f"Không tìm thấy file cấu hình tại: {path}")
+
+    with path.open("r", encoding="utf-8") as handle:
+        data = json.load(handle)
+
     if "blacklist" in data:
-        # Loại bỏ trùng lặp nếu có
-        config_class.BLACKLIST_KEYWORDS = list(set(config_class.BLACKLIST_KEYWORDS + data["blacklist"]))
-        
+        config_module.BLACKLIST_KEYWORDS = list(
+            set(config_module.BLACKLIST_KEYWORDS + data["blacklist"])
+        )
+
     if "title_blacklist_prefixes" in data:
-        config_class.STUB_PREFIXES = list(set(config_class.STUB_PREFIXES + data["title_blacklist_prefixes"]))
-        
+        config_module.STUB_PREFIXES = list(
+            set(config_module.STUB_PREFIXES + data["title_blacklist_prefixes"])
+        )
+
     return data.get("domains", {})
