@@ -29,7 +29,7 @@ quality_filter:
   max_digit_ratio: 0.30
 
 sampling:
-  target_per_domain: 400
+  target_per_domain: 800
   max_chunks_per_title: 5
   priority_sections: [1, 2, 3]
   max_intro_ratio_per_domain: 0.15
