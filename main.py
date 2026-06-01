@@ -1,8 +1,7 @@
 import json
 import logging
 
-from src import ChunkConfig, ContentPipeline, WikipediaCrawler, load_taxonomy, run_chunking
-from src import Config
+from src import ChunkConfig, Config, ContentPipeline, WikipediaCrawler, load_taxonomy, run_chunking
 
 
 logging.basicConfig(
@@ -14,39 +13,39 @@ log = logging.getLogger("Main")
 
 
 def main() -> None:
-    log.info("Khởi động Wikipedia Data Engineering Pipeline...")
+    log.info("Khoi dong Wikipedia Data Engineering Pipeline...")
     Config.ensure_dirs()
 
     try:
         domains_data = load_taxonomy(Config.TAXONOMY_FILE, Config)
-        log.info(f"Đã nạp thành công {len(domains_data)} domains từ taxonomy.")
+        log.info("Da nap thanh cong %s domains tu taxonomy.", len(domains_data))
     except Exception as exc:
-        log.error(f"Lỗi khởi tạo: {exc}")
+        log.error("Loi khoi tao: %s", exc)
         return
 
     log.info("=" * 50)
-    log.info("PHASE 1: Khởi động Crawler...")
+    log.info("PHASE 1: Khoi dong Crawler...")
     crawler = WikipediaCrawler(Config)
     metadata_path = crawler.run(domains_data, Config.BLACKLIST_KEYWORDS)
 
     log.info("=" * 50)
-    log.info("PHASE 2: Khởi động Content Cleaner...")
+    log.info("PHASE 2: Khoi dong Content Cleaner...")
     raw_records = []
     try:
         with metadata_path.open("r", encoding="utf-8") as handle:
             for line in handle:
                 if line.strip():
                     raw_records.append(json.loads(line))
-        log.info(f"Đọc được {len(raw_records)} bài viết cần fetch nội dung.")
+        log.info("Doc duoc %s bai viet can fetch noi dung.", len(raw_records))
     except FileNotFoundError:
-        log.error("Không tìm thấy file metadata raw. Crawler chưa chạy thành công?")
+        log.error("Khong tim thay file metadata raw. Crawler chua chay thanh cong?")
         return
 
     cleaner = ContentPipeline(Config)
     cleaner.process(raw_records)
 
     log.info("=" * 50)
-    log.info("PHASE 3: Khởi động Chunker...")
+    log.info("PHASE 3: Khoi dong Chunker...")
     run_chunking(
         input_path=Config.RAW_PAGES,
         output_path=Config.RAW_CHUNKS,
@@ -54,7 +53,7 @@ def main() -> None:
     )
 
     log.info("=" * 50)
-    log.info("Hoàn tất!")
+    log.info("Hoan tat!")
 
 
 if __name__ == "__main__":

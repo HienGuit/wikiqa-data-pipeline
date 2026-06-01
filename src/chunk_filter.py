@@ -1,44 +1,37 @@
 """
-chunk_filter.py -- Hard filter + Quality filter + Stratified sampler
-============================================================
-Input : data/interim/wiki_chunks.jsonl
-Output: data/interim/chunks_filtered.jsonl
-        data/interim/chunks_sampled.jsonl
+Chunk filtering and stratified sampling.
 
-Thiet ke tu EDA findings:
-  - 29 chunks wiki artifact -> loai tai day
-  - Chunk ngan <300 chars: <10% moi domain -> safe to filter
-  - history/law chiem ty trong lon -> bat buoc stratify theo domain
-  - Bai dai max 125 chunks/bai -> can cap per title
-  - Intro ratio cao o mot so domain -> can kiem soat
-  - Chunk index 1-3 thuong co noi dung "thit" hon intro
+Input:
+- data/interim/wiki_chunks.jsonl
+
+Outputs:
+- data/interim/chunks_filtered.jsonl
+- data/interim/chunks_sampled.jsonl
 """
+
+from __future__ import annotations
+
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from src.config import (
-    FILTERED_CHUNKS,
-    RAW_CHUNKS,
-    SAMPLED_CHUNKS,
-    ensure_dirs,
-    load_filter_config,
-)
+from src.config import FILTERED_CHUNKS, RAW_CHUNKS, SAMPLED_CHUNKS, ensure_dirs, load_filter_config
+
+
+SENTENCE_ENDINGS = list(".?!\"'…")
 
 
 def hard_filter(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
-    """
-    Loai cac chunk vi pham tieu chi ky thuat khong the chap nhan.
-    """
+    """Drop chunks that fail non-negotiable technical quality checks."""
+
     hard_cfg = cfg["hard_filter"]
-    endings = list(".?!\"'…")
     mask = (
         (~df["text"].str.contains(r"\{\{|\[\[", regex=True))
         & (~df["text"].str.contains(r"<[a-zA-Z][^>]*>", regex=True))
         & (df["char_count"] >= hard_cfg["min_char_count"])
         & (df["char_count"] <= hard_cfg["max_char_count"])
-        & (df["text"].str.strip().str[-1].isin(endings))
+        & (df["text"].str.strip().str[-1].isin(SENTENCE_ENDINGS))
         & (df["text"].str.count(r"[.!?]") >= hard_cfg["min_sentences"])
     )
     result = df.loc[mask].copy()
@@ -47,7 +40,8 @@ def hard_filter(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
 
 
 def quality_filter(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
-    """Loai chunk dang bang so lieu qua nhieu, khong phai van xuoi."""
+    """Drop chunks that look too tabular or numeric-heavy to be useful prose."""
+
     quality_cfg = cfg["quality_filter"]
     digit_ratio = df["text"].str.count(r"\d") / df["char_count"]
     result = df.loc[digit_ratio <= quality_cfg["max_digit_ratio"]].copy()
@@ -55,37 +49,40 @@ def quality_filter(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     return result
 
 
-def _assign_priority(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+def assign_priority(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     """
-    Gan diem uu tien truoc khi sampling.
+    Assign per-row sampling priority.
 
-    Priority 0 = non-intro va chunk_index thuoc nhom uu tien.
-    Priority 1 = non-intro con lai.
-    Priority 2 = intro.
+    - 0: non-intro chunk in a preferred chunk_index band
+    - 1: non-intro chunk outside the preferred band
+    - 2: intro chunk
     """
+
     sampling_cfg = cfg["sampling"]
     prioritized_positions = set(sampling_cfg["priority_sections"])
     result = df.copy()
     result["is_intro"] = result["section"].fillna("").eq("")
     in_priority_position = result["chunk_index"].isin(prioritized_positions)
-    conditions = [
-        (~result["is_intro"]) & in_priority_position,
-        (~result["is_intro"]) & (~in_priority_position),
-    ]
-    result["_priority"] = np.select(conditions, [0, 1], default=2)
+    result["_priority"] = np.select(
+        [
+            (~result["is_intro"]) & in_priority_position,
+            (~result["is_intro"]) & (~in_priority_position),
+        ],
+        [0, 1],
+        default=2,
+    )
     return result
 
 
 def stratified_sampler(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
-    """
-    Stratified sampling theo domain, per-title cap va gioi han intro ratio.
-    """
+    """Sample a balanced QA pool by domain with title caps and intro control."""
+
     sampling_cfg = cfg["sampling"]
     target = sampling_cfg["target_per_domain"]
     max_per_title = sampling_cfg["max_chunks_per_title"]
     max_intro_ratio = sampling_cfg["max_intro_ratio_per_domain"]
 
-    prioritized = _assign_priority(df, cfg)
+    prioritized = assign_priority(df, cfg)
     sampled_parts: list[pd.DataFrame] = []
 
     for domain, group in prioritized.groupby("domain", sort=True):
@@ -127,17 +124,14 @@ def stratified_sampler(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     return result
 
 
-def sanity_check(df_raw: pd.DataFrame, df_filtered: pd.DataFrame, df_sampled: pd.DataFrame) -> None:
-    """Kiem chung tu dong. Raise neu loi nghiem trong."""
-    assert df_filtered["text"].str.contains(r"\{\{|\[\[", regex=True).sum() == 0, (
-        "Still have wiki artifact in filtered pool!"
-    )
+def sanity_check(df_filtered: pd.DataFrame, df_sampled: pd.DataFrame) -> None:
+    """Raise on critical violations and warn on soft balance issues."""
+
+    assert df_filtered["text"].str.contains(r"\{\{|\[\[", regex=True).sum() == 0, "Still have wiki artifact in filtered pool!"
     assert (df_filtered["char_count"] < 300).sum() == 0, "Still have chunk <300 chars in filtered pool!"
     assert df_sampled["domain"].nunique() == 8, "Missing domain in sampled set!"
 
-    intro_ratio = df_sampled.assign(is_intro=df_sampled["section"].fillna("").eq("")).groupby("domain")[
-        "is_intro"
-    ].mean()
+    intro_ratio = df_sampled.assign(is_intro=df_sampled["section"].fillna("").eq("")).groupby("domain")["is_intro"].mean()
     over_intro = intro_ratio[intro_ratio > 0.20]
     if not over_intro.empty:
         print(f"WARNING: Domain intro ratio >20%: {over_intro.to_dict()}")
@@ -163,7 +157,7 @@ def run() -> None:
     df_sampled.to_json(SAMPLED_CHUNKS, orient="records", lines=True, force_ascii=False)
     print(f"Sampled saved  -> {Path(SAMPLED_CHUNKS).name}")
 
-    sanity_check(df, df_quality, df_sampled)
+    sanity_check(df_quality, df_sampled)
 
 
 if __name__ == "__main__":

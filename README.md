@@ -1,112 +1,198 @@
 # WikiQA Data Pipeline
 
-Pipeline thu thập, làm sạch, chunking, phân tích EDA và lọc mẫu cho dữ liệu Wikipedia tiếng Việt phục vụ QA / RAG / huấn luyện LLM.
+Pipeline thu thập, làm sạch, chunking, lọc mẫu, sinh QA, judge, repair, và finalization cho dữ liệu Wikipedia tiếng Việt.
 
-Repo hiện được tổ chức theo 3 lớp dữ liệu:
-- `data/raw`: dữ liệu nguồn và metadata đã làm sạch ở mức bài viết
-- `data/interim`: chunk pool, filtered pool, sampled pool
-- `data/processed`: các bước QA dataset về sau
-
-## Kiến trúc chính
-
-Luồng xử lý hiện tại:
-1. `src.crawler` thu metadata bài viết từ taxonomy
-2. `src.content_cleaner` tải plain-text extract từ Wikipedia
-3. `src.chunker` tạo `wiki_chunks.jsonl`
-4. `src.chunk_filter` lọc kỹ thuật + lọc chất lượng + lấy mẫu cân bằng theo domain
-5. `eda/notebooks/01_chunk_pool_eda.ipynb` dùng để phân tích chunk pool
-
-Các đường dẫn dùng chung đều đi qua `src.config`.
-
-## Cấu trúc repo
+## Cau truc repo
 
 ```text
 wikiqa-data-pipeline/
-├── configs/
-│   ├── filter_config.yaml
-│   └── qa_gen_config.yaml
-├── data/
-│   ├── raw/
-│   │   ├── taxonomy.json
-│   │   ├── wiki_pages_raw.jsonl
-│   │   └── wiki_pages_content.jsonl
-│   ├── interim/
-│   │   ├── wiki_chunks.jsonl
-│   │   ├── chunks_filtered.jsonl
-│   │   └── chunks_sampled.jsonl
-│   └── processed/
-├── eda/
-│   ├── figures/
-│   │   └── 01_chunk_pool_eda/
-│   │       ├── chunk_distribution/
-│   │       ├── text_quality/
-│   │       └── sampling_strategy/
-│   ├── notebooks/
-│   │   ├── 01_chunk_pool_eda.ipynb
-│   │   └── 02_qa_dataset_eda.ipynb
-│   └── utils/
-├── src/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── crawler.py
-│   ├── content_cleaner.py
-│   ├── chunker.py
-│   ├── chunk_filter.py
-│   └── utils.py
-├── tests/
-├── main.py
-├── requirements.txt
-└── README.md
+|-- configs/
+|-- data/
+|   |-- raw/
+|   |-- interim/
+|   `-- processed/
+|       |-- datasets/
+|       |-- runs/
+|       |   `-- qa/
+|       |-- reports/
+|       |   `-- qa/
+|       `-- archive/
+|           `-- qa/
+|-- eda/
+|-- scripts/
+|   `-- qa/
+|-- src/
+|   `-- qa/
+|-- main.py
+`-- requirements.txt
 ```
+
+## Data layout
+
+- `data/raw`: taxonomy và article-level source data
+  Path chuẩn hiện tại của taxonomy là `data/raw/taxonomy.json`.
+- `data/interim`: chunk pool, filtered pool, sampled pool, top-up chunk pools
+- `data/processed/datasets`: dataset JSONL đang sử dụng
+- `data/processed/runs/qa`: shard outputs, judge runs, repair runs
+- `data/processed/reports/qa`: summary, manifest, merge reports
+- `data/processed/archive/qa`: backup, judge exports cũ, exploratory artifacts
+
+Bo artifact QA hien tai:
+
+- `qa_pairs_canonical.jsonl`
+- `qa_pairs_canonical_judged.jsonl`
+- `qa_pairs_canonical_context_cleaned.jsonl`
+- `qa_pairs_canonical_judged_context_cleaned.jsonl`
+- `qa_pairs_split_ready.jsonl`
+- `qa_inferential_usable_only.jsonl`
+
+## QA subsystem
+
+`src/qa/` duoc tach thanh:
+
+- `prompts.py`: prompt generation + judge
+- `provider.py`: model providers
+- `generator.py`: orchestration sinh QA
+- `validators.py`: validation rules
+- `batch.py`: smoke, full, topup, judge, repair runners
+- `dataset.py`: selection + merge utilities
+
+Helper context cleaning dùng chung:
+
+- `src/text_cleaning.py`
+
+Mọi path QA quan trọng đều đi qua `src.config`.
 
 ## Cài đặt
 
 ```bash
 python -m venv .venv
-.venv\\Scripts\\activate
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Chạy pipeline
+## Chạy pipeline cơ bản
 
-Chạy toàn bộ flow crawler -> content cleaner -> chunker:
+Crawler -> cleaner -> chunker:
 
 ```bash
 python main.py
 ```
 
-Chạy riêng bước chunk filtering và sampling:
+Lọc chunk / lấy mẫu:
 
 ```bash
 python -m src.chunk_filter
 ```
 
-## Chạy EDA
+## Chạy QA pipeline
 
-Notebook chính:
-- `eda/notebooks/01_chunk_pool_eda.ipynb`
-
-Notebook này sẽ lưu figure vào:
-- `eda/figures/01_chunk_pool_eda/chunk_distribution`
-- `eda/figures/01_chunk_pool_eda/text_quality`
-- `eda/figures/01_chunk_pool_eda/sampling_strategy`
-
-## QA test script
-
-Script QA test hiện dùng `google.genai` và mặc định đọc từ:
-- `data/interim/chunks_sampled.jsonl`
-
-Output mặc định:
-- `tests/chunk_for_tests/qa_test_output.jsonl`
-
-## Kiểm thử
+Smoke test QA generation:
 
 ```bash
-pytest -q
+python -m src.qa.batch smoke
 ```
+
+Full QA generation:
+
+```bash
+python -m src.qa.batch full --shard-index 0 --shard-size 800
+```
+
+Inferential top-up:
+
+```bash
+python -m src.qa.batch topup --shard-index 0 --shard-size 100
+```
+
+Judge:
+
+```bash
+python -m src.qa.batch judge --provider openrouter --reasoning-type all
+```
+
+Repair succinct contextual prefix:
+
+```bash
+python -m src.qa.batch repair-succinct --reasoning-type all
+```
+
+## Merge / dataset utilities
+
+Chọn top-up chunks:
+
+```bash
+python -m src.qa.dataset select-topup
+```
+
+Merge main shards:
+
+```bash
+python -m src.qa.dataset merge-main
+```
+
+Merge top-up:
+
+```bash
+python -m src.qa.dataset merge-topup
+```
+
+Merge judge shards:
+
+```bash
+python -m src.qa.dataset merge-judge
+```
+
+Refresh judged / filtered downstream artifacts after repair:
+
+```bash
+python -m src.qa.dataset refresh-derived
+```
+
+## Finalization workflow
+
+Context clean + downstream sync:
+
+```bash
+python scripts/qa/retro_clean_context.py
+python scripts/qa/finalize_qa_dataset.py
+```
+
+Hoặc dùng launcher:
+
+```powershell
+.\scripts\qa\run_finalize_qa_pipeline.ps1
+```
+
+Workflow final dataset:
+
+1. `qa_pairs_canonical.jsonl`
+2. `qa_pairs_canonical_judged.jsonl`
+3. `qa_pairs_canonical_context_cleaned.jsonl`
+4. `qa_pairs_canonical_judged_context_cleaned.jsonl`
+5. `qa_pairs_split_ready.jsonl`
+6. `qa_inferential_usable_only.jsonl`
+
+## Automation scripts
+
+- `scripts/qa/run_full_judge_openrouter_flex.ps1`
+- `scripts/qa/run_repair_succinct_deepseek.ps1`
+- `scripts/qa/run_refresh_pipeline.ps1`
+- `scripts/qa/run_finalize_qa_pipeline.ps1`
+- `scripts/qa/build_human_verification_sets.py`
+- `scripts/qa/clean_annotation_pool.py`
+- `scripts/qa/retro_clean_context.py`
+- `scripts/qa/finalize_qa_dataset.py`
+
+`clean_annotation_pool.py` is now a compatibility sync:
+- it copies the canonical cleaned judged pool into the historical
+  `qa_pairs_canonical_judged_cleaned.jsonl` filename for older notebooks
+- it does not run a separate cleaning policy anymore
 
 ## Ghi chú
 
-- `src.config.ensure_dirs()` sẽ tự tạo các thư mục cần thiết.
-- `configs/filter_config.yaml` chứa ngưỡng lọc/sampling lấy từ EDA.
-- `data/processed/` đang là placeholder cho các bước QA dataset downstream.
+- `src.config.ensure_dirs()` tự tạo cấu trúc thư mục cần thiết.
+- Không hardcode path mới trong script mới; nếu cần thêm artifact, thêm constant vào `src.config` trước.
+- Artifact exploratory nên đưa vào `data/processed/archive/qa/experiments` thay vì để ở root `data/processed`.
+- Human verification sets hiện tại được giữ nguyên; finalization không regenerate lại các file này.
+- `clean_annotation_pool.py` chỉ còn là lớp tương thích cho notebook/workflow cũ.

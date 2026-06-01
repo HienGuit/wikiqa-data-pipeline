@@ -1,30 +1,32 @@
-# ========================================
-# Môi trường ảo (Virtual Environments)
-# ========================================
+# Virtual environments
 venv/
 env/
 .env
+.venv/
 
-# ========================================
-# File rác của Python & Hệ điều hành
-# ========================================
+# Python cache / build artifacts
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
+.pytest_cache/
+
+# OS noise
 .DS_Store
 Thumbs.db
 
-# ========================================
-# Dữ liệu & Logs (KHÔNG PUSH LÊN GIT)
-# ========================================
+# Logs
 pipeline.log
 *.log
 
-# Bỏ qua toàn bộ nội dung trong thư mục data/
-data/*
+# Local caches / scratch space
+.cache/
 
-# NHƯNG giữ lại file taxonomy.json (Cấu hình)
-!data/taxonomy.json
+# Data artifacts
+data/raw/*
+data/interim/*
+data/processed/*
+
+# Keep directory structure if desired
 !data/.gitkeep
