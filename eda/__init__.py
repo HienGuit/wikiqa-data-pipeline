@@ -1,1 +1,1 @@
-"""Tiện ích EDA cho bộ dữ liệu wiki chunks."""
+"""EDA helpers for chunk and QA dataset analysis."""

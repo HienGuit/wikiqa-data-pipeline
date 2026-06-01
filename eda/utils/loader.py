@@ -1,37 +1,54 @@
+"""EDA loaders for chunk and QA JSONL datasets."""
+
+from __future__ import annotations
+
 import json
 from pathlib import Path
+from typing import Iterable
 
 import pandas as pd
 
 from src.config import RAW_CHUNKS
 
 
-REQUIRED_COLUMNS = {"chunk_id", "title", "domain", "section", "text"}
+REQUIRED_CHUNK_COLUMNS = {"chunk_id", "title", "domain", "section", "text"}
 
 
-def load_chunks(path: str | Path = RAW_CHUNKS) -> pd.DataFrame:
-    """Đọc file JSONL chunk và trả về DataFrame với các cột chuẩn."""
-    path = Path(path)
-
+def load_jsonl_records(path: str | Path) -> list[dict]:
+    file_path = Path(path)
     records = []
-    with path.open("r", encoding="utf-8") as handle:
+    with file_path.open("r", encoding="utf-8") as handle:
         for line in handle:
             line = line.strip()
             if not line:
                 continue
             records.append(json.loads(line))
+    return records
 
-    df = pd.DataFrame(records)
 
-    missing_columns = REQUIRED_COLUMNS - set(df.columns)
+def require_columns(df: pd.DataFrame, required_columns: Iterable[str]) -> None:
+    missing_columns = set(required_columns) - set(df.columns)
     if missing_columns:
         missing_str = ", ".join(sorted(missing_columns))
-        raise ValueError(f"Thiếu cột bắt buộc trong dữ liệu: {missing_str}")
+        raise ValueError(f"Thieu cot bat buoc trong du lieu: {missing_str}")
+
+
+def load_jsonl_frame(path: str | Path, required_columns: Iterable[str] | None = None) -> pd.DataFrame:
+    df = pd.DataFrame(load_jsonl_records(path))
+    if required_columns:
+        require_columns(df, required_columns)
+    return df
+
+
+def load_chunks(path: str | Path = RAW_CHUNKS) -> pd.DataFrame:
+    """Load chunk JSONL as a DataFrame with common derived columns."""
+
+    file_path = Path(path)
+    df = load_jsonl_frame(file_path, REQUIRED_CHUNK_COLUMNS)
 
     if "char_count" not in df.columns:
-        df["char_count"] = df["text"].str.len()
+        df["char_count"] = df["text"].fillna("").str.len()
 
     df["is_intro"] = df["section"].fillna("").eq("")
-
-    print(f"Loaded {len(df):,} chunks from {path}")
+    print(f"Loaded {len(df):,} chunks from {file_path}")
     return df
