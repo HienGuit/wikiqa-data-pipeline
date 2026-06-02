@@ -2,6 +2,12 @@
 
 This repository builds a Vietnamese question-answering dataset from Vietnamese Wikipedia and packages the full evaluation stack around it: LLM judging, human verification, inter-annotator agreement, release normalization, and feature-engineering analysis.
 
+## Documentation
+
+- Dataset card: `dataset_card.md`
+- Data dictionary: `data_dictionary.md`
+- QA bucket guideline for LLM judging and human verification: `qa_bucket_guideline.md`
+
 ## Dataset Overview
 
 ### Public Release
@@ -69,6 +75,7 @@ The dataset is created in six stages:
 - Bundle: `data/processed/datasets/human_verification_bundle_20260602/`
 - IAA summary: `data/processed/datasets/human_verification_bundle_20260602/reports/iaa_summary.md`
 - IAA visualizations: `data/processed/datasets/human_verification_bundle_20260602/reports/`
+- Guideline used for bucket-based judging and annotation: `qa_bucket_guideline.md`
 
 ### EDA
 - EDA1 dataset overview: `eda/figures/02_qa_dataset_eda/`
@@ -100,6 +107,9 @@ Excluded from phase 1:
 
 ```text
 wikiqa-data-pipeline/
+├── dataset_card.md               # public dataset card
+├── data_dictionary.md            # field-level schema notes
+├── qa_bucket_guideline.md        # bucket-label guideline for judges and annotators
 ├── configs/                     # YAML configs
 ├── data/
 │   ├── raw/                     # raw Wikipedia pages and metadata
