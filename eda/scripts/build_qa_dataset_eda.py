@@ -51,7 +51,7 @@ def draw_reasoning_distribution(df: pd.DataFrame) -> str:
     counts = df["final_reasoning_bucket"].value_counts().reindex(order)
     total = int(counts.sum())
 
-    fig, ax = plt.subplots(figsize=(8.2, 4.8))
+    fig, ax = plt.subplots(figsize=(8.4, 5.2))
     bars = ax.bar(
         counts.index,
         counts.values,
@@ -59,17 +59,19 @@ def draw_reasoning_distribution(df: pd.DataFrame) -> str:
         edgecolor="white",
         linewidth=1.2,
     )
-    ax.set_title("Reasoning Bucket Distribution in the Final Release Dataset")
+    ax.set_title("Reasoning Bucket Distribution in the Final Release Dataset", pad=14)
     ax.set_ylabel("Number of QA pairs")
     ax.set_xlabel("")
     ax.grid(axis="y", alpha=0.25)
     ax.set_axisbelow(True)
 
+    ax.set_ylim(0, float(counts.max()) * 1.24)
+
     for bar, value in zip(bars, counts.values):
         pct = value / total * 100
         ax.text(
             bar.get_x() + bar.get_width() / 2,
-            bar.get_height() + total * 0.012,
+            bar.get_height() + total * 0.016,
             f"{value:,}\n({pct:.1f}%)",
             ha="center",
             va="bottom",
@@ -146,6 +148,8 @@ def draw_stacked_bar(
     legend_loc: str = "upper center",
     legend_bbox: tuple[float, float] = (0.5, -0.14),
     legend_ncol: int | None = None,
+    title_pad: float = 10.0,
+    top_margin: float | None = None,
 ) -> str:
     fig, ax = plt.subplots(figsize=figsize)
     bottom = np.zeros(len(table))
@@ -164,7 +168,7 @@ def draw_stacked_bar(
         )
         bottom += values
 
-    ax.set_title(title)
+    ax.set_title(title, pad=title_pad)
     ax.set_ylabel(ylabel)
     ax.set_xlabel(xlabel)
     ax.set_xticks(x, labels=table.index, rotation=rotate_x, ha="right" if rotate_x else "center")
@@ -180,6 +184,9 @@ def draw_stacked_bar(
         loc=legend_loc,
         bbox_to_anchor=legend_bbox,
     )
+
+    if top_margin is not None:
+        fig.subplots_adjust(top=top_margin)
 
     save_fig(fig, FIGURE_DIR, filename, close=True)
     return filename
@@ -373,8 +380,10 @@ def main() -> None:
             rotate_x=25,
             figsize=(10.2, 5.3),
             legend_loc="lower center",
-            legend_bbox=(0.5, 1.02),
+            legend_bbox=(0.5, 1.12),
             legend_ncol=3,
+            title_pad=22,
+            top_margin=0.82,
         )
     )
 
