@@ -105,6 +105,13 @@ def _write_markdown(path: Path, lines: list[str]) -> None:
     path.write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
 
 
+def _repo_rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path.resolve())
+
+
 def build_feature_phase1_provenance() -> dict[str, Any]:
     full_rows, full_columns = _csv_shape(FEATURE_MATRIX_FULL)
     final_rows, final_columns = _csv_shape(FEATURE_MATRIX_FINAL)
@@ -135,10 +142,10 @@ def build_feature_phase1_provenance() -> dict[str, Any]:
     md_lines = [
         "# Feature Engineering Phase 1 Provenance",
         "",
-        f"- Analysis source dataset: `data/processed/datasets/{QA_THREE_WAY_ANALYSIS.name}`",
-        f"- Public release dataset: `data/processed/datasets/{QA_THREE_WAY_READY.name}`",
-        f"- Full matrix: `data/processed/features/{FEATURE_MATRIX_FULL.name}` ({full_rows:,} rows, {len(full_columns)} columns)",
-        f"- Final matrix: `data/processed/features/{FEATURE_MATRIX_FINAL.name}` ({final_rows:,} rows, {len(final_columns)} columns)",
+        f"- Analysis source dataset: `{_repo_rel(QA_THREE_WAY_ANALYSIS)}`",
+        f"- Public release dataset: `{_repo_rel(QA_THREE_WAY_READY)}`",
+        f"- Full matrix: `{_repo_rel(FEATURE_MATRIX_FULL)}` ({full_rows:,} rows, {len(full_columns)} columns)",
+        f"- Final matrix: `{_repo_rel(FEATURE_MATRIX_FINAL)}` ({final_rows:,} rows, {len(final_columns)} columns)",
         "",
         "## Active Phase-1 Features",
         *[f"- Full-matrix knowledge signal: `{feature}`" for feature in ACTIVE_KNOWLEDGE_SIGNALS],
@@ -162,6 +169,9 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
     canonical_cleaned_rows = _count_jsonl_rows(QA_CANONICAL_JUDGED_CONTEXT_CLEANED)
     task1_rows = _count_jsonl_rows(QA_HUMAN_VERIFICATION_TASK1)
     task2_rows = _count_jsonl_rows(QA_HUMAN_VERIFICATION_TASK2)
+    train_rows = _count_jsonl_rows(ROOT / "data" / "final" / "train.jsonl")
+    val_rows = _count_jsonl_rows(ROOT / "data" / "final" / "val.jsonl")
+    test_rows = _count_jsonl_rows(ROOT / "data" / "final" / "test.jsonl")
 
     payload = {
         "canonical_judge": {
@@ -180,6 +190,12 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
             "public_final_rows": public_rows,
             "analysis_source": str(QA_THREE_WAY_ANALYSIS.resolve()),
             "analysis_source_rows": analysis_rows,
+            "train_split": str((ROOT / "data" / "final" / "train.jsonl").resolve()),
+            "train_split_rows": train_rows,
+            "val_split": str((ROOT / "data" / "final" / "val.jsonl").resolve()),
+            "val_split_rows": val_rows,
+            "test_split": str((ROOT / "data" / "final" / "test.jsonl").resolve()),
+            "test_split_rows": test_rows,
             "public_schema_fields": list(PUBLIC_RELEASE_FIELDS),
             "analysis_schema_fields": list(ANALYSIS_RELEASE_FIELDS),
         },
@@ -240,8 +256,11 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
         f"- Parallel DeepSeek source: `data/processed/datasets/{QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH.name}`",
         "",
         "## Release Datasets",
-        f"- Public final dataset: `data/processed/datasets/{QA_THREE_WAY_READY.name}` ({public_rows:,} rows)",
-        f"- Internal analysis source: `data/processed/datasets/{QA_THREE_WAY_ANALYSIS.name}` ({analysis_rows:,} rows)",
+        f"- Public final dataset: `{_repo_rel(QA_THREE_WAY_READY)}` ({public_rows:,} rows)",
+        f"- Internal analysis source: `{_repo_rel(QA_THREE_WAY_ANALYSIS)}` ({analysis_rows:,} rows)",
+        f"- Train split: `data/final/train.jsonl` ({train_rows:,} rows)",
+        f"- Validation split: `data/final/val.jsonl` ({val_rows:,} rows)",
+        f"- Test split: `data/final/test.jsonl` ({test_rows:,} rows)",
         f"- Public schema fields: {', '.join(PUBLIC_RELEASE_FIELDS)}",
         f"- Analysis schema fields: {', '.join(ANALYSIS_RELEASE_FIELDS)}",
         "",
@@ -251,8 +270,8 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
         f"- Invalid rows: `{validation.get('invalid_rows', 0):,}`",
         "",
         "## Feature Engineering Phase 1",
-        f"- Full matrix: `data/processed/features/{FEATURE_MATRIX_FULL.name}` ({feature_payload['full_row_count']:,} rows, {feature_payload['full_column_count']} columns)",
-        f"- Final matrix: `data/processed/features/{FEATURE_MATRIX_FINAL.name}` ({feature_payload['final_row_count']:,} rows, {feature_payload['final_column_count']} columns)",
+        f"- Full matrix: `{_repo_rel(FEATURE_MATRIX_FULL)}` ({feature_payload['full_row_count']:,} rows, {feature_payload['full_column_count']} columns)",
+        f"- Final matrix: `{_repo_rel(FEATURE_MATRIX_FINAL)}` ({feature_payload['final_row_count']:,} rows, {feature_payload['final_column_count']} columns)",
         *[f"- Full-matrix knowledge signal: `{feature}`" for feature in ACTIVE_KNOWLEDGE_SIGNALS],
         *[f"- Retained final-matrix knowledge signal: `{feature}`" for feature in RETAINED_FINAL_KNOWLEDGE_SIGNALS],
         *[f"- Active other feature group: `{feature}`" for feature in ACTIVE_OTHER_FEATURES],

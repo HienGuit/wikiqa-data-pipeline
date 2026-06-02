@@ -24,6 +24,12 @@ This repository builds a Vietnamese question-answering dataset from Vietnamese W
 - `quality_band`
 - `inferential_validity_band`
 
+### Final Splits
+- Train split: `data/final/train.jsonl`
+- Validation split: `data/final/val.jsonl`
+- Test split: `data/final/test.jsonl`
+- Final feature matrix: `data/final/feature_matrix_final.csv`
+
 ### Internal Analysis Source
 - Analysis dataset: `data/processed/datasets/qa_pairs_three_way_analysis.jsonl`
 - Purpose: internal diagnostics and downstream analysis
@@ -70,7 +76,7 @@ The dataset is created in six stages:
 
 ### Feature Engineering Phase 1
 - Full matrix: `data/processed/features/feature_matrix_full.csv`
-- Final matrix after multicollinearity-based pruning: `data/processed/final/feature_matrix_final.csv`
+- Final matrix after multicollinearity-based pruning: `data/final/feature_matrix_final.csv`
 
 Full-matrix knowledge signals:
 - `page_views_rank`
@@ -159,4 +165,4 @@ python scripts/qa/build_release_metadata.py
 - Feature phase-1 provenance JSON: `data/processed/reports/qa/feature_phase1_provenance.json`
 - Feature phase-1 provenance Markdown: `data/processed/reports/qa/feature_phase1_provenance.md`
 
-These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, and which features were kept or excluded.
+These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, and which features were kept or excluded. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.
