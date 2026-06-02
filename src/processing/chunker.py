@@ -11,7 +11,8 @@ from pathlib import Path
 from typing import Any, Dict, Generator, List
 
 from src.config import RAW_CHUNKS, RAW_PAGES, ensure_dirs
-from src.text_cleaning import clean_article_text
+
+from .text_cleaning import clean_article_text
 
 
 @dataclass
@@ -219,9 +220,7 @@ class VietnameseWikiChunker:
             first_line = lines[0]
             inline_header = looks_like_plaintext_section_header(first_line) and len(lines) > 1
             standalone_header = (
-                looks_like_plaintext_section_header(first_line)
-                and len(lines) == 1
-                and index + 1 < len(paragraphs)
+                looks_like_plaintext_section_header(first_line) and len(lines) == 1 and index + 1 < len(paragraphs)
             )
 
             if inline_header or standalone_header:

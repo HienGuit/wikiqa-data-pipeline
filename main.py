@@ -3,7 +3,6 @@ import logging
 
 from src import ChunkConfig, Config, ContentPipeline, WikipediaCrawler, load_taxonomy, run_chunking
 
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",

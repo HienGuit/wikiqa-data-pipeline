@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 EXTRACTION_STANDARD_FEW_SHOT = """
 Vi du 1
 Context:

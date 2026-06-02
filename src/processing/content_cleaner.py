@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 
 import requests
 
-from src.text_cleaning import clean_article_text
+from .text_cleaning import clean_article_text
 
 
 class ContentPipeline:

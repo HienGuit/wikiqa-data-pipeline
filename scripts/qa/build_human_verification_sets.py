@@ -9,7 +9,6 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
 
-
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -23,7 +22,6 @@ from src.config import (  # noqa: E402
     QA_HUMAN_VERIFICATION_TASK2_KEY,
     ensure_dirs,
 )
-
 
 TASK1_SIZE = 100
 TASK2_SIZE = 50
@@ -153,7 +151,9 @@ def main() -> None:
 
     task1_counts = Counter((row.get("quality_band"), row.get("difficulty_band")) for row in rows)
     task1_quotas = largest_remainder_quota(task1_counts, TASK1_SIZE)
-    task1_selected = sample_by_quota(rows, task1_quotas, lambda row: (row.get("quality_band"), row.get("difficulty_band")), rng)
+    task1_selected = sample_by_quota(
+        rows, task1_quotas, lambda row: (row.get("quality_band"), row.get("difficulty_band")), rng
+    )
 
     task1_ids = {str(row.get("chunk_id")) for row in task1_selected}
     inferential_rows = [row for row in rows if row.get("reasoning_type") == "multi-sentence"]
@@ -167,9 +167,13 @@ def main() -> None:
         exclude_ids=task1_ids,
     )
 
-    task1_annotation = [build_task1_annotation_row(f"T1_{index:03d}", row) for index, row in enumerate(task1_selected, start=1)]
+    task1_annotation = [
+        build_task1_annotation_row(f"T1_{index:03d}", row) for index, row in enumerate(task1_selected, start=1)
+    ]
     task1_key = [build_task1_key_row(f"T1_{index:03d}", row) for index, row in enumerate(task1_selected, start=1)]
-    task2_annotation = [build_task2_annotation_row(f"T2_{index:03d}", row) for index, row in enumerate(task2_selected, start=1)]
+    task2_annotation = [
+        build_task2_annotation_row(f"T2_{index:03d}", row) for index, row in enumerate(task2_selected, start=1)
+    ]
     task2_key = [build_task2_key_row(f"T2_{index:03d}", row) for index, row in enumerate(task2_selected, start=1)]
 
     write_jsonl(QA_HUMAN_VERIFICATION_TASK1, task1_annotation)
@@ -185,9 +189,15 @@ def main() -> None:
             "key_path": str(QA_HUMAN_VERIFICATION_TASK1_KEY),
             "sample_size": TASK1_SIZE,
             "source_rows": len(rows),
-            "distribution_source": {f"{quality}|{difficulty}": count for (quality, difficulty), count in sorted(task1_counts.items())},
+            "distribution_source": {
+                f"{quality}|{difficulty}": count for (quality, difficulty), count in sorted(task1_counts.items())
+            },
             "distribution_sampled": dict(
-                sorted(Counter(f"{row.get('quality_band_ref')}|{row.get('difficulty_band_ref')}" for row in task1_key).items())
+                sorted(
+                    Counter(
+                        f"{row.get('quality_band_ref')}|{row.get('difficulty_band_ref')}" for row in task1_key
+                    ).items()
+                )
             ),
         },
         "task2": {
@@ -196,11 +206,15 @@ def main() -> None:
             "sample_size": TASK2_SIZE,
             "source_rows": len(inferential_rows),
             "distribution_source": dict(sorted(task2_counts.items())),
-            "distribution_sampled": dict(sorted(Counter(row.get("inferential_validity_band_ref") for row in task2_key).items())),
+            "distribution_sampled": dict(
+                sorted(Counter(row.get("inferential_validity_band_ref") for row in task2_key).items())
+            ),
             "excluded_task1_chunk_ids": len(task1_ids),
         },
     }
-    QA_HUMAN_VERIFICATION_SAMPLING_REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    QA_HUMAN_VERIFICATION_SAMPLING_REPORT.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
 

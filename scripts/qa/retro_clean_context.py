@@ -22,10 +22,9 @@ from src.config import (  # noqa: E402
     QA_CONTEXT_CLEANING_REPORT,
     ensure_dirs,
 )
-from src.text_cleaning import clean_article_text, clean_short_text  # noqa: E402
+from src.processing.text_cleaning import clean_article_text, clean_short_text  # noqa: E402
+from src.qa.release_validation import validate_release_row  # noqa: E402
 
-
-REQUIRED_FIELDS = ("chunk_id", "title", "domain", "context", "question", "answer", "reasoning_type")
 SUCCINCT_DANGLING_SUFFIXES = (
     "nơi",
     "khi",
@@ -72,10 +71,6 @@ def duplicate_priority(row: Dict[str, Any]) -> Tuple[int, int, int]:
     return (type_rank, quality_rank, difficulty_rank)
 
 
-def has_required_fields(row: Dict[str, Any]) -> bool:
-    return all(str(row.get(field, "")).strip() for field in REQUIRED_FIELDS)
-
-
 def clean_sample_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     cleaned = dict(row)
     cleaned["context"] = clean_article_text(str(row.get("context", "")))
@@ -114,32 +109,50 @@ def clean_dataset(*, name: str, input_path: Path, output_path: Path, rejects_pat
     cleaned_candidates: List[Tuple[int, Dict[str, Any]]] = []
 
     for index, row in enumerate(rows, start=1):
-        if not has_required_fields(row):
-            reject_counts["missing_required_fields"] += 1
-            rejects.append({"dataset": name, "source_index": index, "reject_reason": "missing_required_fields", "row": row})
+        is_valid, error = validate_release_row(row)
+        if not is_valid:
+            reject_counts[error] += 1
+            rejects.append({"dataset": name, "source_index": index, "reject_reason": error, "row": row})
             continue
 
         cleaned_row = clean_sample_fields(row)
 
         if not cleaned_row["context"].strip():
             reject_counts["empty_cleaned_context"] += 1
-            rejects.append({"dataset": name, "source_index": index, "reject_reason": "empty_cleaned_context", "row": row})
+            rejects.append(
+                {"dataset": name, "source_index": index, "reject_reason": "empty_cleaned_context", "row": row}
+            )
             continue
         if not cleaned_row["question"].strip():
             reject_counts["empty_cleaned_question"] += 1
-            rejects.append({"dataset": name, "source_index": index, "reject_reason": "empty_cleaned_question", "row": row})
+            rejects.append(
+                {"dataset": name, "source_index": index, "reject_reason": "empty_cleaned_question", "row": row}
+            )
             continue
         if not cleaned_row["answer"].strip():
             reject_counts["empty_cleaned_answer"] += 1
-            rejects.append({"dataset": name, "source_index": index, "reject_reason": "empty_cleaned_answer", "row": row})
+            rejects.append(
+                {"dataset": name, "source_index": index, "reject_reason": "empty_cleaned_answer", "row": row}
+            )
             continue
-        if cleaned_row["answer"] not in cleaned_row["context"]:
-            reject_counts["answer_not_in_cleaned_context"] += 1
-            rejects.append({"dataset": name, "source_index": index, "reject_reason": "answer_not_in_cleaned_context", "row": row})
+
+        is_valid, error = validate_release_row(cleaned_row)
+        if not is_valid:
+            mapped_error = "answer_not_in_cleaned_context" if error == "answer_not_in_context" else error
+            reject_counts[mapped_error] += 1
+            rejects.append({"dataset": name, "source_index": index, "reject_reason": mapped_error, "row": row})
             continue
+
         if is_bad_succinct_context(cleaned_row):
             reject_counts["bad_succinct_context_after_clean"] += 1
-            rejects.append({"dataset": name, "source_index": index, "reject_reason": "bad_succinct_context_after_clean", "row": row})
+            rejects.append(
+                {
+                    "dataset": name,
+                    "source_index": index,
+                    "reject_reason": "bad_succinct_context_after_clean",
+                    "row": row,
+                }
+            )
             continue
 
         cleaned_candidates.append((index, cleaned_row))
@@ -198,7 +211,9 @@ def clean_dataset(*, name: str, input_path: Path, output_path: Path, rejects_pat
         "cleaned_rows": len(final_rows),
         "rejected_rows": len(rejects),
         "reject_counts": dict(sorted(reject_counts.items())),
-        "reasoning_type_distribution": dict(sorted(Counter(row.get("reasoning_type", "") for row in final_rows).items())),
+        "reasoning_type_distribution": dict(
+            sorted(Counter(row.get("reasoning_type", "") for row in final_rows).items())
+        ),
         "duplicate_examples": duplicate_examples,
     }
 

@@ -1,198 +1,162 @@
-# WikiQA Data Pipeline
+# Vietnamese WikiQA Data Pipeline
 
-Pipeline thu thập, làm sạch, chunking, lọc mẫu, sinh QA, judge, repair, và finalization cho dữ liệu Wikipedia tiếng Việt.
+This repository builds a Vietnamese question-answering dataset from Vietnamese Wikipedia and packages the full evaluation stack around it: LLM judging, human verification, inter-annotator agreement, release normalization, and feature-engineering analysis.
 
-## Cau truc repo
+## Dataset Overview
+
+### Public Release
+- Public HF-ready dataset: `data/processed/datasets/qa_pairs_three_way_ready.jsonl`
+- Rows: `7,592`
+- Final reasoning buckets:
+  - `extraction`
+  - `bridge`
+  - `multi-sentence`
+
+### Public Schema
+- `chunk_id`
+- `domain`
+- `title`
+- `section`
+- `context`
+- `question`
+- `answer`
+- `final_reasoning_bucket`
+- `quality_band`
+- `inferential_validity_band`
+
+### Internal Analysis Source
+- Analysis dataset: `data/processed/datasets/qa_pairs_three_way_analysis.jsonl`
+- Purpose: internal diagnostics and downstream analysis
+- Extra legacy fields retained internally:
+  - `reasoning_type`
+  - `difficulty_band`
+
+## Data Creation Pipeline
+
+The dataset is created in six stages:
+
+1. Crawl Vietnamese Wikipedia pages and metadata from a curated taxonomy.
+2. Clean raw page text and split pages into section-aware chunks.
+3. Generate QA candidates with two reasoning styles:
+   - `extraction`
+   - `multi-sentence`
+4. Judge generated QA pairs with LLM-based labels for:
+   - `quality_band`
+   - `difficulty_band`
+   - `inferential_validity_band`
+5. Promote the canonical judge, clean contexts, and normalize judged artifacts.
+6. Build the final three-way release:
+   - `extraction`
+   - `bridge` for weak inferential multi-sentence cases
+   - `multi-sentence` for usable/strong inferential cases
+
+## Final Artifacts
+
+### Judge Provenance
+- Canonical judge: `Gemini`
+- Canonical judged source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl`
+- Canonical judged, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl`
+- Canonical judged, release-normalized: `data/processed/datasets/qa_pairs_canonical_judged_release.jsonl`
+- Parallel DeepSeek source: `data/processed/datasets/qa_pairs_canonical_judged_deepseek_v4_flash.jsonl`
+
+### Human Verification
+- Bundle: `data/processed/datasets/human_verification_bundle_20260602/`
+- IAA summary: `data/processed/datasets/human_verification_bundle_20260602/reports/iaa_summary.md`
+- IAA visualizations: `data/processed/datasets/human_verification_bundle_20260602/reports/`
+
+### EDA
+- EDA1 dataset overview: `eda/figures/02_qa_dataset_eda/`
+- EDA2 feature-engineering analysis: `eda/figures/03_feature_engineering_eda/`
+
+### Feature Engineering Phase 1
+- Full matrix: `data/processed/features/feature_matrix_full.csv`
+- Final matrix after multicollinearity-based pruning: `data/processed/final/feature_matrix_final.csv`
+
+Full-matrix knowledge signals:
+- `page_views_rank`
+- `site_links_rank`
+- `wiki_count_rank`
+- `statements_rank`
+- `references_rank`
+- `knowledge_difficulty`
+
+Retained knowledge signals in the final matrix:
+- `page_views_rank`
+- `wiki_count_rank`
+- `statements_rank`
+- `knowledge_difficulty`
+
+Excluded from phase 1:
+- `wiki_level`
+- `linked_entities`
+
+## Repository Structure
 
 ```text
 wikiqa-data-pipeline/
-|-- configs/
-|-- data/
-|   |-- raw/
-|   |-- interim/
-|   `-- processed/
-|       |-- datasets/
-|       |-- runs/
-|       |   `-- qa/
-|       |-- reports/
-|       |   `-- qa/
-|       `-- archive/
-|           `-- qa/
-|-- eda/
-|-- scripts/
-|   `-- qa/
-|-- src/
-|   `-- qa/
-|-- main.py
-`-- requirements.txt
+├── configs/                     # YAML configs
+├── data/
+│   ├── raw/                     # raw Wikipedia pages and metadata
+│   ├── interim/                 # chunks and intermediate artifacts
+│   ├── processed/
+│   │   ├── datasets/            # judged, release, and annotation datasets
+│   │   ├── features/            # feature matrices and build reports
+│   │   ├── final/               # final selected feature matrices
+│   │   ├── reports/qa/          # provenance, validation, and release manifests
+│   │   └── wiki_metrics/        # entity-level wiki metrics
+├── eda/
+│   ├── figures/                 # publication-ready EDA outputs
+│   ├── scripts/                 # EDA build scripts
+│   └── utils/                   # EDA loading and plotting helpers
+├── scripts/
+│   ├── features/                # feature engineering pipeline
+│   └── qa/                      # QA release, judging, verification, metadata
+└── src/
+    ├── features/                # reusable feature logic
+    ├── ingestion/               # crawling and raw ingestion
+    ├── processing/              # cleaning and chunking
+    └── qa/                      # QA generation, validation, release schemas
 ```
 
-## Data layout
+## How To Run The Pipeline
 
-- `data/raw`: taxonomy và article-level source data
-  Path chuẩn hiện tại của taxonomy là `data/raw/taxonomy.json`.
-- `data/interim`: chunk pool, filtered pool, sampled pool, top-up chunk pools
-- `data/processed/datasets`: dataset JSONL đang sử dụng
-- `data/processed/runs/qa`: shard outputs, judge runs, repair runs
-- `data/processed/reports/qa`: summary, manifest, merge reports
-- `data/processed/archive/qa`: backup, judge exports cũ, exploratory artifacts
-
-Bo artifact QA hien tai:
-
-- `qa_pairs_canonical.jsonl`
-- `qa_pairs_canonical_judged.jsonl`
-- `qa_pairs_canonical_context_cleaned.jsonl`
-- `qa_pairs_canonical_judged_context_cleaned.jsonl`
-- `qa_pairs_split_ready.jsonl`
-- `qa_inferential_usable_only.jsonl`
-
-## QA subsystem
-
-`src/qa/` duoc tach thanh:
-
-- `prompts.py`: prompt generation + judge
-- `provider.py`: model providers
-- `generator.py`: orchestration sinh QA
-- `validators.py`: validation rules
-- `batch.py`: smoke, full, topup, judge, repair runners
-- `dataset.py`: selection + merge utilities
-
-Helper context cleaning dùng chung:
-
-- `src/text_cleaning.py`
-
-Mọi path QA quan trọng đều đi qua `src.config`.
-
-## Cài đặt
-
+### 1. Build the final three-way release
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+python scripts/qa/build_three_way_dataset.py
+python scripts/qa/final_validate_release_dataset.py
 ```
 
-## Chạy pipeline cơ bản
-
-Crawler -> cleaner -> chunker:
-
+### 2. Build dataset-overview EDA
 ```bash
-python main.py
+python eda/scripts/build_qa_dataset_eda.py
 ```
 
-Lọc chunk / lấy mẫu:
-
+### 3. Build the feature matrix
 ```bash
-python -m src.chunk_filter
+python scripts/features/build_feature_matrix.py
 ```
 
-## Chạy QA pipeline
-
-Smoke test QA generation:
-
+### 4. Build feature-engineering EDA
 ```bash
-python -m src.qa.batch smoke
+python eda/scripts/build_feature_engineering_eda.py
 ```
 
-Full QA generation:
-
+### 5. Rebuild provenance and release metadata
 ```bash
-python -m src.qa.batch full --shard-index 0 --shard-size 800
+python scripts/qa/build_release_metadata.py
 ```
 
-Inferential top-up:
+## Notes On Public Release Design
 
-```bash
-python -m src.qa.batch topup --shard-index 0 --shard-size 100
-```
+- `difficulty_band` is intentionally excluded from the public final dataset because it is treated as a legacy diagnostic signal rather than a high-confidence public target label.
+- `reasoning_type` is retained only in the internal analysis dataset; the public release exposes `final_reasoning_bucket` instead.
+- `is_valid` and `error` are pipeline/debug fields and are excluded from the public final release.
 
-Judge:
+## Provenance Entry Points
 
-```bash
-python -m src.qa.batch judge --provider openrouter --reasoning-type all
-```
+- Final manifest JSON: `data/processed/reports/qa/final_release_manifest.json`
+- Final manifest Markdown: `data/processed/reports/qa/final_release_manifest.md`
+- Feature phase-1 provenance JSON: `data/processed/reports/qa/feature_phase1_provenance.json`
+- Feature phase-1 provenance Markdown: `data/processed/reports/qa/feature_phase1_provenance.md`
 
-Repair succinct contextual prefix:
-
-```bash
-python -m src.qa.batch repair-succinct --reasoning-type all
-```
-
-## Merge / dataset utilities
-
-Chọn top-up chunks:
-
-```bash
-python -m src.qa.dataset select-topup
-```
-
-Merge main shards:
-
-```bash
-python -m src.qa.dataset merge-main
-```
-
-Merge top-up:
-
-```bash
-python -m src.qa.dataset merge-topup
-```
-
-Merge judge shards:
-
-```bash
-python -m src.qa.dataset merge-judge
-```
-
-Refresh judged / filtered downstream artifacts after repair:
-
-```bash
-python -m src.qa.dataset refresh-derived
-```
-
-## Finalization workflow
-
-Context clean + downstream sync:
-
-```bash
-python scripts/qa/retro_clean_context.py
-python scripts/qa/finalize_qa_dataset.py
-```
-
-Hoặc dùng launcher:
-
-```powershell
-.\scripts\qa\run_finalize_qa_pipeline.ps1
-```
-
-Workflow final dataset:
-
-1. `qa_pairs_canonical.jsonl`
-2. `qa_pairs_canonical_judged.jsonl`
-3. `qa_pairs_canonical_context_cleaned.jsonl`
-4. `qa_pairs_canonical_judged_context_cleaned.jsonl`
-5. `qa_pairs_split_ready.jsonl`
-6. `qa_inferential_usable_only.jsonl`
-
-## Automation scripts
-
-- `scripts/qa/run_full_judge_openrouter_flex.ps1`
-- `scripts/qa/run_repair_succinct_deepseek.ps1`
-- `scripts/qa/run_refresh_pipeline.ps1`
-- `scripts/qa/run_finalize_qa_pipeline.ps1`
-- `scripts/qa/build_human_verification_sets.py`
-- `scripts/qa/clean_annotation_pool.py`
-- `scripts/qa/retro_clean_context.py`
-- `scripts/qa/finalize_qa_dataset.py`
-
-`clean_annotation_pool.py` is now a compatibility sync:
-- it copies the canonical cleaned judged pool into the historical
-  `qa_pairs_canonical_judged_cleaned.jsonl` filename for older notebooks
-- it does not run a separate cleaning policy anymore
-
-## Ghi chú
-
-- `src.config.ensure_dirs()` tự tạo cấu trúc thư mục cần thiết.
-- Không hardcode path mới trong script mới; nếu cần thêm artifact, thêm constant vào `src.config` trước.
-- Artifact exploratory nên đưa vào `data/processed/archive/qa/experiments` thay vì để ở root `data/processed`.
-- Human verification sets hiện tại được giữ nguyên; finalization không regenerate lại các file này.
-- `clean_annotation_pool.py` chỉ còn là lớp tương thích cho notebook/workflow cũ.
+These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, and which features were kept or excluded.

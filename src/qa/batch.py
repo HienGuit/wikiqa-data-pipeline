@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Set, Tuple
 
 from src.config import (
-    INTERIM_DIR,
     QA_JUDGE_RUN_DIR,
     QA_REPAIR_SUCCINCT_DIR,
     QA_SHARDS_DIR,
@@ -523,7 +522,9 @@ def run_generation_batch(
 
         if chunk_offset % args.flush_every == 0 or chunk_offset == len(shard):
             flush_jsonl_buffers(valid_path, reject_path, valid_buffer, reject_buffer)
-            print(f"Progress {chunk_offset}/{len(shard)} chunks | accepted={accepted} | rejected={sum(rejected.values())}")
+            print(
+                f"Progress {chunk_offset}/{len(shard)} chunks | accepted={accepted} | rejected={sum(rejected.values())}"
+            )
 
     report = build_generation_report(
         mode=mode,
@@ -570,7 +571,9 @@ def run_judge(args: argparse.Namespace) -> None:
     provider = build_judge_provider(args)
 
     print(f"Loaded {len(rows):,} QA sample(s) from {args.input} after filter={args.reasoning_type}")
-    print(f"Running judge shard {args.shard_index + 1} with {len(shard)} sample(s); already processed pairs={len(processed_pairs)}")
+    print(
+        f"Running judge shard {args.shard_index + 1} with {len(shard)} sample(s); already processed pairs={len(processed_pairs)}"
+    )
     print(f"Valid output : {valid_path}")
     print(f"Reject output: {reject_path}")
     print(f"Report file  : {report_path}")
@@ -680,8 +683,12 @@ def run_smoke(args: argparse.Namespace) -> None:
     print(f"Loaded {len(rows):,} chunks from {args.input}")
     print(f"Collecting {args.n} valid sample(s) per type with model={args.model}; max_candidates={max_candidates}")
 
-    extraction, extraction_rejected = collect_valid_samples(generator, candidates, "extraction", args.n, max_candidates)
-    inferential, inferential_rejected = collect_valid_samples(generator, candidates, "multi-sentence", args.n, max_candidates)
+    extraction, extraction_rejected = collect_valid_samples(
+        generator, candidates, "extraction", args.n, max_candidates
+    )
+    inferential, inferential_rejected = collect_valid_samples(
+        generator, candidates, "multi-sentence", args.n, max_candidates
+    )
     all_samples = extraction + inferential
 
     write_samples(args.output, all_samples)
@@ -752,7 +759,9 @@ def run_repair_succinct(args: argparse.Namespace) -> None:
     )
 
     print(f"Loaded {target_manifest['target_count']:,} repair target(s) from {args.input}")
-    print(f"Running succinct repair shard {args.shard_index + 1} with {len(shard)} target(s); already processed pairs={len(processed_pairs)}")
+    print(
+        f"Running succinct repair shard {args.shard_index + 1} with {len(shard)} target(s); already processed pairs={len(processed_pairs)}"
+    )
     print(f"Valid output : {valid_path}")
     print(f"Reject output: {reject_path}")
     print(f"Report file  : {report_path}")
@@ -830,10 +839,26 @@ def build_arg_parser() -> argparse.ArgumentParser:
     smoke.add_argument("--n", type=int, default=2, help="Target number of valid samples per reasoning type.")
     smoke.add_argument("--seed", type=int, default=42, help="Random seed for chunk selection.")
     smoke.add_argument("--model", default=DEFAULT_DEEPSEEK_MODEL, help="DeepSeek model name.")
-    smoke.add_argument("--rpm-limit", type=int, default=120, help="Soft throttle in requests per minute for the local client.")
-    smoke.add_argument("--max-candidates", type=int, default=None, help="Maximum candidate chunks to try per reasoning type. Defaults to n * 5.")
-    smoke.add_argument("--max-validation-retries", type=int, default=1, help="Retries for malformed/invalid generations before replacing a candidate.")
-    smoke.add_argument("--output", default="tests/chunk_for_tests/qa_smoke_test_output.jsonl", help="JSONL file to save generated QA samples.")
+    smoke.add_argument(
+        "--rpm-limit", type=int, default=120, help="Soft throttle in requests per minute for the local client."
+    )
+    smoke.add_argument(
+        "--max-candidates",
+        type=int,
+        default=None,
+        help="Maximum candidate chunks to try per reasoning type. Defaults to n * 5.",
+    )
+    smoke.add_argument(
+        "--max-validation-retries",
+        type=int,
+        default=1,
+        help="Retries for malformed/invalid generations before replacing a candidate.",
+    )
+    smoke.add_argument(
+        "--output",
+        default="tests/chunk_for_tests/qa_smoke_test_output.jsonl",
+        help="JSONL file to save generated QA samples.",
+    )
     smoke.set_defaults(handler=run_smoke)
 
     full = subparsers.add_parser("full", help="Run full shard generation.")
@@ -876,7 +901,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     repair.add_argument("--model", default=DEFAULT_DEEPSEEK_MODEL, help="Model name.")
     repair.add_argument("--rpm-limit", type=int, default=120, help="Soft throttle for local client.")
     repair.add_argument("--max-validation-retries", type=int, default=5, help="Retries per generation.")
-    repair.add_argument("--reasoning-type", choices=["all", "extraction", "multi-sentence"], default="all", help="Repair all or only one reasoning type.")
+    repair.add_argument(
+        "--reasoning-type",
+        choices=["all", "extraction", "multi-sentence"],
+        default="all",
+        help="Repair all or only one reasoning type.",
+    )
     repair.add_argument("--shard-index", type=int, default=0, help="0-based shard index.")
     repair.add_argument("--shard-size", type=int, default=300, help="Targets per shard.")
     repair.add_argument("--output-dir", default=str(QA_REPAIR_SUCCINCT_DIR), help="Directory for repair outputs.")
@@ -885,16 +915,32 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
     judge = subparsers.add_parser("judge", help="Run LLM-as-judge on generated QA samples.")
     judge.add_argument("--input", default=str(QA_WITH_TOPUP_ROUND2), help="Accepted QA JSONL input.")
-    judge.add_argument("--provider", choices=["deepseek", "openrouter"], default="deepseek", help="Judge API provider.")
-    judge.add_argument("--api-key", default="", help="API key. Defaults to DEEPSEEK_API_KEY or OPENROUTER_API_KEY by provider.")
+    judge.add_argument(
+        "--provider", choices=["deepseek", "openrouter"], default="deepseek", help="Judge API provider."
+    )
+    judge.add_argument(
+        "--api-key", default="", help="API key. Defaults to DEEPSEEK_API_KEY or OPENROUTER_API_KEY by provider."
+    )
     judge.add_argument("--model", default=DEFAULT_DEEPSEEK_MODEL, help="Judge model name.")
     judge.add_argument("--base-url", default=DEFAULT_OPENROUTER_BASE_URL, help="OpenRouter-compatible base URL.")
-    judge.add_argument("--service-tier", choices=["auto", "default", "flex", "priority", "scale"], default=None, help="OpenRouter service tier.")
+    judge.add_argument(
+        "--service-tier",
+        choices=["auto", "default", "flex", "priority", "scale"],
+        default=None,
+        help="OpenRouter service tier.",
+    )
     judge.add_argument("--http-referer", default="", help="Optional OpenRouter HTTP-Referer header.")
-    judge.add_argument("--app-title", default=DEFAULT_OPENROUTER_APP_TITLE, help="Optional OpenRouter app title header.")
+    judge.add_argument(
+        "--app-title", default=DEFAULT_OPENROUTER_APP_TITLE, help="Optional OpenRouter app title header."
+    )
     judge.add_argument("--rpm-limit", type=int, default=120, help="Soft throttle for local client.")
     judge.add_argument("--timeout", type=int, default=120, help="HTTP timeout in seconds.")
-    judge.add_argument("--reasoning-type", choices=["all", "extraction", "multi-sentence"], default="multi-sentence", help="Judge all QA or only one reasoning type.")
+    judge.add_argument(
+        "--reasoning-type",
+        choices=["all", "extraction", "multi-sentence"],
+        default="multi-sentence",
+        help="Judge all QA or only one reasoning type.",
+    )
     judge.add_argument("--shard-index", type=int, default=0, help="0-based shard index.")
     judge.add_argument("--shard-size", type=int, default=400, help="Samples per shard.")
     judge.add_argument("--output-dir", default=str(QA_JUDGE_RUN_DIR), help="Directory for judge outputs.")

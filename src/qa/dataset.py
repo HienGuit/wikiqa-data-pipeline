@@ -12,22 +12,20 @@ from typing import Any, Dict, Iterable, List, Tuple
 
 from src.config import (
     CHUNKS_TOPUP_MANIFEST,
-    CHUNKS_TOPUP_ROUND2_MANIFEST,
     FILTERED_CHUNKS,
     INTERIM_DIR,
     QA_CANONICAL,
     QA_CANONICAL_JUDGED,
-    QA_INFERENTIAL_USABLE_ONLY_SUMMARY,
+    QA_FULL_RUN_SUMMARY,
     QA_INFERENTIAL_USABLE_ONLY,
     QA_JUDGE_FLASH_EXTRACTION_DIR,
-    QA_JUDGE_FLASH_LEGACY,
-    QA_JUDGE_FLASH_LEGACY_REJECTS,
     QA_JUDGE_FLASH_MULTI_DIR,
     QA_JUDGE_FULL_FLASH_SUMMARY,
+    QA_JUDGED_FLASH_LEGACY,
+    QA_JUDGED_FLASH_LEGACY_REJECTS,
     QA_RAW,
     QA_RAW_REJECTS,
     QA_REPORTS_DIR,
-    QA_FULL_RUN_SUMMARY,
     QA_SHARDS_DIR,
     QA_SPLIT_READY,
     QA_TOPUP_RUN_DIR,
@@ -35,9 +33,6 @@ from src.config import (
     QA_WITH_TOPUP_ROUND2,
     QA_WITH_TOPUP_ROUND2_REJECTS,
     QA_WITH_TOPUP_ROUND2_SUMMARY,
-    QA_WITH_TOPUP_SUMMARY,
-    QA_WITH_TOPUP,
-    QA_WITH_TOPUP_REJECTS,
     SAMPLED_CHUNKS,
     ensure_dirs,
 )
@@ -184,7 +179,9 @@ def inferential_score(row: Dict[str, Any]) -> Tuple[int, Dict[str, Any]]:
     return score, meta
 
 
-def select_rows(rows: List[Dict[str, Any]], quotas: Dict[str, int], seed: int) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+def select_rows(
+    rows: List[Dict[str, Any]], quotas: Dict[str, int], seed: int
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     grouped: dict[str, list[tuple[tuple[Any, ...], Dict[str, Any], Dict[str, Any]]]] = defaultdict(list)
     debug_summary: dict[str, Any] = {"domain_candidates": {}, "domain_selected": {}, "top_examples": {}}
 
@@ -275,7 +272,9 @@ def collect_domain_type_counts(rows: List[Dict[str, Any]]) -> tuple[Counter, Cou
     return type_counts, domain_counts, domain_type_counts
 
 
-def build_domain_balance(domain_type_counts: dict[str, Counter], include_split_projection: bool = False) -> Dict[str, Dict[str, Any]]:
+def build_domain_balance(
+    domain_type_counts: dict[str, Counter], include_split_projection: bool = False
+) -> Dict[str, Dict[str, Any]]:
     domain_balance: Dict[str, Dict[str, Any]] = {}
     for domain, counts in sorted(domain_type_counts.items()):
         extraction_count = counts.get("extraction", 0)
@@ -349,7 +348,7 @@ def run_select_topup(args: argparse.Namespace) -> None:
             f"Chi chon duoc {len(selected)} chunk, nho hon target {args.target_total}. "
             "Hay giam quota hoac noi dieu kien loc."
         )
-    if len({str(row.get('chunk_id', '')) for row in selected}) != len(selected):
+    if len({str(row.get("chunk_id", "")) for row in selected}) != len(selected):
         raise SystemExit("Top-up selection produced duplicate chunk_id values.")
 
     write_jsonl(output_path, selected)
@@ -488,7 +487,9 @@ def run_merge_topup(args: argparse.Namespace) -> None:
             accepted_rows = load_jsonl(path)
             rejected_rows = load_jsonl(reject_path)
 
-            extend_unique_pairs(topup_accepted, accepted_rows, seen_pairs, "Duplicate accepted pair detected while merging top-up")
+            extend_unique_pairs(
+                topup_accepted, accepted_rows, seen_pairs, "Duplicate accepted pair detected while merging top-up"
+            )
             topup_rejects.extend(rejected_rows)
             batch_accepted += len(accepted_rows)
             batch_rejected += len(rejected_rows)
@@ -651,8 +652,7 @@ def run_refresh_derived(args: argparse.Namespace) -> None:
 
     canonical_rows = load_jsonl(Path(args.canonical_input))
     canonical_by_pair = {
-        (str(row.get("chunk_id", "")), str(row.get("reasoning_type", ""))): row
-        for row in canonical_rows
+        (str(row.get("chunk_id", "")), str(row.get("reasoning_type", ""))): row for row in canonical_rows
     }
 
     payload_fields = (
@@ -718,10 +718,21 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
     topup = subparsers.add_parser("select-topup", help="Select reproducible inferential top-up chunks.")
     topup.add_argument("--input", default=str(FILTERED_CHUNKS), help="Input chunk pool JSONL.")
-    topup.add_argument("--exclude", nargs="+", default=[str(SAMPLED_CHUNKS)], help="One or more existing chunk JSONL files to exclude by chunk_id.")
-    topup.add_argument("--output", default=str(INTERIM_DIR / "chunks_topup_inferential.jsonl"), help="Output JSONL for selected top-up chunks.")
+    topup.add_argument(
+        "--exclude",
+        nargs="+",
+        default=[str(SAMPLED_CHUNKS)],
+        help="One or more existing chunk JSONL files to exclude by chunk_id.",
+    )
+    topup.add_argument(
+        "--output",
+        default=str(INTERIM_DIR / "chunks_topup_inferential.jsonl"),
+        help="Output JSONL for selected top-up chunks.",
+    )
     topup.add_argument("--manifest", default=str(CHUNKS_TOPUP_MANIFEST), help="Manifest JSON path.")
-    topup.add_argument("--purpose", default="inferential_topup_chunk_selection", help="Purpose string saved into the manifest.")
+    topup.add_argument(
+        "--purpose", default="inferential_topup_chunk_selection", help="Purpose string saved into the manifest."
+    )
     topup.add_argument("--seed", type=int, default=42, help="Seed de on dinh tie-break.")
     topup.add_argument("--target-total", type=int, default=800, help="Tong so chunk can them.")
     topup.add_argument("--min-char-count", type=int, default=450, help="Nguong toi thieu cho do dai chunk.")
@@ -745,11 +756,17 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="One or more directories containing inferential top-up shard outputs.",
     )
     merge_topup.add_argument("--merged-output", default=str(QA_WITH_TOPUP_ROUND2), help="Merged accepted output.")
-    merge_topup.add_argument("--reject-output", default=str(QA_WITH_TOPUP_ROUND2_REJECTS), help="Merged rejects output.")
-    merge_topup.add_argument("--summary-output", default=str(QA_WITH_TOPUP_ROUND2_SUMMARY), help="Merged summary output.")
+    merge_topup.add_argument(
+        "--reject-output", default=str(QA_WITH_TOPUP_ROUND2_REJECTS), help="Merged rejects output."
+    )
+    merge_topup.add_argument(
+        "--summary-output", default=str(QA_WITH_TOPUP_ROUND2_SUMMARY), help="Merged summary output."
+    )
     merge_topup.set_defaults(handler=run_merge_topup)
 
-    merge_judge = subparsers.add_parser("merge-judge", help="Merge judge shard outputs into one consolidated artifact.")
+    merge_judge = subparsers.add_parser(
+        "merge-judge", help="Merge judge shard outputs into one consolidated artifact."
+    )
     merge_judge.add_argument(
         "--input-dirs",
         nargs="+",
@@ -759,17 +776,35 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ],
         help="One or more directories containing judge shard outputs.",
     )
-    merge_judge.add_argument("--merged-output", default=str(QA_JUDGED_FLASH_LEGACY), help="Merged accepted judge output.")
-    merge_judge.add_argument("--reject-output", default=str(QA_JUDGED_FLASH_LEGACY_REJECTS), help="Merged rejected judge output.")
-    merge_judge.add_argument("--summary-output", default=str(QA_JUDGE_FULL_FLASH_SUMMARY), help="Merged judge summary output.")
+    merge_judge.add_argument(
+        "--merged-output", default=str(QA_JUDGED_FLASH_LEGACY), help="Merged accepted judge output."
+    )
+    merge_judge.add_argument(
+        "--reject-output", default=str(QA_JUDGED_FLASH_LEGACY_REJECTS), help="Merged rejected judge output."
+    )
+    merge_judge.add_argument(
+        "--summary-output", default=str(QA_JUDGE_FULL_FLASH_SUMMARY), help="Merged judge summary output."
+    )
     merge_judge.set_defaults(handler=run_merge_judge)
 
-    refresh = subparsers.add_parser("refresh-derived", help="Refresh judged/filtered downstream artifacts from the canonical QA dataset.")
+    refresh = subparsers.add_parser(
+        "refresh-derived", help="Refresh judged/filtered downstream artifacts from the canonical QA dataset."
+    )
     refresh.add_argument("--canonical-input", default=str(QA_CANONICAL), help="Canonical QA dataset after repairs.")
     refresh.add_argument("--judged-path", default=str(QA_CANONICAL_JUDGED), help="Judged dataset to refresh in place.")
-    refresh.add_argument("--filtered-path", default=str(QA_SPLIT_READY), help="Filtered-for-split dataset to refresh in place.")
-    refresh.add_argument("--inferential-path", default=str(QA_INFERENTIAL_USABLE_ONLY), help="Inferential usable subset to refresh in place.")
-    refresh.add_argument("--report-output", default=str(QA_REPORTS_DIR / "qa_refresh_derived_report.json"), help="Refresh report output.")
+    refresh.add_argument(
+        "--filtered-path", default=str(QA_SPLIT_READY), help="Filtered-for-split dataset to refresh in place."
+    )
+    refresh.add_argument(
+        "--inferential-path",
+        default=str(QA_INFERENTIAL_USABLE_ONLY),
+        help="Inferential usable subset to refresh in place.",
+    )
+    refresh.add_argument(
+        "--report-output",
+        default=str(QA_REPORTS_DIR / "qa_refresh_derived_report.json"),
+        help="Refresh report output.",
+    )
     refresh.set_defaults(handler=run_refresh_derived)
 
     return parser

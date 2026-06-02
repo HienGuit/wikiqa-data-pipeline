@@ -44,13 +44,7 @@ class BaseJSONProvider:
                 timeout=self.timeout,
             )
             response.raise_for_status()
-            raw_text = (
-                response.json()
-                .get("choices", [{}])[0]
-                .get("message", {})
-                .get("content", "")
-                .strip()
-            )
+            raw_text = response.json().get("choices", [{}])[0].get("message", {}).get("content", "").strip()
             if not raw_text:
                 raise ValueError("empty_response_content")
             return json.loads(raw_text)

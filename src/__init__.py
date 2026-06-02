@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from . import config as Config
-from .content_cleaner import ContentPipeline
-from .crawler import WikipediaCrawler
+from .ingestion.crawler import WikipediaCrawler
+from .processing.content_cleaner import ContentPipeline
 from .utils import load_taxonomy
 
 __all__ = [
@@ -19,7 +19,7 @@ __all__ = [
 
 def __getattr__(name: str):
     if name in {"ChunkConfig", "run_chunking"}:
-        from .chunker import ChunkConfig, run_chunking
+        from .processing.chunker import ChunkConfig, run_chunking
 
         exports = {
             "ChunkConfig": ChunkConfig,

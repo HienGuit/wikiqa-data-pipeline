@@ -18,7 +18,6 @@ import pandas as pd
 
 from src.config import FILTERED_CHUNKS, RAW_CHUNKS, SAMPLED_CHUNKS, ensure_dirs, load_filter_config
 
-
 SENTENCE_ENDINGS = list(".?!\"'…")
 
 
@@ -127,11 +126,15 @@ def stratified_sampler(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
 def sanity_check(df_filtered: pd.DataFrame, df_sampled: pd.DataFrame) -> None:
     """Raise on critical violations and warn on soft balance issues."""
 
-    assert df_filtered["text"].str.contains(r"\{\{|\[\[", regex=True).sum() == 0, "Still have wiki artifact in filtered pool!"
+    assert df_filtered["text"].str.contains(r"\{\{|\[\[", regex=True).sum() == 0, (
+        "Still have wiki artifact in filtered pool!"
+    )
     assert (df_filtered["char_count"] < 300).sum() == 0, "Still have chunk <300 chars in filtered pool!"
     assert df_sampled["domain"].nunique() == 8, "Missing domain in sampled set!"
 
-    intro_ratio = df_sampled.assign(is_intro=df_sampled["section"].fillna("").eq("")).groupby("domain")["is_intro"].mean()
+    intro_ratio = (
+        df_sampled.assign(is_intro=df_sampled["section"].fillna("").eq("")).groupby("domain")["is_intro"].mean()
+    )
     over_intro = intro_ratio[intro_ratio > 0.20]
     if not over_intro.empty:
         print(f"WARNING: Domain intro ratio >20%: {over_intro.to_dict()}")
