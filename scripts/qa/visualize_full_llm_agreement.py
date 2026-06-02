@@ -62,27 +62,45 @@ def main() -> None:
     colors = [BAR_COLORS[key] for key in DIMENSION_ORDER]
 
     y = np.arange(len(labels))
-    fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.8), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(11.8, 5.1), constrained_layout=True)
 
     axes[0].barh(y, agreement, color=colors, edgecolor="white", linewidth=1.0)
     axes[0].set_title("Observed Agreement")
     axes[0].set_xlabel("Percent")
-    axes[0].set_xlim(0, 100)
+    axes[0].set_xlim(0, 104)
     axes[0].set_yticks(y, labels=labels)
     axes[0].grid(axis="x", alpha=0.25)
     axes[0].set_axisbelow(True)
     for idx, value in enumerate(agreement):
-        axes[0].text(min(value + 1.2, 98.5), idx, f"{value:.1f}%", va="center", fontsize=9, fontweight="bold")
+        axes[0].text(
+            min(value + 1.2, 102.4),
+            idx,
+            f"{value:.1f}%",
+            va="center",
+            fontsize=9,
+            fontweight="bold",
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.25, "alpha": 0.9},
+            clip_on=False,
+        )
 
     axes[1].barh(y, kappa, color=colors, edgecolor="white", linewidth=1.0)
     axes[1].set_title("Cohen's Kappa")
     axes[1].set_xlabel("Kappa")
-    axes[1].set_xlim(0, max(0.4, max(kappa) + 0.08))
+    axes[1].set_xlim(0, max(0.45, max(kappa) + 0.12))
     axes[1].set_yticks(y, labels=[""] * len(labels))
     axes[1].grid(axis="x", alpha=0.25)
     axes[1].set_axisbelow(True)
     for idx, value in enumerate(kappa):
-        axes[1].text(value + 0.01, idx, f"{value:.3f}", va="center", fontsize=9, fontweight="bold")
+        axes[1].text(
+            value + 0.014,
+            idx,
+            f"{value:.3f}",
+            va="center",
+            fontsize=9,
+            fontweight="bold",
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.25, "alpha": 0.9},
+            clip_on=False,
+        )
 
     fig.suptitle("Full-Population Agreement Between Gemini and DeepSeek", fontsize=14, fontweight="bold")
     fig.text(
