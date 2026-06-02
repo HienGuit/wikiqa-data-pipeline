@@ -74,8 +74,8 @@ The dataset is created in six stages:
 
 ### Human Verification
 - Internal bundle source: `data/processed/datasets/human_verification_bundle_20260602/`
-- GitHub-tracked IAA summary: `reports/human_verification/iaa_summary.md`
-- GitHub-tracked IAA visualizations: `reports/human_verification/`
+- GitHub-tracked IAA summary: `reports/evaluation/iaa_summary.md`
+- GitHub-tracked IAA visualizations: `reports/evaluation/`
 - Guideline used for bucket-based judging and annotation: `qa_bucket_guideline.md`
 
 ### EDA
@@ -83,8 +83,8 @@ The dataset is created in six stages:
 - EDA2 feature-engineering analysis: `eda/figures/03_feature_engineering_eda/`
 
 ### Release Reports
-- Final release reports: `reports/qa_release/`
-- Human verification and IAA reports: `reports/human_verification/`
+- Final release reports: `reports/release/`
+- Human verification and IAA reports: `reports/evaluation/`
 
 ### Feature Engineering Phase 1
 - Full matrix: `data/processed/features/feature_matrix_full.csv`
@@ -116,8 +116,8 @@ wikiqa-data-pipeline/
 ├── data_dictionary.md            # field-level schema notes
 ├── qa_bucket_guideline.md        # bucket-label guideline for judges and annotators
 ├── reports/
-│   ├── qa_release/               # tracked final release manifests and validation reports
-│   └── human_verification/       # tracked IAA summaries and visualization artifacts
+│   ├── release/                  # tracked final release manifests and validation reports
+│   └── evaluation/               # tracked IAA summaries and visualization artifacts
 ├── configs/                     # YAML configs
 ├── data/
 │   ├── raw/                     # raw Wikipedia pages and metadata
@@ -183,11 +183,11 @@ python scripts/qa/sync_repo_reports.py
 
 ## Provenance Entry Points
 
-- Final manifest JSON: `reports/qa_release/final_release_manifest.json`
-- Final manifest Markdown: `reports/qa_release/final_release_manifest.md`
-- Feature phase-1 provenance JSON: `reports/qa_release/feature_phase1_provenance.json`
-- Feature phase-1 provenance Markdown: `reports/qa_release/feature_phase1_provenance.md`
-- Human verification manifest: `reports/human_verification/manifest.json`
-- IAA summary: `reports/human_verification/iaa_summary.md`
+- Final manifest JSON: `reports/release/final_release_manifest.json`
+- Final manifest Markdown: `reports/release/final_release_manifest.md`
+- Feature phase-1 provenance JSON: `reports/release/feature_phase1_provenance.json`
+- Feature phase-1 provenance Markdown: `reports/release/feature_phase1_provenance.md`
+- Human verification manifest: `reports/evaluation/manifest.json`
+- IAA summary: `reports/evaluation/iaa_summary.md`
 
 These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, which features were kept or excluded, and how inter-annotator agreement was measured. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.

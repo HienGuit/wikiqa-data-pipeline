@@ -12,8 +12,8 @@ INTERNAL_QA_REPORTS = ROOT / "data" / "processed" / "reports" / "qa"
 INTERNAL_HV_BUNDLE = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_20260602"
 
 TRACKED_REPORTS = ROOT / "reports"
-TRACKED_QA_RELEASE = TRACKED_REPORTS / "qa_release"
-TRACKED_HUMAN_VERIFICATION = TRACKED_REPORTS / "human_verification"
+TRACKED_QA_RELEASE = TRACKED_REPORTS / "release"
+TRACKED_HUMAN_VERIFICATION = TRACKED_REPORTS / "evaluation"
 
 QA_RELEASE_FILES = [
     "final_release_manifest.json",
@@ -69,8 +69,8 @@ def main() -> None:
     TRACKED_HUMAN_VERIFICATION.mkdir(parents=True, exist_ok=True)
 
     report = {
-        "qa_release": sync_qa_release(),
-        "human_verification": sync_human_verification(),
+        "release": sync_qa_release(),
+        "evaluation": sync_human_verification(),
     }
     manifest_path = TRACKED_REPORTS / "sync_manifest.json"
     manifest_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

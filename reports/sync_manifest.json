@@ -1,85 +1,85 @@
 {
-  "qa_release": [
+  "release": [
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\final_release_manifest.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\qa_release\\final_release_manifest.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\final_release_manifest.json",
       "size_bytes": 4984
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\final_release_manifest.md",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\qa_release\\final_release_manifest.md",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\final_release_manifest.md",
       "size_bytes": 3059
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\feature_phase1_provenance.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\qa_release\\feature_phase1_provenance.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\feature_phase1_provenance.json",
       "size_bytes": 2755
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\feature_phase1_provenance.md",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\qa_release\\feature_phase1_provenance.md",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\feature_phase1_provenance.md",
       "size_bytes": 1450
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\qa_three_way_final_validation_report.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\qa_release\\qa_three_way_final_validation_report.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\qa_three_way_final_validation_report.json",
       "size_bytes": 230
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\qa_judge_canonical_promotion_report.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\qa_release\\qa_judge_canonical_promotion_report.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\qa_judge_canonical_promotion_report.json",
       "size_bytes": 2515
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\qa_judge_provenance_report.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\qa_release\\qa_judge_provenance_report.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\qa_judge_provenance_report.json",
       "size_bytes": 4717
     }
   ],
-  "human_verification": [
+  "evaluation": [
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\README.md",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\README.md",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\README.md",
       "size_bytes": 934
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\manifest.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\manifest.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\manifest.json",
       "size_bytes": 2096
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\assembly_report.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\assembly_report.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\assembly_report.json",
       "size_bytes": 3890
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\iaa_summary.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\iaa_summary.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\iaa_summary.json",
       "size_bytes": 28239
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\iaa_summary.md",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\iaa_summary.md",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\iaa_summary.md",
       "size_bytes": 2211
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\iaa_visualization_report.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\iaa_visualization_report.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\iaa_visualization_report.json",
       "size_bytes": 559
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\iaa_kappa_heatmap_matrix.png",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\iaa_kappa_heatmap_matrix.png",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\iaa_kappa_heatmap_matrix.png",
       "size_bytes": 225860
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\task1_a1_vs_a2_confusion.png",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\task1_a1_vs_a2_confusion.png",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\task1_a1_vs_a2_confusion.png",
       "size_bytes": 246502
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\task2_a1_vs_a2_confusion.png",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\human_verification\\task2_a1_vs_a2_confusion.png",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\task2_a1_vs_a2_confusion.png",
       "size_bytes": 173735
     }
   ]
