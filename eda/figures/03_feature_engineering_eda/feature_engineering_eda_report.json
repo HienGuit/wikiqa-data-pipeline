@@ -1,0 +1,44 @@
+{
+  "input": "D:\\wikiqa-data-pipeline\\data\\processed\\features\\feature_matrix_full.csv",
+  "figure_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda\\figures",
+  "table_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda\\tables",
+  "figures": [
+    "01_knowledge_difficulty_distribution.png",
+    "02_answer_type_distribution.png",
+    "03_popularity_source_distribution.png",
+    "04_question_type_distribution.png",
+    "05_structural_boxplots_by_reasoning.png",
+    "07_feature_correlation_heatmap.png"
+  ],
+  "tables": {
+    "csv": "multicollinearity_pairs.csv",
+    "markdown": "multicollinearity_pairs.md"
+  },
+  "summary_markdown": "feature_engineering_eda_summary.md",
+  "notes": {
+    "difficulty_proxy_used": false,
+    "slicing_dimensions": [
+      "final_reasoning_bucket",
+      "quality_band"
+    ],
+    "removed_figures": [
+      "06_ctx_length_vs_knowledge_difficulty.png"
+    ],
+    "wiki_level_note": "Wiki level is excluded from the active phase-1 feature set.",
+    "linked_entities_note": "Linked-entity connectivity was removed from the final phase-1 feature set because API coverage was not stable enough.",
+    "full_matrix_phase1_knowledge_signals": [
+      "page_views_rank",
+      "site_links_rank",
+      "wiki_count_rank",
+      "statements_rank",
+      "references_rank",
+      "knowledge_difficulty"
+    ],
+    "retained_final_matrix_knowledge_signals": [
+      "page_views_rank",
+      "wiki_count_rank",
+      "statements_rank",
+      "knowledge_difficulty"
+    ]
+  }
+}

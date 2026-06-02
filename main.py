@@ -1,66 +1,59 @@
-import logging
 import json
-from src import Config, WikipediaCrawler, ContentPipeline, load_taxonomy, ChunkConfig, run_chunking
+import logging
 
-# Cấu hình log hiển thị ra màn hình cực kỳ chuyên nghiệp
+from src import ChunkConfig, Config, ContentPipeline, WikipediaCrawler, load_taxonomy, run_chunking
+
 logging.basicConfig(
-    level=logging.INFO, 
+    level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
-    datefmt="%H:%M:%S"
+    datefmt="%H:%M:%S",
 )
 log = logging.getLogger("Main")
 
-def main():
-    log.info("Khởi động Wikipedia Data Engineering Pipeline...")
-    
-    # 1. Đảm bảo thư mục data đã tồn tại
-    Config.setup_directories()
-    
-    # 2. Đọc file taxonomy và cập nhật cấu hình blacklist
+
+def main() -> None:
+    log.info("Khoi dong Wikipedia Data Engineering Pipeline...")
+    Config.ensure_dirs()
+
     try:
         domains_data = load_taxonomy(Config.TAXONOMY_FILE, Config)
-        log.info(f"Đã nạp thành công {len(domains_data)} domains từ taxonomy.json")
-    except Exception as e:
-        log.error(f"Lỗi khởi tạo: {e}")
+        log.info("Da nap thanh cong %s domains tu taxonomy.", len(domains_data))
+    except Exception as exc:
+        log.error("Loi khoi tao: %s", exc)
         return
 
-    # 3. CHẠY CRAWLER (Thu thập Metadata)
     log.info("=" * 50)
-    log.info("PHASE 1: Khởi động Crawler...")
+    log.info("PHASE 1: Khoi dong Crawler...")
     crawler = WikipediaCrawler(Config)
-    crawler.run(domains_data, Config.BLACKLIST_KEYWORDS)
-    
-    # 4. CHUẨN BỊ DỮ LIỆU CHO PIPELINE
+    metadata_path = crawler.run(domains_data, Config.BLACKLIST_KEYWORDS)
+
     log.info("=" * 50)
-    log.info("PHASE 2: Khởi động Content Pipeline...")
-    
+    log.info("PHASE 2: Khoi dong Content Cleaner...")
     raw_records = []
-    # Đọc lại file raw do Crawler vừa tạo ra
     try:
-        with open(Config.RAW_DATA_PATH, "r", encoding="utf-8") as f:
-            for line in f:
+        with metadata_path.open("r", encoding="utf-8") as handle:
+            for line in handle:
                 if line.strip():
                     raw_records.append(json.loads(line))
-        log.info(f"Đọc được {len(raw_records)} bài viết cần fetch nội dung.")
+        log.info("Doc duoc %s bai viet can fetch noi dung.", len(raw_records))
     except FileNotFoundError:
-        log.error("Không tìm thấy file Raw Data. Crawler chưa chạy thành công?")
+        log.error("Khong tim thay file metadata raw. Crawler chua chay thanh cong?")
         return
 
-    # 5. CHẠY PIPELINE (Tải Plain Text & Làm sạch)
-    pipeline = ContentPipeline(Config)
-    pipeline.process(raw_records)
+    cleaner = ContentPipeline(Config)
+    cleaner.process(raw_records)
 
-    # 6. CHẠY CHUNKER (Tạo semantic chunks trong thư mục data/)
     log.info("=" * 50)
-    log.info("PHASE 3: Khởi động Chunker...")
+    log.info("PHASE 3: Khoi dong Chunker...")
     run_chunking(
-        input_path=Config.CLEAN_DATA_PATH,
-        output_path=Config.CHUNK_DATA_PATH,
+        input_path=Config.RAW_PAGES,
+        output_path=Config.RAW_CHUNKS,
         config=ChunkConfig(),
     )
-    
+
     log.info("=" * 50)
-    log.info("Hoàn tất!")
+    log.info("Hoan tat!")
+
 
 if __name__ == "__main__":
     main()

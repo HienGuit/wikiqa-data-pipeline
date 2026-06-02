@@ -1,28 +1,162 @@
-# 🚀 Wikipedia Data Engineering Pipeline
+# Vietnamese WikiQA Data Pipeline
 
-Hệ thống tự động hóa thu thập, làm sạch và tiền xử lý dữ liệu từ Wikipedia tiếng Việt. Dự án được thiết kế chuyên biệt để tạo ra bộ Core Corpus (Tập dữ liệu lõi) chất lượng cao, phục vụ cho việc huấn luyện Mô hình Ngôn ngữ Lớn (LLM) và các hệ thống RAG (Retrieval-Augmented Generation).
+This repository builds a Vietnamese question-answering dataset from Vietnamese Wikipedia and packages the full evaluation stack around it: LLM judging, human verification, inter-annotator agreement, release normalization, and feature-engineering analysis.
 
-## ✨ Tính năng Nổi bật
+## Dataset Overview
 
-* **Tự động Khám phá & Cân bằng (Auto-Discovery & Quota Rollover):** Sử dụng thuật toán Duyệt theo chiều rộng (BFS) kết hợp Quota động. Tự động chuyển chỉ tiêu bài viết bị thiếu sang các chuyên mục khác, đảm bảo độ cân bằng cho 8 lĩnh vực tri thức.
-* **Xử lý Đa luồng (Multithreading):** Tối ưu hóa I/O bound khi gọi API, giảm thời gian thu thập hàng vạn bài viết từ nhiều giờ xuống chỉ còn tính bằng phút.
-* **Kiến trúc Chống lỗi (Resilience Architecture):**
-    * Tích hợp Checkpoint tự động: Resume lại chính xác tiến độ nếu mất mạng/sập nguồn.
-    * **Atomic Write:** Ghi dữ liệu vào file tạm (`.tmp`) và chỉ đổi tên khi hoàn tất 100%, đảm bảo tuyệt đối không rác/mất dữ liệu.
-* **Plain Text Tinh khiết:** Khai thác API Extracts thay vì Wikitext, loại bỏ sạch sẽ thẻ HTML, template, và cấu trúc nhiễu, tích hợp bộ lọc độ dài (Truncate) thông minh.
+### Public Release
+- Public HF-ready dataset: `data/processed/datasets/qa_pairs_three_way_ready.jsonl`
+- Rows: `7,592`
+- Final reasoning buckets:
+  - `extraction`
+  - `bridge`
+  - `multi-sentence`
 
-## 📂 Cấu trúc Dự án
+### Public Schema
+- `chunk_id`
+- `domain`
+- `title`
+- `section`
+- `context`
+- `question`
+- `answer`
+- `final_reasoning_bucket`
+- `quality_band`
+- `inferential_validity_band`
+
+### Internal Analysis Source
+- Analysis dataset: `data/processed/datasets/qa_pairs_three_way_analysis.jsonl`
+- Purpose: internal diagnostics and downstream analysis
+- Extra legacy fields retained internally:
+  - `reasoning_type`
+  - `difficulty_band`
+
+## Data Creation Pipeline
+
+The dataset is created in six stages:
+
+1. Crawl Vietnamese Wikipedia pages and metadata from a curated taxonomy.
+2. Clean raw page text and split pages into section-aware chunks.
+3. Generate QA candidates with two reasoning styles:
+   - `extraction`
+   - `multi-sentence`
+4. Judge generated QA pairs with LLM-based labels for:
+   - `quality_band`
+   - `difficulty_band`
+   - `inferential_validity_band`
+5. Promote the canonical judge, clean contexts, and normalize judged artifacts.
+6. Build the final three-way release:
+   - `extraction`
+   - `bridge` for weak inferential multi-sentence cases
+   - `multi-sentence` for usable/strong inferential cases
+
+## Final Artifacts
+
+### Judge Provenance
+- Canonical judge: `Gemini`
+- Canonical judged source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl`
+- Canonical judged, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl`
+- Canonical judged, release-normalized: `data/processed/datasets/qa_pairs_canonical_judged_release.jsonl`
+- Parallel DeepSeek source: `data/processed/datasets/qa_pairs_canonical_judged_deepseek_v4_flash.jsonl`
+
+### Human Verification
+- Bundle: `data/processed/datasets/human_verification_bundle_20260602/`
+- IAA summary: `data/processed/datasets/human_verification_bundle_20260602/reports/iaa_summary.md`
+- IAA visualizations: `data/processed/datasets/human_verification_bundle_20260602/reports/`
+
+### EDA
+- EDA1 dataset overview: `eda/figures/02_qa_dataset_eda/`
+- EDA2 feature-engineering analysis: `eda/figures/03_feature_engineering_eda/`
+
+### Feature Engineering Phase 1
+- Full matrix: `data/processed/features/feature_matrix_full.csv`
+- Final matrix after multicollinearity-based pruning: `data/processed/final/feature_matrix_final.csv`
+
+Full-matrix knowledge signals:
+- `page_views_rank`
+- `site_links_rank`
+- `wiki_count_rank`
+- `statements_rank`
+- `references_rank`
+- `knowledge_difficulty`
+
+Retained knowledge signals in the final matrix:
+- `page_views_rank`
+- `wiki_count_rank`
+- `statements_rank`
+- `knowledge_difficulty`
+
+Excluded from phase 1:
+- `wiki_level`
+- `linked_entities`
+
+## Repository Structure
 
 ```text
-wiki-data-pipeline/
-├── data/                       # Chứa dữ liệu đầu ra 
-│   └── taxonomy.json           # File cấu hình hạt giống (Seed Categories)
-├── src/                        # Chứa Source Code lõi
-│   ├── __init__.py
-│   ├── config.py               # Quản lý cấu hình toàn cục
-│   ├── crawler.py              # Xử lý Metadata & Thuật toán BFS
-│   ├── pipeline.py             # Fetcher đa luồng & Clean Data
-│   └── utils.py                # Các hàm tiện ích (Load taxonomy)
-├── main.py                     # Entry point khởi chạy toàn bộ luồng
-├── requirements.txt            # Danh sách thư viện phụ thuộc
-└── README.md                   # Tài liệu dự án
+wikiqa-data-pipeline/
+├── configs/                     # YAML configs
+├── data/
+│   ├── raw/                     # raw Wikipedia pages and metadata
+│   ├── interim/                 # chunks and intermediate artifacts
+│   ├── processed/
+│   │   ├── datasets/            # judged, release, and annotation datasets
+│   │   ├── features/            # feature matrices and build reports
+│   │   ├── final/               # final selected feature matrices
+│   │   ├── reports/qa/          # provenance, validation, and release manifests
+│   │   └── wiki_metrics/        # entity-level wiki metrics
+├── eda/
+│   ├── figures/                 # publication-ready EDA outputs
+│   ├── scripts/                 # EDA build scripts
+│   └── utils/                   # EDA loading and plotting helpers
+├── scripts/
+│   ├── features/                # feature engineering pipeline
+│   └── qa/                      # QA release, judging, verification, metadata
+└── src/
+    ├── features/                # reusable feature logic
+    ├── ingestion/               # crawling and raw ingestion
+    ├── processing/              # cleaning and chunking
+    └── qa/                      # QA generation, validation, release schemas
+```
+
+## How To Run The Pipeline
+
+### 1. Build the final three-way release
+```bash
+python scripts/qa/build_three_way_dataset.py
+python scripts/qa/final_validate_release_dataset.py
+```
+
+### 2. Build dataset-overview EDA
+```bash
+python eda/scripts/build_qa_dataset_eda.py
+```
+
+### 3. Build the feature matrix
+```bash
+python scripts/features/build_feature_matrix.py
+```
+
+### 4. Build feature-engineering EDA
+```bash
+python eda/scripts/build_feature_engineering_eda.py
+```
+
+### 5. Rebuild provenance and release metadata
+```bash
+python scripts/qa/build_release_metadata.py
+```
+
+## Notes On Public Release Design
+
+- `difficulty_band` is intentionally excluded from the public final dataset because it is treated as a legacy diagnostic signal rather than a high-confidence public target label.
+- `reasoning_type` is retained only in the internal analysis dataset; the public release exposes `final_reasoning_bucket` instead.
+- `is_valid` and `error` are pipeline/debug fields and are excluded from the public final release.
+
+## Provenance Entry Points
+
+- Final manifest JSON: `data/processed/reports/qa/final_release_manifest.json`
+- Final manifest Markdown: `data/processed/reports/qa/final_release_manifest.md`
+- Feature phase-1 provenance JSON: `data/processed/reports/qa/feature_phase1_provenance.json`
+- Feature phase-1 provenance Markdown: `data/processed/reports/qa/feature_phase1_provenance.md`
+
+These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, and which features were kept or excluded.

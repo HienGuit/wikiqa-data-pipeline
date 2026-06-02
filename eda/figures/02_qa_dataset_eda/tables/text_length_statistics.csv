@@ -1,0 +1,4 @@
+field,mean_tokens,median_tokens,std_tokens,p10_tokens,p90_tokens,min_tokens,max_tokens,mean_chars,median_chars,std_chars,p10_chars,p90_chars,min_chars,max_chars
+question,17.26,17.0,5.58,11.0,25.0,4,53,77.35,74.0,25.04,48.0,110.0,17,254
+answer,6.86,5.0,5.81,2.0,15.0,1,47,30.58,22.5,25.97,7.0,67.0,1,214
+context,222.02,224.0,21.77,194.0,247.0,76,354,1019.76,1030.0,90.25,906.0,1121.0,315,1630
