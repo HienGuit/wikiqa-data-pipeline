@@ -8,11 +8,13 @@ This repository builds a Vietnamese question-answering dataset from Vietnamese W
 - Data dictionary: `data_dictionary.md`
 - QA bucket guideline for LLM judging and human verification: `qa_bucket_guideline.md`
 - Final public-facing reports tracked on GitHub: `reports/`
+- Hugging Face dataset: `https://huggingface.co/datasets/HienNGuit/Domain-ViWikiQA`
 
 ## Dataset Overview
 
 ### Public Release
 - Public HF-ready dataset: `data/processed/datasets/qa_pairs_three_way_ready.jsonl`
+- Hugging Face dataset page: `https://huggingface.co/datasets/HienNGuit/Domain-ViWikiQA`
 - Rows: `7,592`
 - Final reasoning buckets:
   - `extraction`

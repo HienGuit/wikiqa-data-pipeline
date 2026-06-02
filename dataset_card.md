@@ -14,6 +14,7 @@ size_categories:
 ## Dataset Description
 
 - **Repository:** Vietnamese WikiQA Pipeline
+- **Hugging Face Dataset:** https://huggingface.co/datasets/HienNGuit/Domain-ViWikiQA
 - **Language(s) (NLP):** Vietnamese (`vi`)
 - **License:** CC BY-SA 4.0
 
@@ -77,6 +78,6 @@ Quy trình gán nhãn (Annotation) diễn ra hoàn toàn tự động bằng cá
   title = {Vietnamese WikiQA: High-Quality MRC and RAG Dataset},
   year = {2026},
   publisher = {HuggingFace},
-  url = {https://huggingface.co/datasets/your-repo/vietnamese-wikiqa}
+  url = {https://huggingface.co/datasets/HienNGuit/Domain-ViWikiQA}
 }
 ```
