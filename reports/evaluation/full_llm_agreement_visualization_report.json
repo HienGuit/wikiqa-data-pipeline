@@ -1,0 +1,14 @@
+{
+  "source_report": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\full_llm_agreement_report.json",
+  "figure": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\full_llm_agreement_overview.png",
+  "dimension_order": [
+    "quality_band",
+    "difficulty_band",
+    "inferential_validity_band"
+  ],
+  "rows": {
+    "Quality": 8005,
+    "Difficulty": 8005,
+    "Inferential Validity": 2378
+  }
+}

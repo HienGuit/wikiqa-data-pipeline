@@ -38,9 +38,9 @@
   ],
   "evaluation": [
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\README.md",
+      "source": "generated",
       "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\README.md",
-      "size_bytes": 934
+      "size_bytes": 1274
     },
     {
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\manifest.json",
@@ -81,6 +81,26 @@
       "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\task2_a1_vs_a2_confusion.png",
       "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\task2_a1_vs_a2_confusion.png",
       "size_bytes": 173735
+    },
+    {
+      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\full_llm_agreement_report.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\full_llm_agreement_report.json",
+      "size_bytes": 3173
+    },
+    {
+      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\full_llm_agreement_report.md",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\full_llm_agreement_report.md",
+      "size_bytes": 823
+    },
+    {
+      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\full_llm_agreement_overview.png",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\full_llm_agreement_overview.png",
+      "size_bytes": 133970
+    },
+    {
+      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\full_llm_agreement_visualization_report.json",
+      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\full_llm_agreement_visualization_report.json",
+      "size_bytes": 425
     }
   ]
 }

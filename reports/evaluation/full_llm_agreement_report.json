@@ -1,0 +1,110 @@
+{
+  "sources": {
+    "gemini": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_gemini31_flash_lite_context_cleaned.jsonl",
+    "deepseek": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_deepseek_v4_flash_context_cleaned.jsonl"
+  },
+  "shared_rows": 8005,
+  "shared_multi_sentence_rows": 2378,
+  "dimensions": {
+    "quality_band": {
+      "dimension": "Quality Band",
+      "field": "quality_band",
+      "rows": 8005,
+      "gemini_distribution": {
+        "strong": 1232,
+        "usable": 6360,
+        "weak": 413
+      },
+      "deepseek_distribution": {
+        "strong": 892,
+        "usable": 5822,
+        "weak": 1291
+      },
+      "n": 8005,
+      "observed_agreement": 0.6585883822610868,
+      "observed_agreement_percent": 65.86,
+      "expected_agreement": 0.6033088626291891,
+      "expected_agreement_percent": 60.33,
+      "cohen_kappa": 0.1394,
+      "agreement_count": 5272,
+      "distribution_a": {
+        "strong": 1232,
+        "usable": 6360,
+        "weak": 413
+      },
+      "distribution_b": {
+        "strong": 892,
+        "usable": 5822,
+        "weak": 1291
+      },
+      "percent_interpretation": "strong agreement",
+      "kappa_interpretation": "slight agreement"
+    },
+    "difficulty_band": {
+      "dimension": "Difficulty Band",
+      "field": "difficulty_band",
+      "rows": 8005,
+      "gemini_distribution": {
+        "easy": 6917,
+        "hard": 10,
+        "medium": 1078
+      },
+      "deepseek_distribution": {
+        "easy": 6887,
+        "hard": 4,
+        "medium": 1114
+      },
+      "n": 8005,
+      "observed_agreement": 0.8417239225484072,
+      "observed_agreement_percent": 84.17,
+      "expected_agreement": 0.7621456296248325,
+      "expected_agreement_percent": 76.21,
+      "cohen_kappa": 0.3346,
+      "agreement_count": 6738,
+      "distribution_a": {
+        "easy": 6917,
+        "hard": 10,
+        "medium": 1078
+      },
+      "distribution_b": {
+        "easy": 6887,
+        "hard": 4,
+        "medium": 1114
+      },
+      "percent_interpretation": "very strong agreement",
+      "kappa_interpretation": "fair agreement"
+    },
+    "inferential_validity_band": {
+      "dimension": "Inferential Validity Band",
+      "field": "inferential_validity_band",
+      "rows": 2378,
+      "gemini_distribution": {
+        "strong": 144,
+        "usable": 674,
+        "weak": 1560
+      },
+      "deepseek_distribution": {
+        "usable": 605,
+        "weak": 1773
+      },
+      "n": 2378,
+      "observed_agreement": 0.63919259882254,
+      "observed_agreement_percent": 63.92,
+      "expected_agreement": 0.5612228296813868,
+      "expected_agreement_percent": 56.12,
+      "cohen_kappa": 0.1777,
+      "agreement_count": 1520,
+      "distribution_a": {
+        "strong": 144,
+        "usable": 674,
+        "weak": 1560
+      },
+      "distribution_b": {
+        "usable": 605,
+        "weak": 1773
+      },
+      "percent_interpretation": "moderate agreement",
+      "kappa_interpretation": "slight agreement"
+    }
+  }
+}

@@ -78,6 +78,7 @@ The dataset is created in six stages:
 - Internal bundle source: `data/processed/datasets/human_verification_bundle_20260602/`
 - GitHub-tracked IAA summary: `reports/evaluation/iaa_summary.md`
 - GitHub-tracked IAA visualizations: `reports/evaluation/`
+- GitHub-tracked full-population Gemini vs DeepSeek agreement: `reports/evaluation/full_llm_agreement_report.md`
 - Guideline used for bucket-based judging and annotation: `qa_bucket_guideline.md`
 
 ### EDA
@@ -191,5 +192,6 @@ python scripts/qa/sync_repo_reports.py
 - Feature phase-1 provenance Markdown: `reports/release/feature_phase1_provenance.md`
 - Human verification manifest: `reports/evaluation/manifest.json`
 - IAA summary: `reports/evaluation/iaa_summary.md`
+- Full-population LLM agreement summary: `reports/evaluation/full_llm_agreement_report.md`
 
 These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, which features were kept or excluded, and how inter-annotator agreement was measured. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.
