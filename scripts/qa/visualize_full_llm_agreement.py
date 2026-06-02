@@ -57,59 +57,98 @@ def main() -> None:
 
     labels = [DISPLAY_LABELS[key] for key in DIMENSION_ORDER]
     agreement = [report["dimensions"][key]["observed_agreement_percent"] for key in DIMENSION_ORDER]
+    expected = [report["dimensions"][key]["expected_agreement_percent"] for key in DIMENSION_ORDER]
     kappa = [report["dimensions"][key]["cohen_kappa"] for key in DIMENSION_ORDER]
     rows = [report["dimensions"][key]["rows"] for key in DIMENSION_ORDER]
     colors = [BAR_COLORS[key] for key in DIMENSION_ORDER]
+    display_labels = [f"{DISPLAY_LABELS[key]} (n={rows[idx]:,})" for idx, key in enumerate(DIMENSION_ORDER)]
 
     y = np.arange(len(labels))
-    fig, axes = plt.subplots(1, 2, figsize=(11.8, 5.1), constrained_layout=True)
+    fig = plt.figure(figsize=(12.6, 5.8), constrained_layout=True)
+    grid = fig.add_gridspec(3, 2, height_ratios=[1.2, 12.5, 2.2], width_ratios=[1.15, 0.85])
+    title_ax = fig.add_subplot(grid[0, :])
+    ax_left = fig.add_subplot(grid[1, 0])
+    ax_right = fig.add_subplot(grid[1, 1])
+    caption_ax = fig.add_subplot(grid[2, :])
 
-    axes[0].barh(y, agreement, color=colors, edgecolor="white", linewidth=1.0)
-    axes[0].set_title("Observed Agreement")
-    axes[0].set_xlabel("Percent")
-    axes[0].set_xlim(0, 104)
-    axes[0].set_yticks(y, labels=labels)
-    axes[0].grid(axis="x", alpha=0.25)
-    axes[0].set_axisbelow(True)
-    for idx, value in enumerate(agreement):
-        axes[0].text(
-            min(value + 1.2, 102.4),
+    title_ax.axis("off")
+    caption_ax.axis("off")
+
+    title_ax.text(
+        0.5,
+        0.56,
+        "Full-Population Agreement Between Gemini and DeepSeek",
+        ha="center",
+        va="center",
+        fontsize=14,
+        fontweight="bold",
+        color="#111111",
+    )
+
+    # Panel A: observed vs expected agreement
+    ax_left.set_title("(a) Observed vs Expected Agreement", pad=10)
+    ax_left.set_xlabel("Agreement (%)")
+    ax_left.set_xlim(0, 100)
+    ax_left.set_yticks(y, labels=display_labels)
+    ax_left.grid(axis="x", alpha=0.25)
+    ax_left.set_axisbelow(True)
+    for idx, (obs, exp, color) in enumerate(zip(agreement, expected, colors)):
+        ax_left.hlines(idx, exp, obs, color=color, linewidth=4, alpha=0.9)
+        ax_left.scatter(exp, idx, s=64, color="white", edgecolor=color, linewidth=1.6, zorder=3)
+        ax_left.scatter(obs, idx, s=78, color=color, edgecolor="white", linewidth=0.9, zorder=4)
+        ax_left.text(
+            min(obs + 1.4, 98.8),
             idx,
-            f"{value:.1f}%",
+            f"{obs:.1f}%",
             va="center",
             fontsize=9,
             fontweight="bold",
-            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.25, "alpha": 0.9},
-            clip_on=False,
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.2, "alpha": 0.92},
+        )
+        ax_left.text(
+            max(exp - 1.4, 1.8),
+            idx - 0.18,
+            f"E={exp:.1f}%",
+            ha="right",
+            va="center",
+            fontsize=8,
+            color="#555555",
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.15, "alpha": 0.85},
         )
 
-    axes[1].barh(y, kappa, color=colors, edgecolor="white", linewidth=1.0)
-    axes[1].set_title("Cohen's Kappa")
-    axes[1].set_xlabel("Kappa")
-    axes[1].set_xlim(0, max(0.45, max(kappa) + 0.12))
-    axes[1].set_yticks(y, labels=[""] * len(labels))
-    axes[1].grid(axis="x", alpha=0.25)
-    axes[1].set_axisbelow(True)
-    for idx, value in enumerate(kappa):
-        axes[1].text(
-            value + 0.014,
+    # Panel B: kappa
+    ax_right.set_title("(b) Cohen's Kappa", pad=10)
+    ax_right.set_xlabel("Kappa")
+    ax_right.set_xlim(0, 0.42)
+    ax_right.set_yticks(y, labels=[""] * len(display_labels))
+    ax_right.grid(axis="x", alpha=0.25)
+    ax_right.set_axisbelow(True)
+    ax_right.axvspan(0.00, 0.20, color="#f3d7cf", alpha=0.5, zorder=0)
+    ax_right.axvspan(0.20, 0.40, color="#f6e7bb", alpha=0.45, zorder=0)
+    ax_right.axvspan(0.40, 0.60, color="#dcecc8", alpha=0.40, zorder=0)
+    for idx, (value, color) in enumerate(zip(kappa, colors)):
+        ax_right.hlines(idx, 0, value, color=color, linewidth=4, alpha=0.9)
+        ax_right.scatter(value, idx, s=80, color=color, edgecolor="white", linewidth=0.9, zorder=3)
+        ax_right.text(
+            min(value + 0.014, 0.395),
             idx,
             f"{value:.3f}",
             va="center",
             fontsize=9,
             fontweight="bold",
-            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.25, "alpha": 0.9},
-            clip_on=False,
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.2, "alpha": 0.92},
         )
 
-    fig.suptitle("Full-Population Agreement Between Gemini and DeepSeek", fontsize=14, fontweight="bold")
-    fig.text(
+    caption_ax.text(
         0.5,
-        0.02,
-        "Agreement is computed on all shared judged rows; inferential validity is restricted to shared multi-sentence samples.",
+        0.56,
+        "Observed agreement is reported alongside expected agreement because class imbalance inflates raw agreement, especially for difficulty. "
+        "Inferential validity is computed only on shared multi-sentence samples.",
         ha="center",
+        va="center",
         fontsize=9,
         color="#444444",
+        wrap=True,
     )
     fig.savefig(FIGURE_PATH, dpi=260, bbox_inches="tight")
     plt.close(fig)
