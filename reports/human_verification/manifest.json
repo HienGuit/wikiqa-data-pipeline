@@ -1,0 +1,77 @@
+{
+  "bundle_name": "human_verification_bundle_20260602",
+  "version": "2026-06-02",
+  "structure": {
+    "tasks": {
+      "task1": "tasks/task1.json",
+      "task2": "tasks/task2.json"
+    },
+    "keys": {
+      "gemini": {
+        "task1": "keys/gemini/task1.json",
+        "task2": "keys/gemini/task2.json"
+      },
+      "deepseek": {
+        "task1": "keys/deepseek/task1.json",
+        "task2": "keys/deepseek/task2.json"
+      }
+    },
+    "annotations": {
+      "annotator1": {
+        "task1": "annotations/annotator1/task1.json",
+        "task2": "annotations/annotator1/task2.json"
+      },
+      "annotator2": {
+        "task1": "annotations/annotator2/task1.json",
+        "task2": "annotations/annotator2/task2.json"
+      }
+    },
+    "reports": {
+      "assembly": "reports/assembly_report.json"
+    }
+  },
+  "notes": [
+    "Tasks and judge keys are copied from the latest dual-judge human-verification set.",
+    "Annotations are normalized into JSON arrays for easier downstream processing.",
+    "Task 2 annotator 1 source contained a malformed final line; the bundle repairs it deterministically by trimming trailing garbage after the first valid JSON object.",
+    "Task 1 now comes directly from the external annotation export with two annotations embedded per sample."
+  ],
+  "summary": {
+    "task1_rows": 100,
+    "task2_rows": 50,
+    "task1_annotator1_distribution": {
+      "quality": {
+        "strong": 40,
+        "usable": 40,
+        "weak": 20
+      },
+      "difficulty": {
+        "easy": 32,
+        "hard": 25,
+        "medium": 43
+      }
+    },
+    "task1_annotator2_distribution": {
+      "quality": {
+        "strong": 28,
+        "usable": 48,
+        "weak": 24
+      },
+      "difficulty": {
+        "easy": 51,
+        "hard": 16,
+        "medium": 33
+      }
+    },
+    "task2_annotator1_distribution": {
+      "strong": 4,
+      "usable": 21,
+      "weak": 25
+    },
+    "task2_annotator2_distribution": {
+      "strong": 6,
+      "usable": 22,
+      "weak": 22
+    }
+  }
+}

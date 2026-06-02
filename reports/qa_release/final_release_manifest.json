@@ -1,0 +1,114 @@
+{
+  "canonical_judge": {
+    "model": "Gemini",
+    "decision_rationale": "Gemini was promoted as the canonical judge because it aligned more closely with human annotations on Task 1 quality and difficulty, while DeepSeek remains available as a parallel provenance reference.",
+    "judged_source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged.jsonl",
+    "judged_source_rows": 8314,
+    "judged_context_cleaned": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_context_cleaned.jsonl",
+    "judged_context_cleaned_rows": 8005,
+    "judged_release_normalized": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_release.jsonl",
+    "parallel_deepseek_source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_deepseek_v4_flash.jsonl",
+    "parallel_deepseek_context_cleaned": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_deepseek_v4_flash_context_cleaned.jsonl"
+  },
+  "release_datasets": {
+    "public_final": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_ready.jsonl",
+    "public_final_rows": 7592,
+    "analysis_source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_analysis.jsonl",
+    "analysis_source_rows": 7592,
+    "train_split": "D:\\wikiqa-data-pipeline\\data\\final\\train.jsonl",
+    "train_split_rows": 6074,
+    "val_split": "D:\\wikiqa-data-pipeline\\data\\final\\val.jsonl",
+    "val_split_rows": 759,
+    "test_split": "D:\\wikiqa-data-pipeline\\data\\final\\test.jsonl",
+    "test_split_rows": 759,
+    "public_schema_fields": [
+      "chunk_id",
+      "domain",
+      "title",
+      "section",
+      "context",
+      "question",
+      "answer",
+      "final_reasoning_bucket",
+      "quality_band",
+      "inferential_validity_band"
+    ],
+    "analysis_schema_fields": [
+      "chunk_id",
+      "domain",
+      "title",
+      "section",
+      "context",
+      "reasoning_type",
+      "question",
+      "answer",
+      "quality_band",
+      "difficulty_band",
+      "inferential_validity_band",
+      "final_reasoning_bucket"
+    ]
+  },
+  "validation": {
+    "final_validation_report": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\qa_three_way_final_validation_report.json",
+    "status": "pass",
+    "validated_rows": 7592,
+    "invalid_rows": 0,
+    "error_counts": {}
+  },
+  "feature_engineering_phase1": {
+    "full_matrix": "D:\\wikiqa-data-pipeline\\data\\processed\\features\\feature_matrix_full.csv",
+    "final_matrix": "D:\\wikiqa-data-pipeline\\data\\final\\feature_matrix_final.csv",
+    "provenance_report": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\feature_phase1_provenance.json",
+    "active_knowledge_signals": [
+      "page_views_rank",
+      "site_links_rank",
+      "wiki_count_rank",
+      "statements_rank",
+      "references_rank",
+      "knowledge_difficulty"
+    ],
+    "retained_final_knowledge_signals": [
+      "page_views_rank",
+      "wiki_count_rank",
+      "statements_rank",
+      "knowledge_difficulty"
+    ],
+    "active_other_features": [
+      "structural_features",
+      "question_type",
+      "answer_type",
+      "popularity_source"
+    ],
+    "excluded_features": {
+      "wiki_level": "Excluded because crawl depth is not reliably preserved in the current raw metadata and would require a separate taxonomy-recovery pass.",
+      "linked_entities": "Excluded because API coverage and stability were not strong enough for the final phase-1 feature set."
+    },
+    "full_row_count": 7592,
+    "full_column_count": 28,
+    "final_row_count": 7592,
+    "final_column_count": 24
+  },
+  "eda": {
+    "eda1_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\02_qa_dataset_eda",
+    "eda1_report": "D:\\wikiqa-data-pipeline\\eda\\figures\\02_qa_dataset_eda\\eda_report.json",
+    "eda1_timestamp": "2026-06-02T17:35:05+07:00",
+    "eda1_figure_count": 7,
+    "eda2_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda",
+    "eda2_report": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda\\feature_engineering_eda_report.json",
+    "eda2_timestamp": "2026-06-02T17:35:05+07:00",
+    "eda2_figure_count": 6
+  },
+  "human_verification": {
+    "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602",
+    "task1_rows": 100,
+    "task2_rows": 50,
+    "iaa_summary": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\iaa_summary.md"
+  },
+  "timestamps": {
+    "public_final_dataset": "2026-06-02T17:13:37+07:00",
+    "analysis_source_dataset": "2026-06-02T17:13:37+07:00",
+    "feature_matrix_full": "2026-06-02T17:17:36+07:00",
+    "feature_matrix_final": "2026-06-02T17:35:05+07:00",
+    "manifest_built_at": "2026-06-02T17:48:10+07:00"
+  }
+}

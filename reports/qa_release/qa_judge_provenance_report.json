@@ -1,0 +1,136 @@
+{
+  "artifacts": {
+    "canonical_judged_current": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged.jsonl",
+    "canonical_judged_context_cleaned_current": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_context_cleaned.jsonl",
+    "canonical_judged_deepseek_parallel": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_deepseek_v4_flash.jsonl",
+    "canonical_judged_deepseek_parallel_context_cleaned": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_deepseek_v4_flash_context_cleaned.jsonl",
+    "deepseek_archive": "D:\\wikiqa-data-pipeline\\data\\processed\\archive\\qa\\judge_exports\\qa_judge_full_flash.jsonl",
+    "deepseek_summary": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\qa_judge_full_flash_summary.json",
+    "gemini_archive": "D:\\wikiqa-data-pipeline\\data\\processed\\archive\\qa\\judge_exports\\qa_judge_openrouter_gemini31_flash_lite_flex_full.jsonl",
+    "gemini_summary": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\qa_judge_openrouter_gemini31_flash_lite_flex_full_summary.json",
+    "restored_gemini_judged": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_gemini31_flash_lite.jsonl",
+    "restored_gemini_judged_context_cleaned": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_gemini31_flash_lite_context_cleaned.jsonl"
+  },
+  "counts": {
+    "canonical_judged_current": 8314,
+    "canonical_judged_context_cleaned_current": 8005,
+    "deepseek_archive": 8320,
+    "gemini_archive": 8314,
+    "restored_gemini_judged": 8314,
+    "restored_gemini_judged_context_cleaned": 8005
+  },
+  "label_comparison": {
+    "current_vs_deepseek_archive": {
+      "common_rows": 8005,
+      "common_multi_sentence_rows": 2378,
+      "quality_agreement": 5272,
+      "difficulty_agreement": 6738,
+      "inferential_validity_agreement": 1520
+    },
+    "current_vs_gemini_archive": {
+      "common_rows": 8005,
+      "common_multi_sentence_rows": 2378,
+      "quality_agreement": 8005,
+      "difficulty_agreement": 8005,
+      "inferential_validity_agreement": 2378
+    }
+  },
+  "bucket_counts": {
+    "current_canonical_judged": {
+      "quality_band": {
+        "usable": 6619,
+        "strong": 1268,
+        "weak": 427
+      },
+      "difficulty_band": {
+        "easy": 7198,
+        "medium": 1106,
+        "hard": 10
+      },
+      "inferential_validity_band": {
+        "": 5858,
+        "weak": 1619,
+        "usable": 692,
+        "strong": 145
+      },
+      "reasoning_type": {
+        "extraction": 5858,
+        "multi-sentence": 2456
+      }
+    },
+    "deepseek_archive": {
+      "quality_band": {
+        "weak": 1353,
+        "usable": 6048,
+        "strong": 919
+      },
+      "difficulty_band": {
+        "easy": 7162,
+        "medium": 1153,
+        "hard": 5
+      },
+      "inferential_validity_band": {
+        "": 5864,
+        "weak": 1833,
+        "usable": 623
+      },
+      "reasoning_type": {
+        "extraction": 5864,
+        "multi-sentence": 2456
+      }
+    },
+    "gemini_archive": {
+      "quality_band": {
+        "usable": 6619,
+        "strong": 1268,
+        "weak": 427
+      },
+      "difficulty_band": {
+        "easy": 7198,
+        "medium": 1106,
+        "hard": 10
+      },
+      "inferential_validity_band": {
+        "weak": 7416,
+        "usable": 753,
+        "strong": 145
+      },
+      "reasoning_type": {
+        "multi-sentence": 2456,
+        "extraction": 5858
+      }
+    },
+    "restored_gemini_judged": {
+      "quality_band": {
+        "usable": 6619,
+        "strong": 1268,
+        "weak": 427
+      },
+      "difficulty_band": {
+        "easy": 7198,
+        "medium": 1106,
+        "hard": 10
+      },
+      "inferential_validity_band": {
+        "": 5858,
+        "weak": 1619,
+        "usable": 692,
+        "strong": 145
+      },
+      "reasoning_type": {
+        "extraction": 5858,
+        "multi-sentence": 2456
+      }
+    }
+  },
+  "conclusion": {
+    "current_canonical_judged_provenance": "gemini_3_1_flash_lite",
+    "why": [
+      "Current provenance is inferred by exact label agreement against the archive judge outputs on the current cleaned payload.",
+      "refresh-derived only refreshes payload fields from canonical QA and does not overwrite judge labels.",
+      "parallel DeepSeek and restored Gemini artifacts are kept side-by-side for provenance and agreement analysis."
+    ],
+    "gemini_was_promoted_to_canonical": true,
+    "restoration_possible": true
+  }
+}

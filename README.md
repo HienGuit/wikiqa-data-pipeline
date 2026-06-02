@@ -7,6 +7,7 @@ This repository builds a Vietnamese question-answering dataset from Vietnamese W
 - Dataset card: `dataset_card.md`
 - Data dictionary: `data_dictionary.md`
 - QA bucket guideline for LLM judging and human verification: `qa_bucket_guideline.md`
+- Final public-facing reports tracked on GitHub: `reports/`
 
 ## Dataset Overview
 
@@ -72,14 +73,18 @@ The dataset is created in six stages:
 - Parallel DeepSeek source: `data/processed/datasets/qa_pairs_canonical_judged_deepseek_v4_flash.jsonl`
 
 ### Human Verification
-- Bundle: `data/processed/datasets/human_verification_bundle_20260602/`
-- IAA summary: `data/processed/datasets/human_verification_bundle_20260602/reports/iaa_summary.md`
-- IAA visualizations: `data/processed/datasets/human_verification_bundle_20260602/reports/`
+- Internal bundle source: `data/processed/datasets/human_verification_bundle_20260602/`
+- GitHub-tracked IAA summary: `reports/human_verification/iaa_summary.md`
+- GitHub-tracked IAA visualizations: `reports/human_verification/`
 - Guideline used for bucket-based judging and annotation: `qa_bucket_guideline.md`
 
 ### EDA
 - EDA1 dataset overview: `eda/figures/02_qa_dataset_eda/`
 - EDA2 feature-engineering analysis: `eda/figures/03_feature_engineering_eda/`
+
+### Release Reports
+- Final release reports: `reports/qa_release/`
+- Human verification and IAA reports: `reports/human_verification/`
 
 ### Feature Engineering Phase 1
 - Full matrix: `data/processed/features/feature_matrix_full.csv`
@@ -110,6 +115,9 @@ wikiqa-data-pipeline/
 ├── dataset_card.md               # public dataset card
 ├── data_dictionary.md            # field-level schema notes
 ├── qa_bucket_guideline.md        # bucket-label guideline for judges and annotators
+├── reports/
+│   ├── qa_release/               # tracked final release manifests and validation reports
+│   └── human_verification/       # tracked IAA summaries and visualization artifacts
 ├── configs/                     # YAML configs
 ├── data/
 │   ├── raw/                     # raw Wikipedia pages and metadata
@@ -162,6 +170,11 @@ python eda/scripts/build_feature_engineering_eda.py
 python scripts/qa/build_release_metadata.py
 ```
 
+### 6. Sync GitHub-tracked final reports
+```bash
+python scripts/qa/sync_repo_reports.py
+```
+
 ## Notes On Public Release Design
 
 - `difficulty_band` is intentionally excluded from the public final dataset because it is treated as a legacy diagnostic signal rather than a high-confidence public target label.
@@ -170,9 +183,11 @@ python scripts/qa/build_release_metadata.py
 
 ## Provenance Entry Points
 
-- Final manifest JSON: `data/processed/reports/qa/final_release_manifest.json`
-- Final manifest Markdown: `data/processed/reports/qa/final_release_manifest.md`
-- Feature phase-1 provenance JSON: `data/processed/reports/qa/feature_phase1_provenance.json`
-- Feature phase-1 provenance Markdown: `data/processed/reports/qa/feature_phase1_provenance.md`
+- Final manifest JSON: `reports/qa_release/final_release_manifest.json`
+- Final manifest Markdown: `reports/qa_release/final_release_manifest.md`
+- Feature phase-1 provenance JSON: `reports/qa_release/feature_phase1_provenance.json`
+- Feature phase-1 provenance Markdown: `reports/qa_release/feature_phase1_provenance.md`
+- Human verification manifest: `reports/human_verification/manifest.json`
+- IAA summary: `reports/human_verification/iaa_summary.md`
 
-These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, and which features were kept or excluded. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.
+These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, which features were kept or excluded, and how inter-annotator agreement was measured. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.

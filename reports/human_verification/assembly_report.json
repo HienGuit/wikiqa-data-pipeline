@@ -1,0 +1,115 @@
+{
+  "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602",
+  "sources": {
+    "task1": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task1_quality_difficulty_100.jsonl",
+    "task2": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task2_inferential_validity_50.jsonl",
+    "task1_gemini_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task1_quality_difficulty_100_key_gemini31_flash_lite.jsonl",
+    "task1_deepseek_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task1_quality_difficulty_100_key_deepseek_v4_flash.jsonl",
+    "task2_gemini_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task2_inferential_validity_50_key_gemini31_flash_lite.jsonl",
+    "task2_deepseek_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task2_inferential_validity_50_key_deepseek_v4_flash.jsonl",
+    "task1_export": "C:\\Users\\GHien\\Downloads\\task1.json",
+    "task2_annotator1": "C:\\Users\\GHien\\Downloads\\task2_inferential_validity_50_completed_annotator1.jsonl",
+    "task2_annotator2": "C:\\Users\\GHien\\Downloads\\gemini31_pro_task_runner_20260602\\outputs\\task2_inferential_validity_50_completed_annotator2.jsonl"
+  },
+  "task1_export_meta": {
+    "source": "C:\\Users\\GHien\\Downloads\\task1.json",
+    "annotator_slots": [
+      {
+        "slot": "annotator1",
+        "completed_by": {
+          "id": 177162,
+          "email": "24520476@gm.uit.edu.vn",
+          "first_name": "Hiền",
+          "last_name": "Nguyễn Trọng Phúc"
+        }
+      },
+      {
+        "slot": "annotator2",
+        "completed_by": {
+          "id": 177160,
+          "email": "nguyengiahien22@gmail.com",
+          "first_name": "Gia Hiển",
+          "last_name": "Nguyễn"
+        }
+      }
+    ]
+  },
+  "alignment": {
+    "task1": {
+      "task": "task1",
+      "task_rows": 100,
+      "gemini_key_rows": 100,
+      "deepseek_key_rows": 100,
+      "annotator1_rows": 100,
+      "annotator2_rows": 100,
+      "all_ids_match": true,
+      "missing_in_gemini_key": [],
+      "missing_in_deepseek_key": [],
+      "missing_in_annotator1": [],
+      "missing_in_annotator2": []
+    },
+    "task2": {
+      "task": "task2",
+      "task_rows": 50,
+      "gemini_key_rows": 50,
+      "deepseek_key_rows": 50,
+      "annotator1_rows": 50,
+      "annotator2_rows": 50,
+      "all_ids_match": true,
+      "missing_in_gemini_key": [],
+      "missing_in_deepseek_key": [],
+      "missing_in_annotator1": [],
+      "missing_in_annotator2": []
+    }
+  },
+  "repair_log": {
+    "task1_annotator1": [],
+    "task1_annotator2": [],
+    "task2_annotator1": [
+      {
+        "line_number": 50,
+        "repair_type": "trailing_garbage_trimmed",
+        "trailing_fragment": "\"}"
+      }
+    ],
+    "task2_annotator2": []
+  },
+  "summary": {
+    "task1_rows": 100,
+    "task2_rows": 50,
+    "task1_annotator1_distribution": {
+      "quality": {
+        "strong": 40,
+        "usable": 40,
+        "weak": 20
+      },
+      "difficulty": {
+        "easy": 32,
+        "hard": 25,
+        "medium": 43
+      }
+    },
+    "task1_annotator2_distribution": {
+      "quality": {
+        "strong": 28,
+        "usable": 48,
+        "weak": 24
+      },
+      "difficulty": {
+        "easy": 51,
+        "hard": 16,
+        "medium": 33
+      }
+    },
+    "task2_annotator1_distribution": {
+      "strong": 4,
+      "usable": 21,
+      "weak": 25
+    },
+    "task2_annotator2_distribution": {
+      "strong": 6,
+      "usable": 22,
+      "weak": 22
+    }
+  }
+}
