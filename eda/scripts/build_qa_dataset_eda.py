@@ -339,6 +339,11 @@ def main() -> None:
             legend_title="Reasoning bucket",
             rotate_x=25,
             figsize=(10.2, 5.3),
+            legend_loc="lower center",
+            legend_bbox=(0.5, 1.12),
+            legend_ncol=3,
+            title_pad=22,
+            top_margin=0.82,
         )
     )
 
