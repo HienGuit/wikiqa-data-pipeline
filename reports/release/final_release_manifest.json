@@ -2,24 +2,25 @@
   "external_annotation": {
     "qa_generator": "DeepSeek V4 Flash",
     "automatic_annotator": "Gemini",
+    "external_annotator_model": "Gemini",
     "decision_rationale": "Gemini is used as the external annotator because it is separate from the QA generation model.",
-    "deepseek_label_policy": "Labels produced by DeepSeek for evaluation are excluded from the official release pipeline to avoid same-model evaluation bias.",
-    "judged_source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged.jsonl",
-    "judged_source_rows": 8314,
-    "judged_context_cleaned": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_context_cleaned.jsonl",
-    "judged_context_cleaned_rows": 8005,
-    "judged_release_normalized": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_release.jsonl"
+    "external_annotation_policy": "Official annotation labels come from Gemini and are audited with human verification.",
+    "gemini_annotated_source": "data/processed/datasets/qa_pairs_canonical_judged.jsonl",
+    "gemini_annotated_source_rows": 8314,
+    "gemini_annotated_context_cleaned": "data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl",
+    "gemini_annotated_context_cleaned_rows": 8005,
+    "gemini_annotated_release_normalized": "data/processed/datasets/qa_pairs_canonical_judged_release.jsonl"
   },
   "release_datasets": {
-    "public_final": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_ready.jsonl",
+    "public_final": "data/processed/datasets/qa_pairs_three_way_ready.jsonl",
     "public_final_rows": 7592,
-    "analysis_source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_analysis.jsonl",
+    "analysis_source": "data/processed/datasets/qa_pairs_three_way_analysis.jsonl",
     "analysis_source_rows": 7592,
-    "train_split": "D:\\wikiqa-data-pipeline\\data\\final\\train.jsonl",
+    "train_split": "data/final/train.jsonl",
     "train_split_rows": 6074,
-    "val_split": "D:\\wikiqa-data-pipeline\\data\\final\\val.jsonl",
+    "val_split": "data/final/val.jsonl",
     "val_split_rows": 759,
-    "test_split": "D:\\wikiqa-data-pipeline\\data\\final\\test.jsonl",
+    "test_split": "data/final/test.jsonl",
     "test_split_rows": 759,
     "public_schema_fields": [
       "chunk_id",
@@ -49,16 +50,16 @@
     ]
   },
   "validation": {
-    "final_validation_report": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\qa_three_way_final_validation_report.json",
+    "final_validation_report": "data/processed/reports/qa/qa_three_way_final_validation_report.json",
     "status": "pass",
     "validated_rows": 7592,
     "invalid_rows": 0,
     "error_counts": {}
   },
   "feature_engineering_phase1": {
-    "full_matrix": "D:\\wikiqa-data-pipeline\\data\\processed\\features\\feature_matrix_full.csv",
-    "final_matrix": "D:\\wikiqa-data-pipeline\\data\\final\\feature_matrix_final.csv",
-    "provenance_report": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\feature_phase1_provenance.json",
+    "full_matrix": "data/processed/features/feature_matrix_full.csv",
+    "final_matrix": "data/final/feature_matrix_final.csv",
+    "provenance_report": "data/processed/reports/qa/feature_phase1_provenance.json",
     "active_knowledge_signals": [
       "page_views_rank",
       "site_links_rank",
@@ -89,26 +90,26 @@
     "final_column_count": 24
   },
   "eda": {
-    "eda1_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\02_qa_dataset_eda",
-    "eda1_report": "D:\\wikiqa-data-pipeline\\eda\\figures\\02_qa_dataset_eda\\eda_report.json",
+    "eda1_dir": "eda/figures/02_qa_dataset_eda",
+    "eda1_report": "eda/figures/02_qa_dataset_eda/eda_report.json",
     "eda1_timestamp": "2026-06-03T10:41:32+07:00",
     "eda1_figure_count": 7,
-    "eda2_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda",
-    "eda2_report": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda\\feature_engineering_eda_report.json",
+    "eda2_dir": "eda/figures/03_feature_engineering_eda",
+    "eda2_report": "eda/figures/03_feature_engineering_eda/feature_engineering_eda_report.json",
     "eda2_timestamp": "2026-06-02T17:35:05+07:00",
     "eda2_figure_count": 6
   },
   "human_verification": {
-    "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605",
+    "bundle_dir": "data/processed/datasets/human_verification_bundle_external_gemini_20260605",
     "task1_rows": 100,
     "task2_rows": 50,
-    "iaa_summary": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\iaa_summary.md"
+    "iaa_summary": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_summary.md"
   },
   "timestamps": {
     "public_final_dataset": "2026-06-02T17:13:37+07:00",
     "analysis_source_dataset": "2026-06-02T17:13:37+07:00",
     "feature_matrix_full": "2026-06-02T17:51:52+07:00",
     "feature_matrix_final": "2026-06-02T17:51:53+07:00",
-    "manifest_built_at": "2026-06-05T23:57:37+07:00"
+    "manifest_built_at": "2026-06-06T00:47:12+07:00"
   }
 }

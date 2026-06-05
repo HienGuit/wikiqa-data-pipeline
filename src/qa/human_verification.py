@@ -79,7 +79,6 @@ def load_task1_from_export(path: Path) -> tuple[List[Dict[str, Any]], List[Dict[
             list(item.get("annotations", [])),
             key=lambda ann: (
                 str(ann.get("created_at", "")),
-                str((ann.get("completed_by") or {}).get("email", "")),
                 int(ann.get("id", 0) or 0),
             ),
         )
@@ -87,10 +86,7 @@ def load_task1_from_export(path: Path) -> tuple[List[Dict[str, Any]], List[Dict[
             raise RuntimeError(f"Task 1 export row {data.get('sample_id')} has fewer than 2 annotations.")
 
         if len(annotator_meta) < 2:
-            annotator_meta = [
-                {"slot": f"annotator{idx}", "completed_by": annotations[idx - 1].get("completed_by", {})}
-                for idx in (1, 2)
-            ]
+            annotator_meta = [{"slot": f"annotator{idx}"} for idx in (1, 2)]
 
         parsed_rows = []
         for annotation in annotations[:2]:

@@ -24,8 +24,6 @@ from src.config import (  # noqa: E402
     QA_CANONICAL_JUDGED,
     QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
     QA_CANONICAL_JUDGED_RELEASE,
-    QA_HUMAN_VERIFICATION_TASK1,
-    QA_HUMAN_VERIFICATION_TASK2,
     QA_REPORTS_DIR,
     QA_THREE_WAY_ANALYSIS,
     QA_THREE_WAY_FINAL_VALIDATION_REPORT,
@@ -35,6 +33,8 @@ from src.config import (  # noqa: E402
 from src.qa.release_schema import ANALYSIS_RELEASE_FIELDS, PUBLIC_RELEASE_FIELDS  # noqa: E402
 
 HUMAN_VERIFICATION_BUNDLE_DIR = QA_THREE_WAY_READY.parent / "human_verification_bundle_external_gemini_20260605"
+HV_TASK1_JSON = HUMAN_VERIFICATION_BUNDLE_DIR / "tasks" / "task1.json"
+HV_TASK2_JSON = HUMAN_VERIFICATION_BUNDLE_DIR / "tasks" / "task2.json"
 IAA_SUMMARY_MD = HUMAN_VERIFICATION_BUNDLE_DIR / "reports" / "iaa_summary.md"
 EDA1_DIR = ROOT / "eda" / "figures" / "02_qa_dataset_eda"
 EDA2_DIR = ROOT / "eda" / "figures" / "03_feature_engineering_eda"
@@ -84,6 +84,12 @@ def _count_jsonl_rows(path: Path) -> int:
         return sum(1 for line in handle if line.strip())
 
 
+def _count_json_array_rows(path: Path) -> int:
+    if not path.exists():
+        return 0
+    return len(json.loads(path.read_text(encoding="utf-8")))
+
+
 def _csv_shape(path: Path) -> tuple[int, list[str]]:
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -113,10 +119,10 @@ def build_feature_phase1_provenance() -> dict[str, Any]:
 
     payload = {
         "phase": "feature_engineering_phase1",
-        "source_dataset_analysis": str(QA_THREE_WAY_ANALYSIS.resolve()),
-        "public_release_dataset": str(QA_THREE_WAY_READY.resolve()),
-        "feature_matrix_full": str(FEATURE_MATRIX_FULL.resolve()),
-        "feature_matrix_final": str(FEATURE_MATRIX_FINAL.resolve()),
+        "source_dataset_analysis": _repo_rel(QA_THREE_WAY_ANALYSIS),
+        "public_release_dataset": _repo_rel(QA_THREE_WAY_READY),
+        "feature_matrix_full": _repo_rel(FEATURE_MATRIX_FULL),
+        "feature_matrix_final": _repo_rel(FEATURE_MATRIX_FINAL),
         "full_row_count": full_rows,
         "full_column_count": len(full_columns),
         "final_row_count": final_rows,
@@ -162,8 +168,8 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
     analysis_rows = _count_jsonl_rows(QA_THREE_WAY_ANALYSIS)
     canonical_rows = _count_jsonl_rows(QA_CANONICAL_JUDGED)
     canonical_cleaned_rows = _count_jsonl_rows(QA_CANONICAL_JUDGED_CONTEXT_CLEANED)
-    task1_rows = _count_jsonl_rows(QA_HUMAN_VERIFICATION_TASK1)
-    task2_rows = _count_jsonl_rows(QA_HUMAN_VERIFICATION_TASK2)
+    task1_rows = _count_json_array_rows(HV_TASK1_JSON)
+    task2_rows = _count_json_array_rows(HV_TASK2_JSON)
     train_rows = _count_jsonl_rows(ROOT / "data" / "final" / "train.jsonl")
     val_rows = _count_jsonl_rows(ROOT / "data" / "final" / "val.jsonl")
     test_rows = _count_jsonl_rows(ROOT / "data" / "final" / "test.jsonl")
@@ -172,41 +178,40 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
         "external_annotation": {
             "qa_generator": "DeepSeek V4 Flash",
             "automatic_annotator": "Gemini",
+            "external_annotator_model": "Gemini",
             "decision_rationale": ANNOTATION_RATIONALE,
-            "deepseek_label_policy": (
-                "Labels produced by DeepSeek for evaluation are excluded from the official release pipeline to avoid same-model evaluation bias."
-            ),
-            "judged_source": str(QA_CANONICAL_JUDGED.resolve()),
-            "judged_source_rows": canonical_rows,
-            "judged_context_cleaned": str(QA_CANONICAL_JUDGED_CONTEXT_CLEANED.resolve()),
-            "judged_context_cleaned_rows": canonical_cleaned_rows,
-            "judged_release_normalized": str(QA_CANONICAL_JUDGED_RELEASE.resolve()),
+            "external_annotation_policy": "Official annotation labels come from Gemini and are audited with human verification.",
+            "gemini_annotated_source": _repo_rel(QA_CANONICAL_JUDGED),
+            "gemini_annotated_source_rows": canonical_rows,
+            "gemini_annotated_context_cleaned": _repo_rel(QA_CANONICAL_JUDGED_CONTEXT_CLEANED),
+            "gemini_annotated_context_cleaned_rows": canonical_cleaned_rows,
+            "gemini_annotated_release_normalized": _repo_rel(QA_CANONICAL_JUDGED_RELEASE),
         },
         "release_datasets": {
-            "public_final": str(QA_THREE_WAY_READY.resolve()),
+            "public_final": _repo_rel(QA_THREE_WAY_READY),
             "public_final_rows": public_rows,
-            "analysis_source": str(QA_THREE_WAY_ANALYSIS.resolve()),
+            "analysis_source": _repo_rel(QA_THREE_WAY_ANALYSIS),
             "analysis_source_rows": analysis_rows,
-            "train_split": str((ROOT / "data" / "final" / "train.jsonl").resolve()),
+            "train_split": _repo_rel(ROOT / "data" / "final" / "train.jsonl"),
             "train_split_rows": train_rows,
-            "val_split": str((ROOT / "data" / "final" / "val.jsonl").resolve()),
+            "val_split": _repo_rel(ROOT / "data" / "final" / "val.jsonl"),
             "val_split_rows": val_rows,
-            "test_split": str((ROOT / "data" / "final" / "test.jsonl").resolve()),
+            "test_split": _repo_rel(ROOT / "data" / "final" / "test.jsonl"),
             "test_split_rows": test_rows,
             "public_schema_fields": list(PUBLIC_RELEASE_FIELDS),
             "analysis_schema_fields": list(ANALYSIS_RELEASE_FIELDS),
         },
         "validation": {
-            "final_validation_report": str(QA_THREE_WAY_FINAL_VALIDATION_REPORT.resolve()),
+            "final_validation_report": _repo_rel(QA_THREE_WAY_FINAL_VALIDATION_REPORT),
             "status": validation.get("status", ""),
             "validated_rows": validation.get("validated_rows", 0),
             "invalid_rows": validation.get("invalid_rows", 0),
             "error_counts": validation.get("error_counts", {}),
         },
         "feature_engineering_phase1": {
-            "full_matrix": str(FEATURE_MATRIX_FULL.resolve()),
-            "final_matrix": str(FEATURE_MATRIX_FINAL.resolve()),
-            "provenance_report": str(FEATURE_PHASE1_PROVENANCE_JSON.resolve()),
+            "full_matrix": _repo_rel(FEATURE_MATRIX_FULL),
+            "final_matrix": _repo_rel(FEATURE_MATRIX_FINAL),
+            "provenance_report": _repo_rel(FEATURE_PHASE1_PROVENANCE_JSON),
             "active_knowledge_signals": ACTIVE_KNOWLEDGE_SIGNALS,
             "retained_final_knowledge_signals": RETAINED_FINAL_KNOWLEDGE_SIGNALS,
             "active_other_features": ACTIVE_OTHER_FEATURES,
@@ -217,20 +222,20 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
             "final_column_count": feature_payload["final_column_count"],
         },
         "eda": {
-            "eda1_dir": str(EDA1_DIR.resolve()),
-            "eda1_report": str(EDA1_REPORT.resolve()),
+            "eda1_dir": _repo_rel(EDA1_DIR),
+            "eda1_report": _repo_rel(EDA1_REPORT),
             "eda1_timestamp": _iso_timestamp(EDA1_REPORT),
             "eda1_figure_count": len(eda1_report.get("figures", [])),
-            "eda2_dir": str(EDA2_DIR.resolve()),
-            "eda2_report": str(FEATURE_MATRIX_EDA_REPORT.resolve()),
+            "eda2_dir": _repo_rel(EDA2_DIR),
+            "eda2_report": _repo_rel(FEATURE_MATRIX_EDA_REPORT),
             "eda2_timestamp": _iso_timestamp(FEATURE_MATRIX_EDA_REPORT),
             "eda2_figure_count": len(eda2_report.get("figures", [])),
         },
         "human_verification": {
-            "bundle_dir": str(HUMAN_VERIFICATION_BUNDLE_DIR.resolve()),
+            "bundle_dir": _repo_rel(HUMAN_VERIFICATION_BUNDLE_DIR),
             "task1_rows": task1_rows,
             "task2_rows": task2_rows,
-            "iaa_summary": str(IAA_SUMMARY_MD.resolve()),
+            "iaa_summary": _repo_rel(IAA_SUMMARY_MD),
         },
         "timestamps": {
             "public_final_dataset": _iso_timestamp(QA_THREE_WAY_READY),
@@ -249,9 +254,9 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
         "- QA generator: `DeepSeek V4 Flash`",
         "- External automatic annotator: `Gemini`",
         f"- Rationale: {ANNOTATION_RATIONALE}",
-        "- Labels produced by DeepSeek for evaluation are excluded from the official release pipeline to avoid same-model evaluation bias.",
-        f"- Canonical judged source: `data/processed/datasets/{QA_CANONICAL_JUDGED.name}` ({canonical_rows:,} rows)",
-        f"- Canonical judged, context-cleaned: `data/processed/datasets/{QA_CANONICAL_JUDGED_CONTEXT_CLEANED.name}` ({canonical_cleaned_rows:,} rows)",
+        "- Official annotation labels come from Gemini and are audited with human verification.",
+        f"- Gemini-annotated source: `data/processed/datasets/{QA_CANONICAL_JUDGED.name}` ({canonical_rows:,} rows)",
+        f"- Gemini-annotated, context-cleaned: `data/processed/datasets/{QA_CANONICAL_JUDGED_CONTEXT_CLEANED.name}` ({canonical_cleaned_rows:,} rows)",
         "",
         "## Release Datasets",
         f"- Public final dataset: `{_repo_rel(QA_THREE_WAY_READY)}` ({public_rows:,} rows)",
@@ -273,7 +278,7 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
         *[f"- Full-matrix knowledge signal: `{feature}`" for feature in ACTIVE_KNOWLEDGE_SIGNALS],
         *[f"- Retained final-matrix knowledge signal: `{feature}`" for feature in RETAINED_FINAL_KNOWLEDGE_SIGNALS],
         *[f"- Active other feature group: `{feature}`" for feature in ACTIVE_OTHER_FEATURES],
-        *[f"- Excluded phase-1 feature: `{feature}` because {reason}" for feature, reason in EXCLUDED_PHASE1_FEATURES.items()],
+        *[f"- Excluded phase-1 feature: `{feature}`: {reason}" for feature, reason in EXCLUDED_PHASE1_FEATURES.items()],
         "",
         "## EDA and Human Verification",
         f"- EDA1 final: `eda/figures/{EDA1_DIR.name}/`",

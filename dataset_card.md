@@ -30,9 +30,9 @@ The dataset is split by title to avoid leakage across train, validation, and tes
 
 | Split | Rows |
 |---|---:|
-| `train` | 6,092 |
-| `val` | 761 |
-| `test` | 739 |
+| `train` | 6,074 |
+| `val` | 759 |
+| `test` | 759 |
 | Total | 7,592 |
 
 ### Reasoning Buckets
@@ -50,7 +50,7 @@ The dataset is split by title to avoid leakage across train, validation, and tes
 
 ### Annotation Provenance
 
-QA candidates were generated with DeepSeek V4 Flash. Automatic labels were assigned by Gemini as an external LLM annotator. Labels produced by DeepSeek for evaluation were removed from the official release pipeline to avoid same-model evaluation bias.
+QA candidates were generated with DeepSeek V4 Flash. Automatic labels were assigned by Gemini as an external LLM annotator and audited with human verification.
 
 The official pipeline is:
 

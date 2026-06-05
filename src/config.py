@@ -157,7 +157,7 @@ QA_WITH_TOPUP_ROUND2_BACKUP = QA_ARCHIVE_DIR / "qa_pairs_canonical.before_succin
 
 # API settings
 API_URL = "https://vi.wikipedia.org/w/api.php"
-USER_AGENT = "WikiDataPipeline/2.0 (research; contact: your-email@gmail.com)"
+USER_AGENT = "WikiDataPipeline/2.0 (research; contact: your-email@example.com)"
 
 # Crawler settings
 MAX_DEPTH = 3

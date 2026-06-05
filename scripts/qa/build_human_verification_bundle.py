@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -38,11 +39,30 @@ TASK2_SOURCE = SOURCE_DIR / "task2_inferential_validity_50.jsonl"
 TASK1_GEMINI_KEY_SOURCE = SOURCE_DIR / "task1_quality_difficulty_100_key_gemini31_flash_lite.jsonl"
 TASK2_GEMINI_KEY_SOURCE = SOURCE_DIR / "task2_inferential_validity_50_key_gemini31_flash_lite.jsonl"
 
-TASK1_EXPORT_SOURCE = Path(r"C:\Users\GHien\Downloads\task1.json")
-TASK2_ANNOTATOR1_SOURCE = Path(r"C:\Users\GHien\Downloads\task2_inferential_validity_50_completed_annotator1.jsonl")
-TASK2_ANNOTATOR2_SOURCE = Path(
-    r"C:\Users\GHien\Downloads\gemini31_pro_task_runner_20260602\outputs\task2_inferential_validity_50_completed_annotator2.jsonl"
-)
+EXTERNAL_SOURCE_REDACTED = "external_annotation_export_redacted"
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Assemble external-Gemini human-verification bundle.")
+    parser.add_argument("--task1-export", required=True, help="Path to Task 1 annotation export JSON.")
+    parser.add_argument("--task2-annotator1", required=True, help="Path to Task 2 annotator 1 JSONL.")
+    parser.add_argument("--task2-annotator2", required=True, help="Path to Task 2 annotator 2 JSONL.")
+    return parser
+
+
+def _repo_rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return EXTERNAL_SOURCE_REDACTED
+
+
+def _redact_task1_export_meta(meta: dict) -> dict:
+    slots = meta.get("annotator_slots") or [{"slot": "annotator1"}, {"slot": "annotator2"}]
+    return {
+        "source": EXTERNAL_SOURCE_REDACTED,
+        "annotator_slots": [{"slot": str(item.get("slot", ""))} for item in slots],
+    }
 
 
 def build_manifest(report: dict) -> dict:
@@ -78,6 +98,11 @@ def build_manifest(report: dict) -> dict:
 
 
 def main() -> None:
+    args = build_parser().parse_args()
+    task1_export_source = Path(args.task1_export)
+    task2_annotator1_source = Path(args.task2_annotator1)
+    task2_annotator2_source = Path(args.task2_annotator2)
+
     ensure_dirs()
     for directory in (
         TASKS_DIR,
@@ -93,9 +118,9 @@ def main() -> None:
     task1_gemini_key = load_jsonl(TASK1_GEMINI_KEY_SOURCE)
     task2_gemini_key = load_jsonl(TASK2_GEMINI_KEY_SOURCE)
 
-    task1_annotator1, task1_annotator2, task1_export_meta = load_task1_from_export(TASK1_EXPORT_SOURCE)
-    task2_annotator1, task2_annotator1_repairs = load_jsonl_robust(TASK2_ANNOTATOR1_SOURCE)
-    task2_annotator2, task2_annotator2_repairs = load_jsonl_robust(TASK2_ANNOTATOR2_SOURCE)
+    task1_annotator1, task1_annotator2, task1_export_meta = load_task1_from_export(task1_export_source)
+    task2_annotator1, task2_annotator1_repairs = load_jsonl_robust(task2_annotator1_source)
+    task2_annotator2, task2_annotator2_repairs = load_jsonl_robust(task2_annotator2_source)
 
     task1_alignment = validate_bundle_alignment(
         label="task1",
@@ -146,17 +171,17 @@ def main() -> None:
         write_json(subdir / name, payload)
 
     report = {
-        "bundle_dir": str(BUNDLE_DIR),
+        "bundle_dir": _repo_rel(BUNDLE_DIR),
         "sources": {
-            "task1": str(TASK1_SOURCE),
-            "task2": str(TASK2_SOURCE),
-            "task1_gemini_key": str(TASK1_GEMINI_KEY_SOURCE),
-            "task2_gemini_key": str(TASK2_GEMINI_KEY_SOURCE),
-            "task1_export": str(TASK1_EXPORT_SOURCE),
-            "task2_annotator1": str(TASK2_ANNOTATOR1_SOURCE),
-            "task2_annotator2": str(TASK2_ANNOTATOR2_SOURCE),
+            "task1": _repo_rel(TASK1_SOURCE),
+            "task2": _repo_rel(TASK2_SOURCE),
+            "task1_gemini_key": _repo_rel(TASK1_GEMINI_KEY_SOURCE),
+            "task2_gemini_key": _repo_rel(TASK2_GEMINI_KEY_SOURCE),
+            "task1_export": _repo_rel(task1_export_source),
+            "task2_annotator1": _repo_rel(task2_annotator1_source),
+            "task2_annotator2": _repo_rel(task2_annotator2_source),
         },
-        "task1_export_meta": task1_export_meta,
+        "task1_export_meta": _redact_task1_export_meta(task1_export_meta),
         "alignment": {"task1": task1_alignment, "task2": task2_alignment},
         "repair_log": {
             "task1_annotator1": [],

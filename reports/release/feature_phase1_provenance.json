@@ -1,9 +1,9 @@
 {
   "phase": "feature_engineering_phase1",
-  "source_dataset_analysis": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_analysis.jsonl",
-  "public_release_dataset": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_ready.jsonl",
-  "feature_matrix_full": "D:\\wikiqa-data-pipeline\\data\\processed\\features\\feature_matrix_full.csv",
-  "feature_matrix_final": "D:\\wikiqa-data-pipeline\\data\\final\\feature_matrix_final.csv",
+  "source_dataset_analysis": "data/processed/datasets/qa_pairs_three_way_analysis.jsonl",
+  "public_release_dataset": "data/processed/datasets/qa_pairs_three_way_ready.jsonl",
+  "feature_matrix_full": "data/processed/features/feature_matrix_full.csv",
+  "feature_matrix_final": "data/final/feature_matrix_final.csv",
   "full_row_count": 7592,
   "full_column_count": 28,
   "final_row_count": 7592,

@@ -71,10 +71,10 @@ The dataset is created in six stages:
 - QA generator: `DeepSeek V4 Flash`
 - External automatic annotator: `Gemini`
 - Human verification: two human annotators on sampled audit tasks
-- Labels produced by DeepSeek for evaluation are excluded from the official annotation and release pipeline to avoid same-model evaluation bias.
-- Canonical judged source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl`
-- Canonical judged, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl`
-- Canonical judged, release-normalized: `data/processed/datasets/qa_pairs_canonical_judged_release.jsonl`
+- Official annotation labels come from the external Gemini annotation pass and are audited with human verification.
+- Gemini-annotated source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl`
+- Gemini-annotated, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl`
+- Gemini-annotated, release-normalized: `data/processed/datasets/qa_pairs_canonical_judged_release.jsonl`
 
 ### Human Verification
 - Internal bundle source: `data/processed/datasets/human_verification_bundle_external_gemini_20260605/`
@@ -122,7 +122,7 @@ Excluded from phase 1:
 wikiqa-data-pipeline/
 ├── dataset_card.md               # public dataset card
 ├── data_dictionary.md            # field-level schema notes
-├── qa_bucket_guideline.md        # bucket-label guideline for judges and annotators
+├── qa_bucket_guideline.md        # bucket-label guideline for external annotation and human verification
 ├── reports/
 │   ├── release/                  # tracked final release manifests and validation reports
 │   └── evaluation/               # tracked IAA summaries and visualization artifacts

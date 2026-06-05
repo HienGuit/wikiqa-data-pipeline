@@ -1,6 +1,6 @@
 {
-  "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605",
-  "manifest_path": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\manifest.json",
+  "bundle_dir": "data/processed/datasets/human_verification_bundle_external_gemini_20260605",
+  "manifest_path": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/manifest.json",
   "pair_definitions": [
     "annotator1__vs__annotator2",
     "annotator1__vs__gemini_key",

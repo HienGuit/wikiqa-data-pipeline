@@ -1,75 +1,75 @@
 {
   "release": [
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\final_release_manifest.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\final_release_manifest.json",
-      "size_bytes": 4827
+      "source": "data/processed/reports/qa/final_release_manifest.json",
+      "destination": "reports/release/final_release_manifest.json",
+      "size_bytes": 4362
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\final_release_manifest.md",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\final_release_manifest.md",
-      "size_bytes": 3074
+      "source": "data/processed/reports/qa/final_release_manifest.md",
+      "destination": "reports/release/final_release_manifest.md",
+      "size_bytes": 3017
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\feature_phase1_provenance.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\feature_phase1_provenance.json",
-      "size_bytes": 2755
+      "source": "data/processed/reports/qa/feature_phase1_provenance.json",
+      "destination": "reports/release/feature_phase1_provenance.json",
+      "size_bytes": 2640
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\feature_phase1_provenance.md",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\feature_phase1_provenance.md",
+      "source": "data/processed/reports/qa/feature_phase1_provenance.md",
+      "destination": "reports/release/feature_phase1_provenance.md",
       "size_bytes": 1450
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\reports\\qa\\qa_three_way_final_validation_report.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\release\\qa_three_way_final_validation_report.json",
+      "source": "data/processed/reports/qa/qa_three_way_final_validation_report.json",
+      "destination": "reports/release/qa_three_way_final_validation_report.json",
       "size_bytes": 230
     }
   ],
   "evaluation": [
     {
       "source": "generated",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\README.md",
+      "destination": "reports/evaluation/README.md",
       "size_bytes": 878
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\manifest.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\manifest.json",
+      "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/manifest.json",
+      "destination": "reports/evaluation/manifest.json",
       "size_bytes": 2103
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\assembly_report.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\assembly_report.json",
-      "size_bytes": 3424
+      "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/assembly_report.json",
+      "destination": "reports/evaluation/assembly_report.json",
+      "size_bytes": 2742
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\iaa_summary.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\iaa_summary.json",
-      "size_bytes": 14698
+      "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_summary.json",
+      "destination": "reports/evaluation/iaa_summary.json",
+      "size_bytes": 14639
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\iaa_summary.md",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\iaa_summary.md",
-      "size_bytes": 1425
+      "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_summary.md",
+      "destination": "reports/evaluation/iaa_summary.md",
+      "size_bytes": 1401
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\iaa_visualization_report.json",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\iaa_visualization_report.json",
-      "size_bytes": 623
+      "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_visualization_report.json",
+      "destination": "reports/evaluation/iaa_visualization_report.json",
+      "size_bytes": 501
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\iaa_kappa_heatmap_matrix.png",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\iaa_kappa_heatmap_matrix.png",
+      "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_kappa_heatmap_matrix.png",
+      "destination": "reports/evaluation/iaa_kappa_heatmap_matrix.png",
       "size_bytes": 187640
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\task1_a1_vs_a2_confusion.png",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\task1_a1_vs_a2_confusion.png",
+      "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/task1_a1_vs_a2_confusion.png",
+      "destination": "reports/evaluation/task1_a1_vs_a2_confusion.png",
       "size_bytes": 246502
     },
     {
-      "source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\task2_a1_vs_a2_confusion.png",
-      "destination": "D:\\wikiqa-data-pipeline\\reports\\evaluation\\task2_a1_vs_a2_confusion.png",
+      "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/task2_a1_vs_a2_confusion.png",
+      "destination": "reports/evaluation/task2_a1_vs_a2_confusion.png",
       "size_bytes": 173735
     }
   ]

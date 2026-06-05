@@ -35,14 +35,21 @@ HUMAN_VERIFICATION_FILES = [
 ]
 
 
+def repo_rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path)
+
+
 def copy_file(src: Path, dst: Path) -> dict[str, str | int]:
     if not src.exists():
         raise FileNotFoundError(f"Missing source file: {src}")
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, dst)
     return {
-        "source": str(src),
-        "destination": str(dst),
+        "source": repo_rel(src),
+        "destination": repo_rel(dst),
         "size_bytes": dst.stat().st_size,
     }
 
@@ -84,7 +91,7 @@ This folder contains the GitHub-tracked evaluation artifacts for the QA release.
 """
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(content, encoding="utf-8")
-    return {"source": "generated", "destination": str(dst), "size_bytes": dst.stat().st_size}
+    return {"source": "generated", "destination": repo_rel(dst), "size_bytes": dst.stat().st_size}
 
 
 def main() -> None:

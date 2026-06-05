@@ -13,6 +13,8 @@ from matplotlib.colors import LinearSegmentedColormap
 
 from src.qa.human_verification import load_json, write_json, write_text
 
+ROOT = Path(__file__).resolve().parents[2]
+
 PAIR_SPECS = [
     ("annotator1", "annotator2"),
     ("annotator1", "gemini_key"),
@@ -41,6 +43,13 @@ HEATMAP_CMAP = LinearSegmentedColormap.from_list(
         (1.00, "#1f5d4e"),
     ],
 )
+
+
+def _repo_rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path)
 
 
 def get_task1_quality(source: str, row: Dict[str, Any]) -> str:
@@ -200,8 +209,8 @@ def compute_bundle_iaa(bundle_dir: Path) -> Dict[str, Any]:
         )
 
     return {
-        "bundle_dir": str(bundle_dir),
-        "manifest_path": str(manifest_path),
+        "bundle_dir": _repo_rel(bundle_dir),
+        "manifest_path": _repo_rel(manifest_path),
         "pair_definitions": [f"{a}__vs__{b}" for a, b in PAIR_SPECS],
         "dimensions": dimensions_report,
         "matrix": matrix,
@@ -453,8 +462,8 @@ def create_task2_confusion(task2_rows: List[Dict[str, Any]], output_path: Path) 
 def build_visualization_report(bundle_dir: Path) -> Dict[str, str]:
     report_dir = bundle_dir / "reports"
     return {
-        "bundle_dir": str(bundle_dir),
-        "heatmap": str(report_dir / "iaa_kappa_heatmap_matrix.png"),
-        "task1_confusion": str(report_dir / "task1_a1_vs_a2_confusion.png"),
-        "task2_confusion": str(report_dir / "task2_a1_vs_a2_confusion.png"),
+        "bundle_dir": _repo_rel(bundle_dir),
+        "heatmap": _repo_rel(report_dir / "iaa_kappa_heatmap_matrix.png"),
+        "task1_confusion": _repo_rel(report_dir / "task1_a1_vs_a2_confusion.png"),
+        "task2_confusion": _repo_rel(report_dir / "task2_a1_vs_a2_confusion.png"),
     }

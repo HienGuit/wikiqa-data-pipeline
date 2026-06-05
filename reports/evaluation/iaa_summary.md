@@ -1,6 +1,6 @@
 # IAA Summary
 
-Bundle: `D:\wikiqa-data-pipeline\data\processed\datasets\human_verification_bundle_external_gemini_20260605`
+Bundle: `data/processed/datasets/human_verification_bundle_external_gemini_20260605`
 
 ## task1_quality_difficulty / quality_band
 

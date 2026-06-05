@@ -4,9 +4,9 @@
 - QA generator: `DeepSeek V4 Flash`
 - External automatic annotator: `Gemini`
 - Rationale: Gemini is used as the external annotator because it is separate from the QA generation model.
-- Labels produced by DeepSeek for evaluation are excluded from the official release pipeline to avoid same-model evaluation bias.
-- Canonical judged source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl` (8,314 rows)
-- Canonical judged, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl` (8,005 rows)
+- Official annotation labels come from Gemini and are audited with human verification.
+- Gemini-annotated source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl` (8,314 rows)
+- Gemini-annotated, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl` (8,005 rows)
 
 ## Release Datasets
 - Public final dataset: `data/processed/datasets/qa_pairs_three_way_ready.jsonl` (7,592 rows)
@@ -39,8 +39,8 @@
 - Active other feature group: `question_type`
 - Active other feature group: `answer_type`
 - Active other feature group: `popularity_source`
-- Excluded phase-1 feature: `wiki_level` because Excluded because crawl depth is not reliably preserved in the current raw metadata and would require a separate taxonomy-recovery pass.
-- Excluded phase-1 feature: `linked_entities` because Excluded because API coverage and stability were not strong enough for the final phase-1 feature set.
+- Excluded phase-1 feature: `wiki_level`: Excluded because crawl depth is not reliably preserved in the current raw metadata and would require a separate taxonomy-recovery pass.
+- Excluded phase-1 feature: `linked_entities`: Excluded because API coverage and stability were not strong enough for the final phase-1 feature set.
 
 ## EDA and Human Verification
 - EDA1 final: `eda/figures/02_qa_dataset_eda/`
