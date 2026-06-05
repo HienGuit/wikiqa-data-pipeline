@@ -1,5 +1,5 @@
 {
-  "input_path": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_ready.jsonl",
+  "input_path": "data/processed/datasets/qa_pairs_three_way_ready.jsonl",
   "validated_rows": 7592,
   "invalid_rows": 0,
   "error_counts": {},

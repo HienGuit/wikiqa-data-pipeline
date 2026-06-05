@@ -1,105 +1,90 @@
-# Hướng dẫn đánh giá QA tiếng Việt bằng Bucket Labels
+# Vietnamese QA Bucket Label Guideline
 
-**Phiên bản:** 1.0  
-**Phạm vi sử dụng:** LLM-as-a-Judge và Human Verification  
-**Đối tượng đánh giá:** Cặp câu hỏi - câu trả lời tiếng Việt đã qua rule-based validation  
-**Nhãn chính:** `quality_band`, `difficulty_band`, `inferential_validity_band`
+**Version:** 1.1  
+**Scope:** External Gemini Annotation and Human Verification  
+**Evaluation object:** Vietnamese question-answer pairs that passed rule-based validation  
+**Main labels:** `quality_band`, `difficulty_band`, `inferential_validity_band`
 
-Tài liệu này chuẩn hóa cách đánh giá các mẫu QA tiếng Việt theo bucket labels. Mục tiêu là giảm tính cảm tính trong annotation, thống nhất tiêu chí giữa LLM-as-a-Judge và annotator con người, đồng thời tạo bằng chứng phương pháp luận cho báo cáo xây dựng dữ liệu.
+This guideline standardizes bucket labeling for Vietnamese QA samples. It aligns the external LLM annotator and human annotators on the same rubric, while preserving rule-based validation as the first quality gate.
 
-> Nguyên tắc cốt lõi: rule-based validation chặn lỗi hình thức; bucket labels đánh giá chất lượng ngữ nghĩa và giá trị sử dụng của mẫu.
+In the official pipeline, the external LLM annotator is Gemini. The QA generation model is not used to assign official labels, which avoids same-model evaluation bias.
 
----
+## 1. Task Overview
 
-## 1. Giới thiệu bài toán
+Each sample contains:
 
-Vietnamese Domain WikiQA là bài toán xây dựng và đánh giá các cặp câu hỏi - câu trả lời tiếng Việt dựa trên ngữ cảnh văn bản. Mỗi mẫu gồm một đoạn `context`, một `question` và một `answer` dạng exact span. Nhiệm vụ đánh giá không chỉ kiểm tra mẫu có đúng hình thức hay không, mà còn xác định mẫu có đủ tự nhiên, hữu ích và đúng bản chất suy luận hay không.
+- `context`: source text used as evidence
+- `question`: generated Vietnamese question
+- `answer`: concise answer grounded in the context
+- `reasoning_type`: initial generation mode, usually `extraction` or `multi-sentence`
 
+The goal is to decide whether the QA pair is clear, useful, grounded in the context, and correctly characterized by its reasoning label.
 
----
+## 2. Labels
 
-## 2. Thành phần dữ liệu cần đánh giá
-
-| Thành phần | Ý nghĩa | Vai trò trong đánh giá |
-|---|---|---|
-| `context` | Đoạn văn nguồn dùng để trả lời câu hỏi. | Nguồn duy nhất để kiểm chứng answer và evidence. |
-| `question` | Câu hỏi tiếng Việt được sinh từ context. | Đánh giá độ tự nhiên, độ rõ nghĩa và mức paraphrase. |
-| `answer` | Đáp án dạng exact span trong context. | Phải khớp ngữ nghĩa với question và có thể truy vết. |
-| `reasoning_type` | Kiểu sinh ban đầu: `extraction` hoặc `multi-sentence`. | Quyết định bộ tiêu chí cần chấm. |
-
-
----
-
-## 3. Nhãn đánh giá và phạm vi áp dụng
-
-| Nhãn | Miền giá trị | Áp dụng cho | Mục đích |
+| Label | Values | Applies to | Purpose |
 |---|---|---|---|
-| `quality_band` | `weak` / `usable` / `strong` | Extraction và multi-sentence | Đo chất lượng sử dụng thực tế của cặp QA. |
-| `difficulty_band` | `easy` / `medium` / `hard` | Extraction và multi-sentence | Đo độ khó khi trả lời dựa trên context. |
-| `inferential_validity_band` | `weak` / `usable` / `strong` | Chỉ multi-sentence | Đo xem câu hỏi có thật sự cần nhiều câu hay không. |
+| `quality_band` | `weak`, `usable`, `strong` | all QA samples | Overall QA usefulness and clarity |
+| `difficulty_band` | `easy`, `medium`, `hard` | internal analysis | Difficulty of answering from context |
+| `inferential_validity_band` | `weak`, `usable`, `strong` | multi-sentence samples | Whether multiple sentences are genuinely needed |
 
-Khi phân vân giữa hai bucket, chọn bucket thấp hơn nếu bằng chứng chưa đủ rõ. Quy tắc này giúp nhãn bảo thủ hơn và hạn chế việc đánh giá quá dễ dãi.
+When a case sits between two buckets, choose the lower bucket unless the evidence clearly supports the higher one.
 
----
+## 3. Rule-Based Validation Comes First
 
-## 4. Rule-based validation trước khi chấm bucket
+Bucket labels do not replace deterministic validation. Samples should be rejected or repaired before annotation when they have:
 
-Không dùng bucket labels để thay thế các kiểm tra hình thức. Các lỗi có thể xác định bằng quy tắc phải được loại trước, vì chúng không cần đến đánh giá chủ quan của LLM hoặc annotator.
+- empty, unsupported, or overlong answers
+- questions that reveal the answer or ask for multiple targets
+- evidence spans that do not contain the answer
+- multi-sentence evidence that is actually answerable from one sentence
+- answer type mismatches, such as asking for a duration but giving a single date
 
-| Nhóm lỗi | Mô tả | Hành động |
+## 4. `quality_band`
+
+| Bucket | Definition | Typical signs |
 |---|---|---|
-| Answer không hợp lệ | answer rỗng, không nằm trong context, quá dài hoặc mơ hồ. | Loại mẫu trước khi chấm bucket. |
-| Question không hợp lệ | question quá ngắn, làm lộ answer, dùng cụm “theo đoạn văn”, hoặc hỏi nhiều đáp án. | Loại mẫu hoặc yêu cầu sinh lại. |
-| Evidence không hợp lệ | evidence_span không liên tục, không chứa answer hoặc chỉ gồm một câu với multi-sentence. | Loại khỏi nhóm multi-sentence. |
-| Answer type mismatch | Câu hỏi về khoảng thời gian nhưng answer là ngày tuyệt đối, hoặc số thiếu đơn vị. | Loại hoặc yêu cầu sửa. |
+| `weak` | Formally valid but awkward, unclear, or weakly useful. | Mechanical wording, poor paraphrase, answer does not read naturally with the question |
+| `usable` | Clear, grounded, and usable for training or evaluation. | Understandable question, matching answer, no serious semantic issue |
+| `strong` | Natural, concise, representative, and tightly grounded. | Good paraphrase, independent question, precise answer |
 
----
+Do not assign `strong` only because the topic sounds academic. Focus on the quality of the QA pair.
 
-## 5. Tiêu chí 1: `quality_band`
+## 5. `difficulty_band`
 
-`quality_band` đo chất lượng sử dụng thực tế của mẫu QA sau khi đã qua kiểm tra hình thức. Bucket này không hỏi “mẫu có đúng JSON không”, mà hỏi “mẫu này có đủ rõ, tự nhiên và hữu ích để đưa vào dataset không”.
-
-| Bucket | Định nghĩa | Dấu hiệu nhận biết |
+| Bucket | Definition | Typical signs |
 |---|---|---|
-| `weak` | Mẫu đúng hình thức nhưng còn gượng, paraphrase kém hoặc chưa thuyết phục. | Question máy móc, bám sát câu gốc, answer chưa đủ đẹp khi ghép với question. |
-| `usable` | Mẫu rõ ràng, đúng và dùng được cho huấn luyện hoặc đánh giá. | Question hiểu được ngay, answer khớp nghĩa, không có lỗi ngữ nghĩa đáng kể. |
-| `strong` | Mẫu tự nhiên, gọn, khớp chặt và có thể dùng làm ví dụ tiêu biểu. | Question paraphrase tốt, độc lập, answer chính xác và thuyết phục. |
+| `easy` | The answer is obvious from one sentence or a prominent phrase. | Named entity, date, number, or near-copy question |
+| `medium` | The reader must inspect the context carefully or connect simple clues. | Clear paraphrase, answer is not too obvious, mild distractors |
+| `hard` | The reader must synthesize or reject competing information. | Multiple entities, timelines, distractors, or partially correct alternatives |
 
-Quy tắc phân xử: nếu mẫu đúng nhưng không tự nhiên, không đẩy lên `strong`. Nếu question tự nhiên, không lộ answer và cặp QA gọn đẹp, ưu tiên `strong`.
+`difficulty_band` is a diagnostic/internal label, not a public target label in the final release.
 
----
+## 6. `inferential_validity_band`
 
-## 6. Tiêu chí 2: `difficulty_band`
+This label applies only to multi-sentence samples.
 
-`difficulty_band` đo độ khó thực tế khi trả lời câu hỏi dựa trên context. Không tự động gán multi-sentence là hard, vì có những mẫu multi-sentence chỉ cần nối ý rất trực tiếp.
-
-| Bucket | Định nghĩa | Dấu hiệu nhận biết |
+| Bucket | Definition | Sentence removal test |
 |---|---|---|
-| `easy` | Answer lộ hoặc chỉ cần quét một câu là thấy. | Tên riêng, ngày tháng, số liệu nổi bật; question gần câu gốc; không có distractor. |
-| `medium` | Cần đọc kỹ context hoặc đối chiếu hai ý không sâu. | Có paraphrase rõ; answer không quá lộ; có ít yếu tố gây nhiễu. |
-| `hard` | Cần tổng hợp rõ hoặc loại trừ thông tin cạnh tranh. | Nhiều mốc thời gian, nhiều thực thể, distractor, hoặc nhiều thông tin đúng một phần. |
+| `weak` | One sentence is enough, or the second sentence is ornamental. | Removing the extra sentence still leaves a certain answer |
+| `usable` | At least two ideas are needed, but the connection is straightforward. | Removing one sentence lowers confidence but may still allow a guess |
+| `strong` | Multiple sentences are essential. | Removing a key sentence makes the answer unsupported |
 
----
+Use the sentence removal test: hide one evidence sentence at a time and ask whether a careful reader can still answer confidently.
 
-## 7. Tiêu chí 3: `inferential_validity_band`
+## 7. Guidance for External LLM Annotator
 
-`inferential_validity_band` chỉ áp dụng cho mẫu multi-sentence. Tiêu chí này đo xem câu hỏi có thật sự cần kết hợp nhiều câu hay chỉ được gắn nhãn multi-sentence một cách hình thức.
+The external LLM annotator must:
 
-| Bucket | Định nghĩa | Sentence removal test |
-|---|---|---|
-| `weak` | Thực chất một câu là đủ, hoặc câu phụ không thật sự cần thiết. | Bỏ câu phụ vẫn trả lời chắc chắn như cũ. |
-| `usable` | Cần nối ít nhất hai ý, nhưng mối nối còn khá trực tiếp. | Bỏ một câu làm giảm độ chắc chắn nhưng đôi khi vẫn đoán được. |
-| `strong` | Nhiều câu đóng vai trò thiết yếu; thiếu một ý thì không trả lời chắc chắn. | Bỏ câu quan trọng khiến answer không còn được chứng minh đầy đủ. |
+- use only the given context, question, answer, and guideline
+- return only labels from the allowed bucket set
+- avoid inventing labels or adding unsupported assumptions
+- choose the lower bucket when evidence is ambiguous
+- treat multi-sentence validity as an evidence requirement, not just a surface label
 
-**Test thực hành:** tách context thành từng câu, lần lượt che từng câu, rồi kiểm tra liệu người đọc còn trả lời chắc chắn không.
+In the official pipeline, this external annotator is Gemini. Gemini assigns labels independently from the original text evidence and does not inherit labels from the QA generation model.
 
----
-
-## 8. Hướng dẫn cho LLM-as-a-Judge
-
-LLM-as-a-Judge phải đánh giá theo đúng bucket đã định nghĩa, không phát minh thêm nhãn và không suy diễn vượt quá context. Với trường hợp biên, mô hình chọn bucket thấp hơn nếu evidence chưa đủ rõ.
-
-### Output schema đề xuất cho extraction
+### Suggested Output Schema For Extraction
 
 ```json
 {
@@ -108,7 +93,7 @@ LLM-as-a-Judge phải đánh giá theo đúng bucket đã định nghĩa, không
 }
 ```
 
-### Output schema đề xuất cho multi-sentence
+### Suggested Output Schema For Multi-Sentence
 
 ```json
 {
@@ -118,72 +103,30 @@ LLM-as-a-Judge phải đánh giá theo đúng bucket đã định nghĩa, không
 }
 ```
 
-Nguyên tắc chấm: không nâng bucket chỉ vì chủ đề nghe học thuật; luôn hỏi liệu answer có được chứng minh bởi context không; với multi-sentence, luôn kiểm tra câu hỏi có thật sự cần hơn một câu hay không.
+## 8. Guidance For Human Verification
 
----
+Human verification audits the reliability of the rubric and the external annotation pass.
 
-## 9. Hướng dẫn cho human verification
-
-Human verification dùng để kiểm tra tính hợp lý của nhãn do LLM gán, hiệu chỉnh rubric khi phát hiện LLM quá dễ dãi hoặc quá khắt khe, và tạo bằng chứng đánh giá thủ công cho báo cáo.
-
-| Bước | Thao tác | Câu hỏi tự kiểm tra |
+| Step | Action | Check |
 |---|---|---|
-| 1 | Đọc toàn bộ context, question, answer. | Không chấm khi chỉ nhìn question hoặc answer riêng lẻ. |
-| 2 | Gán quality_band. | Question có tự nhiên, rõ nghĩa và khớp answer không? |
-| 3 | Gán difficulty_band. | Answer có lộ không? Có distractor hoặc cần đọc kỹ không? |
-| 4 | Nếu là multi-sentence, gán inferential_validity_band. | Dùng sentence removal test để kiểm tra từng câu chứng cứ. |
+| 1 | Read full context, question, and answer. | Do not label from question or answer alone. |
+| 2 | Assign `quality_band`. | Is the QA pair natural, clear, and grounded? |
+| 3 | Assign `difficulty_band`. | How hard is the answer to find from context? |
+| 4 | For multi-sentence samples, assign `inferential_validity_band`. | Does the question require more than one sentence of evidence? |
 
----
+## 9. Agreement And Calibration
 
-## 10. Inter-Annotator Agreement và calibration
+Before broad use, sampled cases should be labeled independently by two human annotators. Agreement is reported for:
 
-Trước khi human verification diện rộng, cần calibration trên một tập nhỏ gồm cả extraction và multi-sentence. Nhiều annotator chấm độc lập, sau đó so sánh các trường hợp bất đồng để thống nhất cách xử lý case biên.
+- Annotator 1 vs Annotator 2
+- Annotator 1 vs Gemini
+- Annotator 2 vs Gemini
 
-Độ tin cậy giữa annotator được đo bằng Cohen’s Kappa hoặc một chỉ số tương đương. Nếu một dimension có agreement thấp, đó là tín hiệu guideline chưa đủ rõ hoặc nhãn đó là vùng khó cần thảo luận trong phần limitations.
+Low agreement should be discussed as a limitation and used to refine the guideline.
 
-| Giai đoạn | Mục tiêu |
-|---|---|
-| Calibration set | Chọn 15-20 mẫu đại diện, gồm cả dễ, khó và case biên. |
-| Independent annotation | Annotator chấm độc lập, không thảo luận trong lúc chấm. |
-| Disagreement review | Ghi lại trường hợp lệch nhãn và lý do. |
-| Guideline update | Bổ sung quy tắc phân xử nếu phát hiện định nghĩa chưa rõ. |
+## 10. Pipeline Use
 
----
-
-## 11. Khuyến nghị sử dụng bucket trong pipeline
-
-- Dùng `quality_band` làm tín hiệu chính để giữ hoặc ưu tiên mẫu.
-- Dùng `difficulty_band` làm metadata cho EDA và phân tích độ khó, không nên dùng làm tiêu chí loại mặc định.
-- Dùng `inferential_validity_band` để rà lại nhóm multi-sentence và tách các mẫu suy luận yếu sang vùng bridge nếu cần.
-- Giữ các mẫu có `quality_band` là `usable` hoặc `strong`; cân nhắc loại hoặc hạ cấp các mẫu `weak`.
-- Với multi-sentence, ưu tiên các mẫu có `inferential_validity_band` là `usable` hoặc `strong`.
-
----
-
-## Phụ lục A. Prompt rút gọn cho LLM-as-a-Judge
-
-### A.1. Extraction judge
-
-```text
-Bạn là chuyên gia đánh giá QA tiếng Việt.
-Hãy gán bucket cho mẫu extraction theo hai tiêu chí:
-- quality_band: weak | usable | strong
-- difficulty_band: easy | medium | hard
-
-Chỉ trả về JSON đúng schema:
-{"quality_band":"...","difficulty_band":"..."}
-```
-
-### A.2. Multi-sentence judge
-
-```text
-Bạn là chuyên gia đánh giá QA tiếng Việt.
-Hãy gán bucket cho mẫu multi-sentence theo ba tiêu chí:
-- quality_band: weak | usable | strong
-- difficulty_band: easy | medium | hard
-- inferential_validity_band: weak | usable | strong
-
-Luôn tự hỏi: câu hỏi có thật sự cần hơn một câu để trả lời không?
-Chỉ trả về JSON đúng schema:
-{"quality_band":"...","difficulty_band":"...","inferential_validity_band":"..."}
-```
+- Use `quality_band` as the main signal for retaining or prioritizing samples.
+- Use `difficulty_band` for diagnostics and EDA.
+- Use `inferential_validity_band` to review multi-sentence samples and map weak inference cases into `bridge` when appropriate.
+- Prefer `usable` and `strong`; inspect or downgrade `weak` cases.

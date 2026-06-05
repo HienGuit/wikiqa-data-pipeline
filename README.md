@@ -34,9 +34,9 @@ This repository builds a Vietnamese question-answering dataset from Vietnamese W
 - `inferential_validity_band`
 
 ### Final Splits
-- Train split: `data/final/train.jsonl`
-- Validation split: `data/final/val.jsonl`
-- Test split: `data/final/test.jsonl`
+- Train split: `data/final/train.jsonl` (`6,074` rows)
+- Validation split: `data/final/val.jsonl` (`759` rows)
+- Test split: `data/final/test.jsonl` (`759` rows)
 - Final feature matrix: `data/final/feature_matrix_final.csv`
 
 ### Internal Analysis Source
@@ -173,12 +173,29 @@ python scripts/features/build_feature_matrix.py
 python eda/scripts/build_feature_engineering_eda.py
 ```
 
-### 5. Rebuild provenance and release metadata
+### 5. Rebuild human verification and IAA reports
+Human annotation exports are not tracked publicly because they may contain annotator metadata. To rebuild the redacted external-Gemini verification bundle, provide local annotation export paths:
+
+```bash
+python scripts/qa/build_human_verification_bundle.py \
+  --task1-export path/to/task1_export.json \
+  --task2-annotator1 path/to/task2_annotator1.jsonl \
+  --task2-annotator2 path/to/task2_annotator2.jsonl
+
+python scripts/qa/compute_iaa.py
+python scripts/qa/visualize_iaa.py
+python scripts/qa/build_release_metadata.py
+python scripts/qa/sync_repo_reports.py
+```
+
+The public tracked reports are redacted and contain only repository-relative paths or `external_annotation_export_redacted`.
+
+### 6. Rebuild provenance and release metadata
 ```bash
 python scripts/qa/build_release_metadata.py
 ```
 
-### 6. Sync GitHub-tracked final reports
+### 7. Sync GitHub-tracked final reports
 ```bash
 python scripts/qa/sync_repo_reports.py
 ```

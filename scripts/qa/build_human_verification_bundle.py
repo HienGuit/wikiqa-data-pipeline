@@ -68,7 +68,8 @@ def _redact_task1_export_meta(meta: dict) -> dict:
 def build_manifest(report: dict) -> dict:
     return {
         "bundle_name": BUNDLE_DIR.name,
-        "version": "2026-06-02",
+        "bundle_version": "2026-06-05",
+        "source_annotation_version": "2026-06-02",
         "structure": {
             "tasks": {"task1": "tasks/task1.json", "task2": "tasks/task2.json"},
             "keys": {

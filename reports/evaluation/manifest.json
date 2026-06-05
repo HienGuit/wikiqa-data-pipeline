@@ -1,6 +1,7 @@
 {
   "bundle_name": "human_verification_bundle_external_gemini_20260605",
-  "version": "2026-06-02",
+  "bundle_version": "2026-06-05",
+  "source_annotation_version": "2026-06-02",
   "structure": {
     "tasks": {
       "task1": "tasks/task1.json",

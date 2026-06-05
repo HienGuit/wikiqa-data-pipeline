@@ -19,6 +19,12 @@ Each line is a JSON object for one question-answer pair.
 | `quality_band` | string | QA quality label assigned by the external Gemini annotation pass and audited with human verification. | `strong`, `usable`, `weak` |
 | `inferential_validity_band` | string | Multi-sentence inference validity label assigned by the external Gemini annotation pass and audited with human verification. | `strong`, `usable`, `weak` |
 
+### Label Reliability Note
+
+`quality_band` and `inferential_validity_band` are external Gemini annotations audited on a sampled human-verification set. They should be interpreted as controlled metadata labels rather than absolute ground-truth labels. Human-human agreement and human-Gemini agreement are reported in `reports/evaluation/iaa_summary.md`.
+
+`difficulty_band` is retained only in internal analysis artifacts because it is a subjective diagnostic signal and is not used as a public target label in the final release.
+
 ## Internal Analysis Fields
 
 These fields may appear in internal processed datasets but are not all public target labels.

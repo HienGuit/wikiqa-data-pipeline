@@ -1,9 +1,9 @@
 {
-  "release_dataset": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_ready.jsonl",
-  "analysis_dataset": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_analysis.jsonl",
-  "judged_dataset": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_context_cleaned.jsonl",
-  "figure_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\02_qa_dataset_eda\\figures",
-  "table_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\02_qa_dataset_eda\\tables",
+  "release_dataset": "data/processed/datasets/qa_pairs_three_way_ready.jsonl",
+  "analysis_dataset": "data/processed/datasets/qa_pairs_three_way_analysis.jsonl",
+  "gemini_annotated_dataset": "data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl",
+  "figure_dir": "eda/figures/02_qa_dataset_eda/figures",
+  "table_dir": "eda/figures/02_qa_dataset_eda/tables",
   "figures": [
     "01_reasoning_bucket_distribution.png",
     "02_domain_distribution.png",
@@ -20,7 +20,7 @@
   "summary_markdown": "eda_summary.md",
   "notes": {
     "overview_charts_source": "Internal three-way analysis dataset with legacy difficulty labels retained for diagnostics",
-    "public_release_path": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_ready.jsonl",
+    "public_release_path": "data/processed/datasets/qa_pairs_three_way_ready.jsonl",
     "quality_diagnostic_charts_source": "Full judged pool before weak-quality filtering",
     "difficulty_note": "The hard band is extremely sparse (n=5) in the final release dataset and is therefore interpreted cautiously.",
     "answer_type_note": "Answer-type analysis has been moved to the feature-engineering EDA stage."

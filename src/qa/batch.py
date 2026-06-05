@@ -911,7 +911,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     judge.add_argument(
         "--api-key", default="", help="API key. Defaults to OPENROUTER_API_KEY."
     )
-    judge.add_argument("--model", default=DEFAULT_OPENROUTER_MODEL, help="External judge model name.")
+    judge.add_argument("--model", default=DEFAULT_OPENROUTER_MODEL, help="External annotator model name.")
     judge.add_argument("--base-url", default=DEFAULT_OPENROUTER_BASE_URL, help="OpenRouter-compatible base URL.")
     judge.add_argument(
         "--service-tier",

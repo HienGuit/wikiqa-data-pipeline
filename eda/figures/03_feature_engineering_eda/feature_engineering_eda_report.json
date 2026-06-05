@@ -1,7 +1,7 @@
 {
-  "input": "D:\\wikiqa-data-pipeline\\data\\processed\\features\\feature_matrix_full.csv",
-  "figure_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda\\figures",
-  "table_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda\\tables",
+  "input": "data/processed/features/feature_matrix_full.csv",
+  "figure_dir": "eda/figures/03_feature_engineering_eda/figures",
+  "table_dir": "eda/figures/03_feature_engineering_eda/tables",
   "figures": [
     "01_knowledge_difficulty_distribution.png",
     "02_answer_type_distribution.png",
