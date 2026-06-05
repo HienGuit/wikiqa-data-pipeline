@@ -23,7 +23,7 @@
     {
       "source": "data/processed/reports/qa/qa_three_way_final_validation_report.json",
       "destination": "reports/release/qa_three_way_final_validation_report.json",
-      "size_bytes": 230
+      "size_bytes": 203
     }
   ],
   "evaluation": [

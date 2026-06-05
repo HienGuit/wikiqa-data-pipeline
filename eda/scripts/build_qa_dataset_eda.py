@@ -36,6 +36,13 @@ REPORT_PATH = OUTPUT_DIR / "eda_report.json"
 SUMMARY_MD = OUTPUT_DIR / "eda_summary.md"
 
 
+def repo_rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path)
+
+
 def percent_table(df: pd.DataFrame, index: str, columns: str, *, column_order: list[str]) -> pd.DataFrame:
     table = pd.crosstab(df[index], df[columns], normalize="index")
     return table.reindex(columns=column_order, fill_value=0.0)
@@ -285,13 +292,13 @@ def build_summary_markdown(
         "",
         "## Dataset Scope",
         f"- Public final release dataset: `{len(release_df):,}` QA pairs mirrored from the analysis source `qa_pairs_three_way_analysis.jsonl` into `qa_pairs_three_way_ready.jsonl`.",
-        f"- Judge-diagnostic dataset: `{len(judged_df):,}` QA pairs from `qa_pairs_canonical_judged_context_cleaned.jsonl`.",
+        f"- External-Gemini diagnostic dataset: `{len(judged_df):,}` QA pairs from `qa_pairs_canonical_judged_context_cleaned.jsonl`.",
         "",
         "## Key Findings",
         f"- Extraction remains the dominant bucket ({reason_share['extraction']:.1f}%), while bridge ({reason_share['bridge']:.1f}%) captures the transitional reasoning region between literal extraction and fully multi-sentence inference ({reason_share['multi-sentence']:.1f}%).",
-        f"- Multi-sentence QA has a markedly higher weak-quality share than extraction in the full judged pool ({weak_multi:.1f}% vs {weak_extraction:.1f}%), supporting the decision to apply stricter human verification to inferential content.",
+        f"- Multi-sentence QA has a markedly higher weak-quality share than extraction in the full Gemini-annotated pool ({weak_multi:.1f}% vs {weak_extraction:.1f}%), supporting the decision to apply stricter human verification to inferential content.",
         f"- Within this final three-way release, the combined medium+hard share is {((medium_hard.loc['extraction', 'medium'] + medium_hard.loc['extraction', 'hard']) * 100):.1f}% for extraction, {((medium_hard.loc['bridge', 'medium'] + medium_hard.loc['bridge', 'hard']) * 100):.1f}% for bridge, and {((medium_hard.loc['multi-sentence', 'medium'] + medium_hard.loc['multi-sentence', 'hard']) * 100):.1f}% for multi-sentence. This reflects the current release composition rather than a universal claim about all inferential QA.",
-        f"- `{weakest_domain}` shows the highest weak-quality proportion in the full judged pool and should therefore be discussed explicitly in the limitations section.",
+        f"- `{weakest_domain}` shows the highest weak-quality proportion in the full Gemini-annotated pool and should therefore be discussed explicitly in the limitations section.",
         "",
         "## Outputs",
     ]
@@ -357,7 +364,7 @@ def main() -> None:
         draw_stacked_bar(
             quality_reasoning,
             color_map=COLOR_QUALITY,
-            title="Quality Band by Reasoning Type (Full Judged Pool)",
+            title="Quality Band by Reasoning Type (Full Gemini-Annotated Pool)",
             xlabel="Reasoning type",
             ylabel="Proportion of QA pairs",
             filename="05_quality_reasoning_stacked.png",
@@ -377,7 +384,7 @@ def main() -> None:
         draw_stacked_bar(
             quality_domain,
             color_map=COLOR_QUALITY,
-            title="Quality Band by Domain (Full Judged Pool)",
+            title="Quality Band by Domain (Full Gemini-Annotated Pool)",
             xlabel="Domain",
             ylabel="Proportion of QA pairs",
             filename="06_quality_domain_stacked.png",
@@ -397,23 +404,24 @@ def main() -> None:
     build_summary_markdown(release_df, judged_df, figures, table_md)
 
     report = {
-        "release_dataset": str(QA_THREE_WAY_READY),
-        "analysis_dataset": str(QA_THREE_WAY_ANALYSIS),
-        "judged_dataset": str(QA_CANONICAL_JUDGED_CONTEXT_CLEANED),
-        "figure_dir": str(FIGURE_DIR),
-        "table_dir": str(TABLE_DIR),
+        "release_dataset": repo_rel(QA_THREE_WAY_READY),
+        "analysis_dataset": repo_rel(QA_THREE_WAY_ANALYSIS),
+        "gemini_annotated_dataset": repo_rel(QA_CANONICAL_JUDGED_CONTEXT_CLEANED),
+        "figure_dir": repo_rel(FIGURE_DIR),
+        "table_dir": repo_rel(TABLE_DIR),
         "figures": figures,
+        "vector_figures": [name.replace(".png", ".pdf") for name in figures],
         "tables": {"csv": table_csv, "markdown": table_md},
         "summary_markdown": SUMMARY_MD.name,
         "notes": {
             "overview_charts_source": "Internal three-way analysis dataset with legacy difficulty labels retained for diagnostics",
-            "public_release_path": str(QA_THREE_WAY_READY),
-            "quality_diagnostic_charts_source": "Full judged pool before weak-quality filtering",
+            "public_release_path": repo_rel(QA_THREE_WAY_READY),
+            "quality_diagnostic_charts_source": "Full Gemini-annotated pool before weak-quality filtering",
             "difficulty_note": "The hard band is extremely sparse (n=5) in the final release dataset and is therefore interpreted cautiously.",
             "answer_type_note": "Answer-type analysis has been moved to the feature-engineering EDA stage.",
         },
     }
-    REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
 

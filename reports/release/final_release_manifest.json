@@ -92,11 +92,11 @@
   "eda": {
     "eda1_dir": "eda/figures/02_qa_dataset_eda",
     "eda1_report": "eda/figures/02_qa_dataset_eda/eda_report.json",
-    "eda1_timestamp": "2026-06-03T10:41:32+07:00",
+    "eda1_timestamp": "2026-06-06T02:11:29+07:00",
     "eda1_figure_count": 7,
     "eda2_dir": "eda/figures/03_feature_engineering_eda",
     "eda2_report": "eda/figures/03_feature_engineering_eda/feature_engineering_eda_report.json",
-    "eda2_timestamp": "2026-06-02T17:35:05+07:00",
+    "eda2_timestamp": "2026-06-06T02:11:34+07:00",
     "eda2_figure_count": 6
   },
   "human_verification": {
@@ -110,6 +110,6 @@
     "analysis_source_dataset": "2026-06-02T17:13:37+07:00",
     "feature_matrix_full": "2026-06-02T17:51:52+07:00",
     "feature_matrix_final": "2026-06-02T17:51:53+07:00",
-    "manifest_built_at": "2026-06-06T01:13:21+07:00"
+    "manifest_built_at": "2026-06-06T02:11:37+07:00"
   }
 }

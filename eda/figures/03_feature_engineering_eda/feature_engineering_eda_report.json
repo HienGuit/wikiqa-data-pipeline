@@ -10,6 +10,14 @@
     "05_structural_boxplots_by_reasoning.png",
     "07_feature_correlation_heatmap.png"
   ],
+  "vector_figures": [
+    "01_knowledge_difficulty_distribution.pdf",
+    "02_answer_type_distribution.pdf",
+    "03_popularity_source_distribution.pdf",
+    "04_question_type_distribution.pdf",
+    "05_structural_boxplots_by_reasoning.pdf",
+    "07_feature_correlation_heatmap.pdf"
+  ],
   "tables": {
     "csv": "multicollinearity_pairs.csv",
     "markdown": "multicollinearity_pairs.md"

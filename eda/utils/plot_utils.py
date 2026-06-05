@@ -7,7 +7,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 PALETTE = "tab10"
-DPI = 150
+DPI = 300
 FIGSIZE_DEFAULT = (10, 5)
 FIGSIZE_WIDE = (14, 5)
 COLOR_REASONING = {
@@ -51,11 +51,18 @@ def apply_publication_style() -> None:
 
 
 def save_fig(fig, fig_dir: Path, filename: str, *, close: bool = False, show: bool = False) -> None:
-    """Save a figure, creating the target directory if needed."""
+    """Save a figure as PNG and PDF, creating the target directory if needed."""
 
     fig_dir.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()
-    fig.savefig(fig_dir / filename, dpi=DPI, bbox_inches="tight")
+
+    png_path = fig_dir / filename
+    fig.savefig(png_path, dpi=DPI, bbox_inches="tight")
+
+    if filename.endswith(".png"):
+        pdf_path = fig_dir / filename.replace(".png", ".pdf")
+        fig.savefig(pdf_path, bbox_inches="tight")
+
     if show:
         plt.show()
     if close:

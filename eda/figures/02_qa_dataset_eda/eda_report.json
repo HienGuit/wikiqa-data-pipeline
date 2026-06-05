@@ -13,6 +13,15 @@
     "06_quality_domain_stacked.png",
     "07_length_by_reasoning_boxplots.png"
   ],
+  "vector_figures": [
+    "01_reasoning_bucket_distribution.pdf",
+    "02_domain_distribution.pdf",
+    "03_reasoning_difficulty_heatmap.pdf",
+    "04_domain_reasoning_stacked.pdf",
+    "05_quality_reasoning_stacked.pdf",
+    "06_quality_domain_stacked.pdf",
+    "07_length_by_reasoning_boxplots.pdf"
+  ],
   "tables": {
     "csv": "text_length_statistics.csv",
     "markdown": "text_length_statistics.md"
@@ -21,7 +30,7 @@
   "notes": {
     "overview_charts_source": "Internal three-way analysis dataset with legacy difficulty labels retained for diagnostics",
     "public_release_path": "data/processed/datasets/qa_pairs_three_way_ready.jsonl",
-    "quality_diagnostic_charts_source": "Full judged pool before weak-quality filtering",
+    "quality_diagnostic_charts_source": "Full Gemini-annotated pool before weak-quality filtering",
     "difficulty_note": "The hard band is extremely sparse (n=5) in the final release dataset and is therefore interpreted cautiously.",
     "answer_type_note": "Answer-type analysis has been moved to the feature-engineering EDA stage."
   }

@@ -23,6 +23,13 @@ from src.qa.release_validation import validate_release_row  # noqa: E402
 ALLOWED_FINAL_BUCKETS = {"extraction", "bridge", "multi-sentence"}
 
 
+def repo_rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path)
+
+
 def load_jsonl(path: Path) -> List[Dict[str, Any]]:
     with path.open("r", encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
@@ -81,14 +88,14 @@ def main() -> None:
         write_jsonl(invalid_output, invalid_rows)
 
     report = {
-        "input_path": str(input_path),
+        "input_path": repo_rel(input_path),
         "validated_rows": len(rows),
         "invalid_rows": len(invalid_rows),
         "error_counts": dict(sorted(error_counts.items())),
-        "invalid_output_path": str(invalid_output) if invalid_output is not None else "",
+        "invalid_output_path": repo_rel(invalid_output) if invalid_output is not None else "",
         "status": "pass" if not invalid_rows else "fail",
     }
-    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
     if invalid_rows:

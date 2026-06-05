@@ -24,6 +24,13 @@ from src.config import (  # noqa: E402
 )
 
 
+def repo_rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build EDA for the feature matrix.")
     parser.add_argument("--input", default=str(FEATURE_MATRIX_FULL))
@@ -203,10 +210,11 @@ def main() -> None:
     build_summary(df, figures, multicol_csv, summary_md)
 
     report = {
-        "input": str(args.input),
-        "figure_dir": str(figure_dir),
-        "table_dir": str(table_dir),
+        "input": repo_rel(Path(args.input)),
+        "figure_dir": repo_rel(figure_dir),
+        "table_dir": repo_rel(table_dir),
         "figures": figures,
+        "vector_figures": [name.replace(".png", ".pdf") for name in figures],
         "tables": {"csv": multicol_csv, "markdown": multicol_md},
         "summary_markdown": summary_md.name,
         "notes": {
@@ -231,7 +239,7 @@ def main() -> None:
             ],
         },
     }
-    Path(args.report).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    Path(args.report).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
 
