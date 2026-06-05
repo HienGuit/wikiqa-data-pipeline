@@ -135,13 +135,11 @@ def validate_bundle_alignment(
     label: str,
     task_rows: List[Dict[str, Any]],
     gemini_key_rows: List[Dict[str, Any]],
-    deepseek_key_rows: List[Dict[str, Any]],
     annotator1_rows: List[Dict[str, Any]],
     annotator2_rows: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
     task_ids = sample_id_set(task_rows)
     gemini_ids = sample_id_set(gemini_key_rows)
-    deepseek_ids = sample_id_set(deepseek_key_rows)
     annotator1_ids = sample_id_set(annotator1_rows)
     annotator2_ids = sample_id_set(annotator2_rows)
 
@@ -149,12 +147,10 @@ def validate_bundle_alignment(
         "task": label,
         "task_rows": len(task_rows),
         "gemini_key_rows": len(gemini_key_rows),
-        "deepseek_key_rows": len(deepseek_key_rows),
         "annotator1_rows": len(annotator1_rows),
         "annotator2_rows": len(annotator2_rows),
-        "all_ids_match": task_ids == gemini_ids == deepseek_ids == annotator1_ids == annotator2_ids,
+        "all_ids_match": task_ids == gemini_ids == annotator1_ids == annotator2_ids,
         "missing_in_gemini_key": sorted(task_ids - gemini_ids),
-        "missing_in_deepseek_key": sorted(task_ids - deepseek_ids),
         "missing_in_annotator1": sorted(task_ids - annotator1_ids),
         "missing_in_annotator2": sorted(task_ids - annotator2_ids),
     }
@@ -212,12 +208,10 @@ def build_combined_task1_rows(
     *,
     task_rows: List[Dict[str, Any]],
     gemini_key_rows: List[Dict[str, Any]],
-    deepseek_key_rows: List[Dict[str, Any]],
     annotator1_rows: List[Dict[str, Any]],
     annotator2_rows: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
     gemini_by_id = rows_by_sample_id(gemini_key_rows)
-    deepseek_by_id = rows_by_sample_id(deepseek_key_rows)
     annotator1_by_id = rows_by_sample_id(annotator1_rows)
     annotator2_by_id = rows_by_sample_id(annotator2_rows)
 
@@ -225,7 +219,6 @@ def build_combined_task1_rows(
         {
             **strip_task_payload_fields(row),
             "gemini_key": strip_task1_key_fields(gemini_by_id[str(row.get("sample_id", ""))]),
-            "deepseek_key": strip_task1_key_fields(deepseek_by_id[str(row.get("sample_id", ""))]),
             "annotator1": strip_task1_annotation_fields(annotator1_by_id[str(row.get("sample_id", ""))]),
             "annotator2": strip_task1_annotation_fields(annotator2_by_id[str(row.get("sample_id", ""))]),
         }
@@ -237,12 +230,10 @@ def build_combined_task2_rows(
     *,
     task_rows: List[Dict[str, Any]],
     gemini_key_rows: List[Dict[str, Any]],
-    deepseek_key_rows: List[Dict[str, Any]],
     annotator1_rows: List[Dict[str, Any]],
     annotator2_rows: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
     gemini_by_id = rows_by_sample_id(gemini_key_rows)
-    deepseek_by_id = rows_by_sample_id(deepseek_key_rows)
     annotator1_by_id = rows_by_sample_id(annotator1_rows)
     annotator2_by_id = rows_by_sample_id(annotator2_rows)
 
@@ -250,7 +241,6 @@ def build_combined_task2_rows(
         {
             **strip_task_payload_fields(row),
             "gemini_key": strip_task2_key_fields(gemini_by_id[str(row.get("sample_id", ""))]),
-            "deepseek_key": strip_task2_key_fields(deepseek_by_id[str(row.get("sample_id", ""))]),
             "annotator1": strip_task2_annotation_fields(annotator1_by_id[str(row.get("sample_id", ""))]),
             "annotator2": strip_task2_annotation_fields(annotator2_by_id[str(row.get("sample_id", ""))]),
         }

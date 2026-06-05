@@ -1,6 +1,6 @@
 {
-  "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602",
-  "heatmap": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\iaa_kappa_heatmap_matrix.png",
-  "task1_confusion": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\task1_a1_vs_a2_confusion.png",
-  "task2_confusion": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\task2_a1_vs_a2_confusion.png"
+  "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605",
+  "heatmap": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\iaa_kappa_heatmap_matrix.png",
+  "task1_confusion": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\task1_a1_vs_a2_confusion.png",
+  "task2_confusion": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\task2_a1_vs_a2_confusion.png"
 }

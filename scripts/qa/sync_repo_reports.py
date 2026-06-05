@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 INTERNAL_QA_REPORTS = ROOT / "data" / "processed" / "reports" / "qa"
-INTERNAL_HV_BUNDLE = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_20260602"
+INTERNAL_HV_BUNDLE = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_external_gemini_20260605"
 
 TRACKED_REPORTS = ROOT / "reports"
 TRACKED_QA_RELEASE = TRACKED_REPORTS / "release"
@@ -21,8 +21,6 @@ QA_RELEASE_FILES = [
     "feature_phase1_provenance.json",
     "feature_phase1_provenance.md",
     "qa_three_way_final_validation_report.json",
-    "qa_judge_canonical_promotion_report.json",
-    "qa_judge_provenance_report.json",
 ]
 
 HUMAN_VERIFICATION_FILES = [
@@ -34,10 +32,6 @@ HUMAN_VERIFICATION_FILES = [
     ("iaa_kappa_heatmap_matrix.png", INTERNAL_HV_BUNDLE / "reports" / "iaa_kappa_heatmap_matrix.png"),
     ("task1_a1_vs_a2_confusion.png", INTERNAL_HV_BUNDLE / "reports" / "task1_a1_vs_a2_confusion.png"),
     ("task2_a1_vs_a2_confusion.png", INTERNAL_HV_BUNDLE / "reports" / "task2_a1_vs_a2_confusion.png"),
-    ("full_llm_agreement_report.json", INTERNAL_QA_REPORTS / "full_llm_agreement_report.json"),
-    ("full_llm_agreement_report.md", INTERNAL_QA_REPORTS / "full_llm_agreement_report.md"),
-    ("full_llm_agreement_overview.png", INTERNAL_QA_REPORTS / "full_llm_agreement_overview.png"),
-    ("full_llm_agreement_visualization_report.json", INTERNAL_QA_REPORTS / "full_llm_agreement_visualization_report.json"),
 ]
 
 
@@ -77,19 +71,16 @@ This folder contains the GitHub-tracked evaluation artifacts for the QA release.
 
 - `manifest.json`: machine-readable manifest for the human-verification bundle
 - `assembly_report.json`: bundle provenance and alignment checks
-- `iaa_summary.json` / `iaa_summary.md`: human-verification inter-annotator agreement summary
+- `iaa_summary.json` / `iaa_summary.md`: human-verification and external-Gemini agreement summary
 - `iaa_visualization_report.json`: metadata for the IAA figures
-- `iaa_kappa_heatmap_matrix.png`: pairwise kappa heatmap for A1, A2, Gemini, and DeepSeek
-- `task1_a1_vs_a2_confusion.png`: Task 1 confusion matrices
-- `task2_a1_vs_a2_confusion.png`: Task 2 confusion matrix
-- `full_llm_agreement_report.json` / `full_llm_agreement_report.md`: Gemini vs DeepSeek agreement on the full shared judged population
-- `full_llm_agreement_overview.png`: compact visualization of full-population observed agreement and Cohen's kappa
-- `full_llm_agreement_visualization_report.json`: metadata for the full-population agreement visualization
+- `iaa_kappa_heatmap_matrix.png`: pairwise kappa heatmap for Annotator 1, Annotator 2, and Gemini
+- `task1_a1_vs_a2_confusion.png`: Task 1 human-human confusion matrices
+- `task2_a1_vs_a2_confusion.png`: Task 2 human-human confusion matrix
 
 ## Notes
 
-- Human-verification artifacts are derived from the internal bundle under `data/processed/datasets/human_verification_bundle_20260602/`.
-- Full-population LLM agreement is derived from the shared rows between the cleaned Gemini and DeepSeek judged datasets.
+- Human-verification artifacts are derived from the external-Gemini human-verification bundle.
+- Evaluation artifacts include only human annotator and external Gemini agreement outputs.
 """
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(content, encoding="utf-8")

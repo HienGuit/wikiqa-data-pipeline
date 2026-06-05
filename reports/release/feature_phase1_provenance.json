@@ -89,7 +89,7 @@
     "linked_entities": "Excluded because API coverage and stability were not strong enough for the final phase-1 feature set."
   },
   "timestamps": {
-    "feature_matrix_full": "2026-06-02T17:17:36+07:00",
-    "feature_matrix_final": "2026-06-02T17:35:05+07:00"
+    "feature_matrix_full": "2026-06-02T17:51:52+07:00",
+    "feature_matrix_final": "2026-06-02T17:51:53+07:00"
   }
 }

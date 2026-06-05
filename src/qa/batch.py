@@ -26,7 +26,7 @@ from src.config import (
 )
 from src.qa.generator import QAGenerator
 from src.qa.prompts import UNIFIED_JUDGE_FEW_SHOT, UNIFIED_JUDGE_SYSTEM_PROMPT, UNIFIED_JUDGE_USER_TEMPLATE
-from src.qa.provider import DeepSeekJSONProvider, OpenRouterJSONProvider
+from src.qa.provider import OpenRouterJSONProvider
 from src.qa.validators import validate_succinct_context
 
 REQUIRED_FIELDS = ("chunk_id", "title", "domain", "text")
@@ -275,33 +275,23 @@ def build_judge_prompt(row: Dict[str, Any]) -> Tuple[str, str]:
 
 
 def resolve_judge_api_key(args: argparse.Namespace) -> str:
-    env_name = "OPENROUTER_API_KEY" if args.provider == "openrouter" else "DEEPSEEK_API_KEY"
-    return ensure_api_key(args.api_key, env_name)
+    return ensure_api_key(args.api_key, "OPENROUTER_API_KEY")
 
 
 def resolve_judge_model(args: argparse.Namespace) -> str:
-    if args.provider == "openrouter" and args.model == DEFAULT_DEEPSEEK_MODEL:
-        return DEFAULT_OPENROUTER_MODEL
-    return args.model
+    return args.model or DEFAULT_OPENROUTER_MODEL
 
 
 def build_judge_provider(args: argparse.Namespace):
-    if args.provider == "openrouter":
-        return OpenRouterJSONProvider(
-            api_key=args.api_key,
-            model_name=args.model,
-            rpm_limit=args.rpm_limit,
-            timeout=args.timeout,
-            base_url=args.base_url,
-            service_tier=args.service_tier,
-            http_referer=args.http_referer,
-            app_title=args.app_title,
-        )
-    return DeepSeekJSONProvider(
+    return OpenRouterJSONProvider(
         api_key=args.api_key,
         model_name=args.model,
         rpm_limit=args.rpm_limit,
         timeout=args.timeout,
+        base_url=args.base_url,
+        service_tier=args.service_tier,
+        http_referer=args.http_referer,
+        app_title=args.app_title,
     )
 
 
@@ -640,14 +630,14 @@ def run_judge(args: argparse.Namespace) -> None:
             print(f"Progress {idx}/{len(shard)} sample(s) | accepted={accepted} | rejected={sum(rejected.values())}")
 
     report = {
-        "mode": "judge",
+        "mode": "external_gemini_annotation",
         "reasoning_filter": args.reasoning_type,
         "shard_index": args.shard_index,
         "shard_size": args.shard_size,
         "sample_count": len(shard),
-        "provider": args.provider,
+        "provider": "openrouter",
         "model": args.model,
-        "service_tier": args.service_tier if args.provider == "openrouter" else None,
+        "service_tier": args.service_tier,
         "rpm_limit": args.rpm_limit,
         "timeout": args.timeout,
         "input_path": str(Path(args.input).resolve()),
@@ -913,15 +903,15 @@ def build_arg_parser() -> argparse.ArgumentParser:
     repair.add_argument("--flush-every", type=int, default=20, help="Flush files every N targets.")
     repair.set_defaults(handler=run_repair_succinct)
 
-    judge = subparsers.add_parser("judge", help="Run LLM-as-judge on generated QA samples.")
+    judge = subparsers.add_parser("judge", help="Run external Gemini annotation on generated QA samples.")
     judge.add_argument("--input", default=str(QA_WITH_TOPUP_ROUND2), help="Accepted QA JSONL input.")
     judge.add_argument(
-        "--provider", choices=["deepseek", "openrouter"], default="deepseek", help="Judge API provider."
+        "--provider", choices=["openrouter"], default="openrouter", help="External judge API provider."
     )
     judge.add_argument(
-        "--api-key", default="", help="API key. Defaults to DEEPSEEK_API_KEY or OPENROUTER_API_KEY by provider."
+        "--api-key", default="", help="API key. Defaults to OPENROUTER_API_KEY."
     )
-    judge.add_argument("--model", default=DEFAULT_DEEPSEEK_MODEL, help="Judge model name.")
+    judge.add_argument("--model", default=DEFAULT_OPENROUTER_MODEL, help="External judge model name.")
     judge.add_argument("--base-url", default=DEFAULT_OPENROUTER_BASE_URL, help="OpenRouter-compatible base URL.")
     judge.add_argument(
         "--service-tier",

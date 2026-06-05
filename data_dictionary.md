@@ -1,59 +1,64 @@
 # Data Dictionary
 
-Tài liệu này mô tả chi tiết schema (cấu trúc dữ liệu) của bộ dữ liệu Vietnamese WikiQA. Bộ dữ liệu bao gồm hai định dạng chính: **Tập dữ liệu hỏi đáp (QA Pairs)** và **Ma trận đặc trưng (Feature Matrix)**.
+This file documents the public Vietnamese WikiQA release files and the final feature matrix.
 
-## 1. QA Pairs (`train.jsonl`, `val.jsonl`, `test.jsonl`)
+## QA Pairs (`train.jsonl`, `val.jsonl`, `test.jsonl`)
 
-Mỗi dòng trong các file `.jsonl` là một object JSON đại diện cho một cặp Hỏi-Đáp kèm theo ngữ cảnh từ Wikipedia Tiếng Việt.
+Each line is a JSON object for one question-answer pair.
 
-| Tên trường | Kiểu dữ liệu | Ý nghĩa | Miền giá trị (Domain) |
+| Field | Type | Meaning | Values |
 |---|---|---|---|
-| `chunk_id` | String | ID định danh duy nhất cho đoạn văn (chunk). | Ví dụ: `19794_0` |
-| `domain` | String | Lĩnh vực/Chủ đề của bài viết Wikipedia. | `Kinh te`, `Van hoa`, `Lich su`, `Khoa hoc`, `Dia ly`... |
-| `title` | String | Tựa đề bài viết Wikipedia. | Bất kỳ chuỗi văn bản nào |
-| `section` | String | Tiêu đề của mục con (heading) chứa ngữ cảnh. | Bất kỳ chuỗi văn bản nào |
-| `context` | String | Ngữ cảnh văn bản (Chunk) dùng để trả lời câu hỏi. | Văn bản tiếng Việt, max 500 từ. |
-| `reasoning_type` | String | Loại câu hỏi do mô hình tự quyết định khi sinh. | `extraction`, `bridge`, `multi-sentence` |
-| `question` | String | Câu hỏi tiếng Việt được sinh tự động. | Câu kết thúc bằng dấu `?`. |
-| `answer` | String | Câu trả lời (hoặc trích xuất). Không dài dòng. | Bất kỳ chuỗi văn bản nào. |
-| `is_valid` | Boolean | Trạng thái hợp lệ của cặp QA. | `true`, `false` |
-| `error` | String/Null | Chuỗi mô tả lỗi (nếu sinh bị thất bại hoặc bị lọc). | `null`, `too_short`, `hallucination`,... |
-| `quality_band` | String | Nhãn chất lượng sinh ra từ bước Dual-Judge. | `strong`, `usable`, `weak` |
-| `difficulty_band` | String | Nhãn độ khó của cặp QA sinh ra từ Dual-Judge. | `easy`, `medium`, `hard` |
-| `inferential_validity_band` | String | Mức độ suy luận (liên kết nhiều câu) sinh từ Dual-Judge. | `strong`, `usable`, `weak` |
-| `final_reasoning_bucket` | String | Nhãn phân loại cuối cùng (đã hiệu chỉnh sau bước Judge). | `extraction`, `bridge`, `multi-sentence` |
+| `chunk_id` | string | Unique source chunk identifier. | Example: `19794_0` |
+| `domain` | string | Wikipedia domain/category used during crawl. | `Kinh te`, `Van hoa`, `Lich su`, `Khoa hoc`, `Dia ly`, ... |
+| `title` | string | Wikipedia page title. | Free text |
+| `section` | string | Section heading for the context. | Free text |
+| `context` | string | Text evidence used to answer the question. | Vietnamese text |
+| `question` | string | Generated Vietnamese question. | Free text |
+| `answer` | string | Concise answer grounded in the context. | Free text |
+| `final_reasoning_bucket` | string | Public reasoning category after release mapping. | `extraction`, `bridge`, `multi-sentence` |
+| `quality_band` | string | QA quality label assigned by the external Gemini annotation pass and audited with human verification. | `strong`, `usable`, `weak` |
+| `inferential_validity_band` | string | Multi-sentence inference validity label assigned by the external Gemini annotation pass and audited with human verification. | `strong`, `usable`, `weak` |
 
----
+## Internal Analysis Fields
 
-## 2. Feature Matrix (`feature_matrix_final.csv`)
+These fields may appear in internal processed datasets but are not all public target labels.
 
-Đây là ma trận chứa các đặc trưng số học (Numerical & Categorical Features) được trích xuất từ dữ liệu QA, dùng để phân tích EDA và huấn luyện các mô hình Machine Learning phụ (nếu có).
-
-| Tên trường | Kiểu dữ liệu | Ý nghĩa | Miền giá trị (Domain) |
+| Field | Type | Meaning | Values |
 |---|---|---|---|
-| `row_id` | String | ID định danh duy nhất (tương tự `chunk_id`). | `19794_0` |
-| `chunk_id` | String | ID của đoạn văn Wikipedia. | - |
-| `title` | String | Tựa đề bài viết. | - |
-| `domain` | String | Lĩnh vực bài viết. | - |
-| `section` | String | Mục chứa đoạn văn. | - |
-| `reasoning_type` | String | Loại câu hỏi ban đầu. | `extraction`, `bridge`, `multi-sentence` |
-| `final_reasoning_bucket` | String | Phân loại câu hỏi cuối cùng. | `extraction`, `bridge`, `multi-sentence` |
-| `quality_band` | String | Chất lượng cặp QA. | `strong`, `usable`, `weak` |
-| `difficulty_band` | String | Độ khó cặp QA. | `easy`, `medium`, `hard` |
-| `inferential_validity_band` | String | Mức độ suy luận. | `strong`, `usable`, `weak` |
-| `q_length` | Integer | Độ dài câu hỏi (số lượng từ/token). | $\ge 1$ |
-| `a_length` | Integer | Độ dài câu trả lời (số lượng từ/token). | $\ge 1$ |
-| `ctx_length` | Integer | Độ dài ngữ cảnh (số lượng từ/token). | $\ge 1$ |
-| `ctx_sentence_count` | Integer | Số lượng câu trong ngữ cảnh. | $\ge 1$ |
-| `answer_position_ratio` | Float | Tỷ lệ vị trí của câu trả lời trong ngữ cảnh (0.0 - 1.0). | $[0.0, 1.0]$ |
-| `lexical_overlap_ratio` | Float | Tỷ lệ trùng lặp từ vựng giữa câu hỏi và câu trả lời. | $[0.0, 1.0]$ |
-| `ttr_question` | Float | Type-Token Ratio của câu hỏi (độ đa dạng từ vựng). | $[0.0, 1.0]$ |
-| `question_type` | String | Từ để hỏi phổ biến (`Cái gì`, `Ở đâu`, `Khi nào`...). | Categorical |
-| `answer_type` | String | Phân loại câu trả lời (định danh, số lượng, thời gian). | Categorical |
-| `popularity_source` | String | Nguồn phổ biến (nếu có). | - |
-| `knowledge_difficulty` | Float | Độ khó kiến thức ước tính. | Giá trị thực |
-| `page_views_rank` | Integer | Thứ hạng lượt xem bài viết Wikipedia. | $> 0$ |
-| `wiki_count_rank` | Integer | Thứ hạng mức độ xuất hiện/link nội bộ. | $> 0$ |
-| `statements_rank` | Integer | Thứ hạng số lượng phát biểu (statement) trên Wikidata. | $> 0$ |
+| `reasoning_type` | string | Initial generation mode or intermediate reasoning label. | `extraction`, `multi-sentence`, `bridge` |
+| `difficulty_band` | string | Difficulty label assigned by the external Gemini annotation pass and audited with human verification. | `easy`, `medium`, `hard` |
+| `is_valid` | boolean | Pipeline validation status for generated candidates. | `true`, `false` |
+| `error` | string/null | Pipeline validation or generation error. | Free text or `null` |
 
-> **Lưu ý:** Ma trận đặc trưng này đã được qua bước loại bỏ các đặc trưng đa cộng tuyến (Multicollinearity pruning threshold = 0.80) để đảm bảo chất lượng và tính độc lập của các đặc trưng.
+## Feature Matrix (`feature_matrix_final.csv`)
+
+The final feature matrix contains numerical and categorical features derived from the QA dataset.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `row_id` | string | Feature row identifier, usually aligned with `chunk_id`. |
+| `chunk_id` | string | Source chunk identifier. |
+| `title` | string | Wikipedia page title. |
+| `domain` | string | Wikipedia domain/category. |
+| `section` | string | Section heading. |
+| `reasoning_type` | string | Internal reasoning type. |
+| `final_reasoning_bucket` | string | Public reasoning bucket. |
+| `quality_band` | string | External Gemini quality label audited with human verification. |
+| `difficulty_band` | string | External Gemini difficulty label audited with human verification. |
+| `inferential_validity_band` | string | External Gemini inferential-validity label audited with human verification. |
+| `q_length` | integer | Question length. |
+| `a_length` | integer | Answer length. |
+| `ctx_length` | integer | Context length. |
+| `ctx_sentence_count` | integer | Number of sentences in context. |
+| `answer_position_ratio` | float | Approximate answer position in context. |
+| `lexical_overlap_ratio` | float | Token overlap between question and answer. |
+| `ttr_question` | float | Type-token ratio for the question. |
+| `question_type` | string | Question-form category. |
+| `answer_type` | string | Answer-type category. |
+| `popularity_source` | string | Popularity source category, when available. |
+| `knowledge_difficulty` | float | Estimated knowledge difficulty signal. |
+| `page_views_rank` | integer | Wikipedia page-view rank. |
+| `wiki_count_rank` | integer | Wiki-link or wiki-count rank. |
+| `statements_rank` | integer | Wikidata statement-count rank. |
+
+The final matrix is pruned for multicollinearity before release.

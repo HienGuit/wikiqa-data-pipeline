@@ -16,18 +16,14 @@ from src.qa.human_verification import load_json, write_json, write_text
 PAIR_SPECS = [
     ("annotator1", "annotator2"),
     ("annotator1", "gemini_key"),
-    ("annotator1", "deepseek_key"),
     ("annotator2", "gemini_key"),
-    ("annotator2", "deepseek_key"),
-    ("gemini_key", "deepseek_key"),
 ]
 
-ACTOR_ORDER = ["annotator1", "annotator2", "gemini_key", "deepseek_key"]
+ACTOR_ORDER = ["annotator1", "annotator2", "gemini_key"]
 ACTOR_LABELS = {
     "annotator1": "A1",
     "annotator2": "A2",
     "gemini_key": "Gemini",
-    "deepseek_key": "DeepSeek",
 }
 DIMENSION_TITLES = {
     "quality_band": "Task 1: Quality Band",
@@ -360,11 +356,11 @@ def create_heatmap_figure(summary: Dict[str, Any], output_path: Path) -> None:
     cbar.set_label("Cohen's kappa", rotation=90, labelpad=12)
     cbar.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8])
     cbar.set_ticklabels(["0.0\nPoor", "0.2\nSlight", "0.4\nFair", "0.6\nModerate", "0.8+\nSubstantial"])
-    fig.suptitle("Pairwise Agreement Matrix Across Annotators and Judge Models", fontweight="bold")
+    fig.suptitle("Human Verification and External Gemini Agreement", fontweight="bold")
     fig.text(
         0.5,
         0.02,
-        "Upper-triangular heatmaps summarize Cohen's kappa for A1, A2, Gemini, and DeepSeek across the three evaluation dimensions.",
+        "Upper-triangular heatmaps summarize Cohen's kappa for Annotator 1, Annotator 2, and the external Gemini annotator across the three evaluation dimensions.",
         ha="center",
         fontsize=10,
         color="#444444",

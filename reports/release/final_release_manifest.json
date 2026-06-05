@@ -1,14 +1,14 @@
 {
-  "canonical_judge": {
-    "model": "Gemini",
-    "decision_rationale": "Gemini was promoted as the canonical judge because it aligned more closely with human annotations on Task 1 quality and difficulty, while DeepSeek remains available as a parallel provenance reference.",
+  "external_annotation": {
+    "qa_generator": "DeepSeek V4 Flash",
+    "automatic_annotator": "Gemini",
+    "decision_rationale": "Gemini is used as the external annotator because it is separate from the QA generation model.",
+    "deepseek_label_policy": "Labels produced by DeepSeek for evaluation are excluded from the official release pipeline to avoid same-model evaluation bias.",
     "judged_source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged.jsonl",
     "judged_source_rows": 8314,
     "judged_context_cleaned": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_context_cleaned.jsonl",
     "judged_context_cleaned_rows": 8005,
-    "judged_release_normalized": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_release.jsonl",
-    "parallel_deepseek_source": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_deepseek_v4_flash.jsonl",
-    "parallel_deepseek_context_cleaned": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_deepseek_v4_flash_context_cleaned.jsonl"
+    "judged_release_normalized": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_canonical_judged_release.jsonl"
   },
   "release_datasets": {
     "public_final": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\qa_pairs_three_way_ready.jsonl",
@@ -91,7 +91,7 @@
   "eda": {
     "eda1_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\02_qa_dataset_eda",
     "eda1_report": "D:\\wikiqa-data-pipeline\\eda\\figures\\02_qa_dataset_eda\\eda_report.json",
-    "eda1_timestamp": "2026-06-02T17:35:05+07:00",
+    "eda1_timestamp": "2026-06-03T10:41:32+07:00",
     "eda1_figure_count": 7,
     "eda2_dir": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda",
     "eda2_report": "D:\\wikiqa-data-pipeline\\eda\\figures\\03_feature_engineering_eda\\feature_engineering_eda_report.json",
@@ -99,16 +99,16 @@
     "eda2_figure_count": 6
   },
   "human_verification": {
-    "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602",
+    "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605",
     "task1_rows": 100,
     "task2_rows": 50,
-    "iaa_summary": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\reports\\iaa_summary.md"
+    "iaa_summary": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\reports\\iaa_summary.md"
   },
   "timestamps": {
     "public_final_dataset": "2026-06-02T17:13:37+07:00",
     "analysis_source_dataset": "2026-06-02T17:13:37+07:00",
-    "feature_matrix_full": "2026-06-02T17:17:36+07:00",
-    "feature_matrix_final": "2026-06-02T17:35:05+07:00",
-    "manifest_built_at": "2026-06-02T17:48:10+07:00"
+    "feature_matrix_full": "2026-06-02T17:51:52+07:00",
+    "feature_matrix_final": "2026-06-02T17:51:53+07:00",
+    "manifest_built_at": "2026-06-05T23:57:37+07:00"
   }
 }

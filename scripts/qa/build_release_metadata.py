@@ -23,8 +23,6 @@ from src.config import (  # noqa: E402
     FINAL_RELEASE_MANIFEST_MD,
     QA_CANONICAL_JUDGED,
     QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
-    QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH,
-    QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH_CONTEXT_CLEANED,
     QA_CANONICAL_JUDGED_RELEASE,
     QA_HUMAN_VERIFICATION_TASK1,
     QA_HUMAN_VERIFICATION_TASK2,
@@ -36,7 +34,7 @@ from src.config import (  # noqa: E402
 )
 from src.qa.release_schema import ANALYSIS_RELEASE_FIELDS, PUBLIC_RELEASE_FIELDS  # noqa: E402
 
-HUMAN_VERIFICATION_BUNDLE_DIR = QA_THREE_WAY_READY.parent / "human_verification_bundle_20260602"
+HUMAN_VERIFICATION_BUNDLE_DIR = QA_THREE_WAY_READY.parent / "human_verification_bundle_external_gemini_20260605"
 IAA_SUMMARY_MD = HUMAN_VERIFICATION_BUNDLE_DIR / "reports" / "iaa_summary.md"
 EDA1_DIR = ROOT / "eda" / "figures" / "02_qa_dataset_eda"
 EDA2_DIR = ROOT / "eda" / "figures" / "03_feature_engineering_eda"
@@ -66,10 +64,7 @@ EXCLUDED_PHASE1_FEATURES = {
     "wiki_level": "Excluded because crawl depth is not reliably preserved in the current raw metadata and would require a separate taxonomy-recovery pass.",
     "linked_entities": "Excluded because API coverage and stability were not strong enough for the final phase-1 feature set.",
 }
-JUDGE_RATIONALE = (
-    "Gemini was promoted as the canonical judge because it aligned more closely with human annotations on "
-    "Task 1 quality and difficulty, while DeepSeek remains available as a parallel provenance reference."
-)
+ANNOTATION_RATIONALE = "Gemini is used as the external annotator because it is separate from the QA generation model."
 
 
 def _iso_timestamp(path: Path) -> str:
@@ -174,16 +169,18 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
     test_rows = _count_jsonl_rows(ROOT / "data" / "final" / "test.jsonl")
 
     payload = {
-        "canonical_judge": {
-            "model": "Gemini",
-            "decision_rationale": JUDGE_RATIONALE,
+        "external_annotation": {
+            "qa_generator": "DeepSeek V4 Flash",
+            "automatic_annotator": "Gemini",
+            "decision_rationale": ANNOTATION_RATIONALE,
+            "deepseek_label_policy": (
+                "Labels produced by DeepSeek for evaluation are excluded from the official release pipeline to avoid same-model evaluation bias."
+            ),
             "judged_source": str(QA_CANONICAL_JUDGED.resolve()),
             "judged_source_rows": canonical_rows,
             "judged_context_cleaned": str(QA_CANONICAL_JUDGED_CONTEXT_CLEANED.resolve()),
             "judged_context_cleaned_rows": canonical_cleaned_rows,
             "judged_release_normalized": str(QA_CANONICAL_JUDGED_RELEASE.resolve()),
-            "parallel_deepseek_source": str(QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH.resolve()),
-            "parallel_deepseek_context_cleaned": str(QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH_CONTEXT_CLEANED.resolve()),
         },
         "release_datasets": {
             "public_final": str(QA_THREE_WAY_READY.resolve()),
@@ -248,12 +245,13 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
     md_lines = [
         "# Final Release Manifest",
         "",
-        "## Canonical Judge",
-        "- Model: `Gemini`",
-        f"- Rationale: {JUDGE_RATIONALE}",
+        "## External Annotation",
+        "- QA generator: `DeepSeek V4 Flash`",
+        "- External automatic annotator: `Gemini`",
+        f"- Rationale: {ANNOTATION_RATIONALE}",
+        "- Labels produced by DeepSeek for evaluation are excluded from the official release pipeline to avoid same-model evaluation bias.",
         f"- Canonical judged source: `data/processed/datasets/{QA_CANONICAL_JUDGED.name}` ({canonical_rows:,} rows)",
         f"- Canonical judged, context-cleaned: `data/processed/datasets/{QA_CANONICAL_JUDGED_CONTEXT_CLEANED.name}` ({canonical_cleaned_rows:,} rows)",
-        f"- Parallel DeepSeek source: `data/processed/datasets/{QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH.name}`",
         "",
         "## Release Datasets",
         f"- Public final dataset: `{_repo_rel(QA_THREE_WAY_READY)}` ({public_rows:,} rows)",

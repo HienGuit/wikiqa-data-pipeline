@@ -1,11 +1,12 @@
 # Final Release Manifest
 
-## Canonical Judge
-- Model: `Gemini`
-- Rationale: Gemini was promoted as the canonical judge because it aligned more closely with human annotations on Task 1 quality and difficulty, while DeepSeek remains available as a parallel provenance reference.
+## External Annotation
+- QA generator: `DeepSeek V4 Flash`
+- External automatic annotator: `Gemini`
+- Rationale: Gemini is used as the external annotator because it is separate from the QA generation model.
+- Labels produced by DeepSeek for evaluation are excluded from the official release pipeline to avoid same-model evaluation bias.
 - Canonical judged source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl` (8,314 rows)
 - Canonical judged, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl` (8,005 rows)
-- Parallel DeepSeek source: `data/processed/datasets/qa_pairs_canonical_judged_deepseek_v4_flash.jsonl`
 
 ## Release Datasets
 - Public final dataset: `data/processed/datasets/qa_pairs_three_way_ready.jsonl` (7,592 rows)
@@ -44,5 +45,5 @@
 ## EDA and Human Verification
 - EDA1 final: `eda/figures/02_qa_dataset_eda/`
 - EDA2 final: `eda/figures/03_feature_engineering_eda/`
-- Human verification bundle: `data/processed/datasets/human_verification_bundle_20260602/`
-- IAA summary: `data/processed/datasets/human_verification_bundle_20260602/reports/iaa_summary.md`
+- Human verification bundle: `data/processed/datasets/human_verification_bundle_external_gemini_20260605/`
+- IAA summary: `data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_summary.md`

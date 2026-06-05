@@ -1,12 +1,12 @@
 # Vietnamese WikiQA Data Pipeline
 
-This repository builds a Vietnamese question-answering dataset from Vietnamese Wikipedia and packages the full evaluation stack around it: LLM judging, human verification, inter-annotator agreement, release normalization, and feature-engineering analysis.
+This repository builds a Vietnamese question-answering dataset from Vietnamese Wikipedia and packages the full evaluation stack around it: external Gemini annotation, human verification, inter-annotator agreement, release normalization, and feature-engineering analysis.
 
 ## Documentation
 
 - Dataset card: `dataset_card.md`
 - Data dictionary: `data_dictionary.md`
-- QA bucket guideline for LLM judging and human verification: `qa_bucket_guideline.md`
+- QA bucket guideline for external annotation and human verification: `qa_bucket_guideline.md`
 - Final public-facing reports tracked on GitHub: `reports/`
 - Hugging Face dataset: `https://huggingface.co/datasets/HienNGuit/Domain-ViWikiQA`
 
@@ -52,34 +52,39 @@ The dataset is created in six stages:
 
 1. Crawl Vietnamese Wikipedia pages and metadata from a curated taxonomy.
 2. Clean raw page text and split pages into section-aware chunks.
-3. Generate QA candidates with two reasoning styles:
+3. Generate QA candidates with DeepSeek V4 Flash using two reasoning styles:
    - `extraction`
    - `multi-sentence`
-4. Judge generated QA pairs with LLM-based labels for:
-   - `quality_band`
-   - `difficulty_band`
-   - `inferential_validity_band`
-5. Promote the canonical judge, clean contexts, and normalize judged artifacts.
-6. Build the final three-way release:
+4. Validate QA candidates with rule-based checks:
+   - exact answer span
+   - evidence span for multi-sentence QA
+   - single-target question constraint
+5. Assign automatic bucket labels with Gemini as an external LLM annotator.
+6. Audit the annotation protocol with human verification and release the final three-way dataset:
    - `extraction`
-   - `bridge` for weak inferential multi-sentence cases
-   - `multi-sentence` for usable/strong inferential cases
+   - `bridge`
+   - `multi-sentence`
 
 ## Final Artifacts
 
-### Judge Provenance
-- Canonical judge: `Gemini`
+### Annotation Provenance
+- QA generator: `DeepSeek V4 Flash`
+- External automatic annotator: `Gemini`
+- Human verification: two human annotators on sampled audit tasks
+- Labels produced by DeepSeek for evaluation are excluded from the official annotation and release pipeline to avoid same-model evaluation bias.
 - Canonical judged source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl`
 - Canonical judged, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl`
 - Canonical judged, release-normalized: `data/processed/datasets/qa_pairs_canonical_judged_release.jsonl`
-- Parallel DeepSeek source: `data/processed/datasets/qa_pairs_canonical_judged_deepseek_v4_flash.jsonl`
 
 ### Human Verification
-- Internal bundle source: `data/processed/datasets/human_verification_bundle_20260602/`
+- Internal bundle source: `data/processed/datasets/human_verification_bundle_external_gemini_20260605/`
 - GitHub-tracked IAA summary: `reports/evaluation/iaa_summary.md`
 - GitHub-tracked IAA visualizations: `reports/evaluation/`
-- GitHub-tracked full-population Gemini vs DeepSeek agreement: `reports/evaluation/full_llm_agreement_report.md`
-- Guideline used for bucket-based judging and annotation: `qa_bucket_guideline.md`
+- Agreement is computed for:
+  - Annotator 1 vs Annotator 2
+  - Annotator 1 vs Gemini
+  - Annotator 2 vs Gemini
+- Guideline used for bucket-based external annotation and human verification: `qa_bucket_guideline.md`
 
 ### EDA
 - EDA1 dataset overview: `eda/figures/02_qa_dataset_eda/`
@@ -192,6 +197,5 @@ python scripts/qa/sync_repo_reports.py
 - Feature phase-1 provenance Markdown: `reports/release/feature_phase1_provenance.md`
 - Human verification manifest: `reports/evaluation/manifest.json`
 - IAA summary: `reports/evaluation/iaa_summary.md`
-- Full-population LLM agreement summary: `reports/evaluation/full_llm_agreement_report.md`
 
-These files are the main entry points for checking which dataset is public, which dataset is internal, which judge is canonical, which features were kept or excluded, and how inter-annotator agreement was measured. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.
+These files are the main entry points for checking which dataset is public, which dataset is internal, how external annotation was audited, which features were kept or excluded, and how inter-annotator agreement was measured. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.

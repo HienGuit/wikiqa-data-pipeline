@@ -21,7 +21,7 @@ from src.qa.iaa import (  # noqa: E402
     create_task2_confusion,
 )
 
-DEFAULT_BUNDLE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_20260602"
+DEFAULT_BUNDLE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_external_gemini_20260605"
 
 
 def build_parser() -> argparse.ArgumentParser:

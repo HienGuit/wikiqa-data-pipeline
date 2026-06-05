@@ -51,20 +51,13 @@ QA_CANONICAL_JUDGED = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged.jsonl"
 QA_CANONICAL_JUDGED_GEMINI31_FLASH_LITE = (
     PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_gemini31_flash_lite.jsonl"
 )
-QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_deepseek_v4_flash.jsonl"
 QA_CANONICAL_CONTEXT_CLEANED = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_context_cleaned.jsonl"
 QA_CANONICAL_CONTEXT_CLEANING_REJECTS = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_context_cleaning_rejects.jsonl"
 QA_CANONICAL_JUDGED_CONTEXT_CLEANED = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_context_cleaned.jsonl"
 QA_CANONICAL_JUDGED_GEMINI31_FLASH_LITE_CONTEXT_CLEANED = (
     PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_gemini31_flash_lite_context_cleaned.jsonl"
 )
-QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH_CONTEXT_CLEANED = (
-    PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_deepseek_v4_flash_context_cleaned.jsonl"
-)
 QA_CANONICAL_JUDGED_RELEASE = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_release.jsonl"
-QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH_RELEASE = (
-    PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_deepseek_v4_flash_release.jsonl"
-)
 QA_CANONICAL_JUDGED_CONTEXT_CLEANING_REJECTS = (
     PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_context_cleaning_rejects.jsonl"
 )
@@ -152,8 +145,6 @@ QA_HUMAN_VERIFICATION_SAMPLING_REPORT = QA_REPORTS_DIR / "human_verification_sam
 QA_ANNOTATION_POOL_COMPAT_REPORT = QA_REPORTS_DIR / "qa_annotation_pool_compat_report.json"
 QA_THREE_WAY_REPORT = QA_REPORTS_DIR / "qa_three_way_split_report.json"
 QA_THREE_WAY_FINAL_VALIDATION_REPORT = QA_REPORTS_DIR / "qa_three_way_final_validation_report.json"
-QA_JUDGE_PROVENANCE_REPORT = QA_REPORTS_DIR / "qa_judge_provenance_report.json"
-QA_JUDGE_CANONICAL_PROMOTION_REPORT = QA_REPORTS_DIR / "qa_judge_canonical_promotion_report.json"
 QA_JUDGED_RELEASE_NORMALIZATION_REPORT = QA_REPORTS_DIR / "qa_judged_release_normalization_report.json"
 QA_SPLIT_DISTRIBUTION_REPORT = QA_REPORTS_DIR / "qa_split_distribution_report.json"
 FEATURE_PHASE1_PROVENANCE_JSON = QA_REPORTS_DIR / "feature_phase1_provenance.json"

@@ -1,12 +1,10 @@
 {
-  "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602",
+  "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605",
   "sources": {
-    "task1": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task1_quality_difficulty_100.jsonl",
-    "task2": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task2_inferential_validity_50.jsonl",
-    "task1_gemini_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task1_quality_difficulty_100_key_gemini31_flash_lite.jsonl",
-    "task1_deepseek_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task1_quality_difficulty_100_key_deepseek_v4_flash.jsonl",
-    "task2_gemini_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task2_inferential_validity_50_key_gemini31_flash_lite.jsonl",
-    "task2_deepseek_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_dual_judge_20260602\\task2_inferential_validity_50_key_deepseek_v4_flash.jsonl",
+    "task1": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_external_gemini_20260602\\task1_quality_difficulty_100.jsonl",
+    "task2": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_external_gemini_20260602\\task2_inferential_validity_50.jsonl",
+    "task1_gemini_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_external_gemini_20260602\\task1_quality_difficulty_100_key_gemini31_flash_lite.jsonl",
+    "task2_gemini_key": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_external_gemini_20260602\\task2_inferential_validity_50_key_gemini31_flash_lite.jsonl",
     "task1_export": "C:\\Users\\GHien\\Downloads\\task1.json",
     "task2_annotator1": "C:\\Users\\GHien\\Downloads\\task2_inferential_validity_50_completed_annotator1.jsonl",
     "task2_annotator2": "C:\\Users\\GHien\\Downloads\\gemini31_pro_task_runner_20260602\\outputs\\task2_inferential_validity_50_completed_annotator2.jsonl"
@@ -39,12 +37,10 @@
       "task": "task1",
       "task_rows": 100,
       "gemini_key_rows": 100,
-      "deepseek_key_rows": 100,
       "annotator1_rows": 100,
       "annotator2_rows": 100,
       "all_ids_match": true,
       "missing_in_gemini_key": [],
-      "missing_in_deepseek_key": [],
       "missing_in_annotator1": [],
       "missing_in_annotator2": []
     },
@@ -52,12 +48,10 @@
       "task": "task2",
       "task_rows": 50,
       "gemini_key_rows": 50,
-      "deepseek_key_rows": 50,
       "annotator1_rows": 50,
       "annotator2_rows": 50,
       "all_ids_match": true,
       "missing_in_gemini_key": [],
-      "missing_in_deepseek_key": [],
       "missing_in_annotator1": [],
       "missing_in_annotator2": []
     }

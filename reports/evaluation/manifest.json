@@ -1,5 +1,5 @@
 {
-  "bundle_name": "human_verification_bundle_20260602",
+  "bundle_name": "human_verification_bundle_external_gemini_20260605",
   "version": "2026-06-02",
   "structure": {
     "tasks": {
@@ -10,10 +10,6 @@
       "gemini": {
         "task1": "keys/gemini/task1.json",
         "task2": "keys/gemini/task2.json"
-      },
-      "deepseek": {
-        "task1": "keys/deepseek/task1.json",
-        "task2": "keys/deepseek/task2.json"
       }
     },
     "annotations": {
@@ -31,7 +27,8 @@
     }
   },
   "notes": [
-    "Tasks and judge keys are copied from the latest dual-judge human-verification set.",
+    "Tasks and Gemini reference labels are copied from the external-Gemini human-verification set.",
+    "The bundle includes only task payloads, Gemini reference labels, and human annotator outputs.",
     "Annotations are normalized into JSON arrays for easier downstream processing.",
     "Task 2 annotator 1 source contained a malformed final line; the bundle repairs it deterministically by trimming trailing garbage after the first valid JSON object.",
     "Task 1 now comes directly from the external annotation export with two annotations embedded per sample."

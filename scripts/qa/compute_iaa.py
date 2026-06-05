@@ -14,7 +14,7 @@ if str(ROOT) not in sys.path:
 from src.config import ensure_dirs  # noqa: E402
 from src.qa.iaa import compute_bundle_iaa, write_iaa_outputs  # noqa: E402
 
-DEFAULT_BUNDLE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_20260602"
+DEFAULT_BUNDLE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_external_gemini_20260605"
 DEFAULT_REPORT_JSON = DEFAULT_BUNDLE_DIR / "reports" / "iaa_summary.json"
 DEFAULT_REPORT_MD = DEFAULT_BUNDLE_DIR / "reports" / "iaa_summary.md"
 

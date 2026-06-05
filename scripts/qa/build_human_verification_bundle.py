@@ -25,61 +25,18 @@ from src.qa.human_verification import (  # noqa: E402
     write_text,
 )
 
-BUNDLE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_20260602"
+BUNDLE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_external_gemini_20260605"
 TASKS_DIR = BUNDLE_DIR / "tasks"
 KEYS_DIR = BUNDLE_DIR / "keys"
 ANNOTATIONS_DIR = BUNDLE_DIR / "annotations"
 REPORTS_DIR = BUNDLE_DIR / "reports"
+SOURCE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_external_gemini_20260602"
 
-TASK1_SOURCE = (
-    ROOT
-    / "data"
-    / "processed"
-    / "datasets"
-    / "human_verification_dual_judge_20260602"
-    / "task1_quality_difficulty_100.jsonl"
-)
-TASK2_SOURCE = (
-    ROOT
-    / "data"
-    / "processed"
-    / "datasets"
-    / "human_verification_dual_judge_20260602"
-    / "task2_inferential_validity_50.jsonl"
-)
+TASK1_SOURCE = SOURCE_DIR / "task1_quality_difficulty_100.jsonl"
+TASK2_SOURCE = SOURCE_DIR / "task2_inferential_validity_50.jsonl"
 
-TASK1_GEMINI_KEY_SOURCE = (
-    ROOT
-    / "data"
-    / "processed"
-    / "datasets"
-    / "human_verification_dual_judge_20260602"
-    / "task1_quality_difficulty_100_key_gemini31_flash_lite.jsonl"
-)
-TASK1_DEEPSEEK_KEY_SOURCE = (
-    ROOT
-    / "data"
-    / "processed"
-    / "datasets"
-    / "human_verification_dual_judge_20260602"
-    / "task1_quality_difficulty_100_key_deepseek_v4_flash.jsonl"
-)
-TASK2_GEMINI_KEY_SOURCE = (
-    ROOT
-    / "data"
-    / "processed"
-    / "datasets"
-    / "human_verification_dual_judge_20260602"
-    / "task2_inferential_validity_50_key_gemini31_flash_lite.jsonl"
-)
-TASK2_DEEPSEEK_KEY_SOURCE = (
-    ROOT
-    / "data"
-    / "processed"
-    / "datasets"
-    / "human_verification_dual_judge_20260602"
-    / "task2_inferential_validity_50_key_deepseek_v4_flash.jsonl"
-)
+TASK1_GEMINI_KEY_SOURCE = SOURCE_DIR / "task1_quality_difficulty_100_key_gemini31_flash_lite.jsonl"
+TASK2_GEMINI_KEY_SOURCE = SOURCE_DIR / "task2_inferential_validity_50_key_gemini31_flash_lite.jsonl"
 
 TASK1_EXPORT_SOURCE = Path(r"C:\Users\GHien\Downloads\task1.json")
 TASK2_ANNOTATOR1_SOURCE = Path(r"C:\Users\GHien\Downloads\task2_inferential_validity_50_completed_annotator1.jsonl")
@@ -96,7 +53,6 @@ def build_manifest(report: dict) -> dict:
             "tasks": {"task1": "tasks/task1.json", "task2": "tasks/task2.json"},
             "keys": {
                 "gemini": {"task1": "keys/gemini/task1.json", "task2": "keys/gemini/task2.json"},
-                "deepseek": {"task1": "keys/deepseek/task1.json", "task2": "keys/deepseek/task2.json"},
             },
             "annotations": {
                 "annotator1": {
@@ -111,7 +67,8 @@ def build_manifest(report: dict) -> dict:
             "reports": {"assembly": "reports/assembly_report.json"},
         },
         "notes": [
-            "Tasks and judge keys are copied from the latest dual-judge human-verification set.",
+            "Tasks and Gemini reference labels are copied from the external-Gemini human-verification set.",
+            "The bundle includes only task payloads, Gemini reference labels, and human annotator outputs.",
             "Annotations are normalized into JSON arrays for easier downstream processing.",
             "Task 2 annotator 1 source contained a malformed final line; the bundle repairs it deterministically by trimming trailing garbage after the first valid JSON object.",
             "Task 1 now comes directly from the external annotation export with two annotations embedded per sample.",
@@ -125,7 +82,6 @@ def main() -> None:
     for directory in (
         TASKS_DIR,
         KEYS_DIR / "gemini",
-        KEYS_DIR / "deepseek",
         ANNOTATIONS_DIR / "annotator1",
         ANNOTATIONS_DIR / "annotator2",
         REPORTS_DIR,
@@ -135,9 +91,7 @@ def main() -> None:
     task1_rows = load_jsonl(TASK1_SOURCE)
     task2_rows = load_jsonl(TASK2_SOURCE)
     task1_gemini_key = load_jsonl(TASK1_GEMINI_KEY_SOURCE)
-    task1_deepseek_key = load_jsonl(TASK1_DEEPSEEK_KEY_SOURCE)
     task2_gemini_key = load_jsonl(TASK2_GEMINI_KEY_SOURCE)
-    task2_deepseek_key = load_jsonl(TASK2_DEEPSEEK_KEY_SOURCE)
 
     task1_annotator1, task1_annotator2, task1_export_meta = load_task1_from_export(TASK1_EXPORT_SOURCE)
     task2_annotator1, task2_annotator1_repairs = load_jsonl_robust(TASK2_ANNOTATOR1_SOURCE)
@@ -147,7 +101,6 @@ def main() -> None:
         label="task1",
         task_rows=task1_rows,
         gemini_key_rows=task1_gemini_key,
-        deepseek_key_rows=task1_deepseek_key,
         annotator1_rows=task1_annotator1,
         annotator2_rows=task1_annotator2,
     )
@@ -155,7 +108,6 @@ def main() -> None:
         label="task2",
         task_rows=task2_rows,
         gemini_key_rows=task2_gemini_key,
-        deepseek_key_rows=task2_deepseek_key,
         annotator1_rows=task2_annotator1,
         annotator2_rows=task2_annotator2,
     )
@@ -169,7 +121,6 @@ def main() -> None:
         build_combined_task1_rows(
             task_rows=task1_rows,
             gemini_key_rows=task1_gemini_key,
-            deepseek_key_rows=task1_deepseek_key,
             annotator1_rows=task1_annotator1,
             annotator2_rows=task1_annotator2,
         ),
@@ -179,7 +130,6 @@ def main() -> None:
         build_combined_task2_rows(
             task_rows=task2_rows,
             gemini_key_rows=task2_gemini_key,
-            deepseek_key_rows=task2_deepseek_key,
             annotator1_rows=task2_annotator1,
             annotator2_rows=task2_annotator2,
         ),
@@ -188,8 +138,6 @@ def main() -> None:
     for subdir, name, payload in [
         (KEYS_DIR / "gemini", "task1.json", task1_gemini_key),
         (KEYS_DIR / "gemini", "task2.json", task2_gemini_key),
-        (KEYS_DIR / "deepseek", "task1.json", task1_deepseek_key),
-        (KEYS_DIR / "deepseek", "task2.json", task2_deepseek_key),
         (ANNOTATIONS_DIR / "annotator1", "task1.json", task1_annotator1),
         (ANNOTATIONS_DIR / "annotator1", "task2.json", task2_annotator1),
         (ANNOTATIONS_DIR / "annotator2", "task1.json", task1_annotator2),
@@ -203,9 +151,7 @@ def main() -> None:
             "task1": str(TASK1_SOURCE),
             "task2": str(TASK2_SOURCE),
             "task1_gemini_key": str(TASK1_GEMINI_KEY_SOURCE),
-            "task1_deepseek_key": str(TASK1_DEEPSEEK_KEY_SOURCE),
             "task2_gemini_key": str(TASK2_GEMINI_KEY_SOURCE),
-            "task2_deepseek_key": str(TASK2_DEEPSEEK_KEY_SOURCE),
             "task1_export": str(TASK1_EXPORT_SOURCE),
             "task2_annotator1": str(TASK2_ANNOTATOR1_SOURCE),
             "task2_annotator2": str(TASK2_ANNOTATOR2_SOURCE),
@@ -246,15 +192,14 @@ def main() -> None:
             [
                 "# Human Verification Bundle",
                 "",
-                "This bundle packages the latest dual-judge human-verification tasks,",
-                "Gemini and DeepSeek reference keys, and two annotator result sets.",
+                "This bundle packages human-verification tasks, Gemini reference labels,",
+                "and two human annotator result sets.",
                 "",
                 "## Structure",
                 "",
-                "- `tasks/task1.json`: combined Task 1 payload with Gemini key, DeepSeek key, annotator1, annotator2",
-                "- `tasks/task2.json`: combined Task 2 payload with Gemini key, DeepSeek key, annotator1, annotator2",
+                "- `tasks/task1.json`: combined Task 1 payload with Gemini key, annotator1, annotator2",
+                "- `tasks/task2.json`: combined Task 2 payload with Gemini key, annotator1, annotator2",
                 "- `keys/gemini/*.json`: Gemini reference labels",
-                "- `keys/deepseek/*.json`: DeepSeek reference labels",
                 "- `annotations/annotator1/*.json`: annotator 1 labels",
                 "- `annotations/annotator2/*.json`: annotator 2 labels",
                 "- `reports/assembly_report.json`: provenance, alignment, and repair details",

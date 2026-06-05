@@ -14,8 +14,6 @@ if str(ROOT) not in sys.path:
 
 from src.config import (  # noqa: E402
     QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
-    QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH_CONTEXT_CLEANED,
-    QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH_RELEASE,
     QA_CANONICAL_JUDGED_RELEASE,
     QA_JUDGED_RELEASE_NORMALIZATION_REPORT,
     ensure_dirs,
@@ -124,11 +122,6 @@ def main() -> None:
             input_path=QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
             output_path=QA_CANONICAL_JUDGED_RELEASE,
             judge_model="gemini-3.1-flash-lite",
-        ),
-        "deepseek_parallel_release": normalize_dataset(
-            input_path=QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH_CONTEXT_CLEANED,
-            output_path=QA_CANONICAL_JUDGED_DEEPSEEK_V4_FLASH_RELEASE,
-            judge_model="deepseek-v4-flash",
         ),
     }
     QA_JUDGED_RELEASE_NORMALIZATION_REPORT.write_text(

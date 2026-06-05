@@ -1,13 +1,10 @@
 {
-  "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602",
-  "manifest_path": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_20260602\\manifest.json",
+  "bundle_dir": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605",
+  "manifest_path": "D:\\wikiqa-data-pipeline\\data\\processed\\datasets\\human_verification_bundle_external_gemini_20260605\\manifest.json",
   "pair_definitions": [
     "annotator1__vs__annotator2",
     "annotator1__vs__gemini_key",
-    "annotator1__vs__deepseek_key",
-    "annotator2__vs__gemini_key",
-    "annotator2__vs__deepseek_key",
-    "gemini_key__vs__deepseek_key"
+    "annotator2__vs__gemini_key"
   ],
   "dimensions": [
     {
@@ -65,30 +62,6 @@
           "kappa_interpretation": "fair agreement"
         },
         {
-          "pair": "annotator1__vs__deepseek_key",
-          "left": "annotator1",
-          "right": "deepseek_key",
-          "n": 100,
-          "observed_agreement": 0.42,
-          "observed_agreement_percent": 42.0,
-          "expected_agreement": 0.31,
-          "expected_agreement_percent": 31.0,
-          "cohen_kappa": 0.1594,
-          "agreement_count": 42,
-          "distribution_a": {
-            "strong": 40,
-            "usable": 40,
-            "weak": 20
-          },
-          "distribution_b": {
-            "strong": 20,
-            "usable": 35,
-            "weak": 45
-          },
-          "percent_interpretation": "low agreement",
-          "kappa_interpretation": "slight agreement"
-        },
-        {
           "pair": "annotator2__vs__gemini_key",
           "left": "annotator2",
           "right": "gemini_key",
@@ -108,54 +81,6 @@
             "strong": 50,
             "usable": 35,
             "weak": 15
-          },
-          "percent_interpretation": "moderate agreement",
-          "kappa_interpretation": "fair agreement"
-        },
-        {
-          "pair": "annotator2__vs__deepseek_key",
-          "left": "annotator2",
-          "right": "deepseek_key",
-          "n": 100,
-          "observed_agreement": 0.51,
-          "observed_agreement_percent": 51.0,
-          "expected_agreement": 0.33199999999999996,
-          "expected_agreement_percent": 33.2,
-          "cohen_kappa": 0.2665,
-          "agreement_count": 51,
-          "distribution_a": {
-            "strong": 28,
-            "usable": 48,
-            "weak": 24
-          },
-          "distribution_b": {
-            "strong": 20,
-            "usable": 35,
-            "weak": 45
-          },
-          "percent_interpretation": "moderate agreement",
-          "kappa_interpretation": "fair agreement"
-        },
-        {
-          "pair": "gemini_key__vs__deepseek_key",
-          "left": "gemini_key",
-          "right": "deepseek_key",
-          "n": 100,
-          "observed_agreement": 0.5,
-          "observed_agreement_percent": 50.0,
-          "expected_agreement": 0.29,
-          "expected_agreement_percent": 29.0,
-          "cohen_kappa": 0.2958,
-          "agreement_count": 50,
-          "distribution_a": {
-            "strong": 50,
-            "usable": 35,
-            "weak": 15
-          },
-          "distribution_b": {
-            "strong": 20,
-            "usable": 35,
-            "weak": 45
           },
           "percent_interpretation": "moderate agreement",
           "kappa_interpretation": "fair agreement"
@@ -217,30 +142,6 @@
           "kappa_interpretation": "fair agreement"
         },
         {
-          "pair": "annotator1__vs__deepseek_key",
-          "left": "annotator1",
-          "right": "deepseek_key",
-          "n": 100,
-          "observed_agreement": 0.36,
-          "observed_agreement_percent": 36.0,
-          "expected_agreement": 0.3333,
-          "expected_agreement_percent": 33.33,
-          "cohen_kappa": 0.04,
-          "agreement_count": 36,
-          "distribution_a": {
-            "easy": 32,
-            "hard": 25,
-            "medium": 43
-          },
-          "distribution_b": {
-            "easy": 83,
-            "hard": 3,
-            "medium": 14
-          },
-          "percent_interpretation": "low agreement",
-          "kappa_interpretation": "slight agreement"
-        },
-        {
           "pair": "annotator2__vs__gemini_key",
           "left": "annotator2",
           "right": "gemini_key",
@@ -263,54 +164,6 @@
           },
           "percent_interpretation": "strong agreement",
           "kappa_interpretation": "moderate agreement"
-        },
-        {
-          "pair": "annotator2__vs__deepseek_key",
-          "left": "annotator2",
-          "right": "deepseek_key",
-          "n": 100,
-          "observed_agreement": 0.5,
-          "observed_agreement_percent": 50.0,
-          "expected_agreement": 0.4743,
-          "expected_agreement_percent": 47.43,
-          "cohen_kappa": 0.0489,
-          "agreement_count": 50,
-          "distribution_a": {
-            "easy": 51,
-            "hard": 16,
-            "medium": 33
-          },
-          "distribution_b": {
-            "easy": 83,
-            "hard": 3,
-            "medium": 14
-          },
-          "percent_interpretation": "moderate agreement",
-          "kappa_interpretation": "slight agreement"
-        },
-        {
-          "pair": "gemini_key__vs__deepseek_key",
-          "left": "gemini_key",
-          "right": "deepseek_key",
-          "n": 100,
-          "observed_agreement": 0.44,
-          "observed_agreement_percent": 44.0,
-          "expected_agreement": 0.46349999999999997,
-          "expected_agreement_percent": 46.35,
-          "cohen_kappa": -0.0438,
-          "agreement_count": 44,
-          "distribution_a": {
-            "easy": 48,
-            "hard": 7,
-            "medium": 45
-          },
-          "distribution_b": {
-            "easy": 83,
-            "hard": 3,
-            "medium": 14
-          },
-          "percent_interpretation": "low agreement",
-          "kappa_interpretation": "less than chance"
         }
       ]
     },
@@ -369,29 +222,6 @@
           "kappa_interpretation": "fair agreement"
         },
         {
-          "pair": "annotator1__vs__deepseek_key",
-          "left": "annotator1",
-          "right": "deepseek_key",
-          "n": 50,
-          "observed_agreement": 0.62,
-          "observed_agreement_percent": 62.0,
-          "expected_agreement": 0.4648,
-          "expected_agreement_percent": 46.48,
-          "cohen_kappa": 0.29,
-          "agreement_count": 31,
-          "distribution_a": {
-            "strong": 4,
-            "usable": 21,
-            "weak": 25
-          },
-          "distribution_b": {
-            "usable": 22,
-            "weak": 28
-          },
-          "percent_interpretation": "moderate agreement",
-          "kappa_interpretation": "fair agreement"
-        },
-        {
           "pair": "annotator2__vs__gemini_key",
           "left": "annotator2",
           "right": "gemini_key",
@@ -414,52 +244,6 @@
           },
           "percent_interpretation": "low agreement",
           "kappa_interpretation": "slight agreement"
-        },
-        {
-          "pair": "annotator2__vs__deepseek_key",
-          "left": "annotator2",
-          "right": "deepseek_key",
-          "n": 50,
-          "observed_agreement": 0.44,
-          "observed_agreement_percent": 44.0,
-          "expected_agreement": 0.44000000000000006,
-          "expected_agreement_percent": 44.0,
-          "cohen_kappa": -0.0,
-          "agreement_count": 22,
-          "distribution_a": {
-            "strong": 6,
-            "usable": 22,
-            "weak": 22
-          },
-          "distribution_b": {
-            "usable": 22,
-            "weak": 28
-          },
-          "percent_interpretation": "low agreement",
-          "kappa_interpretation": "less than chance"
-        },
-        {
-          "pair": "gemini_key__vs__deepseek_key",
-          "left": "gemini_key",
-          "right": "deepseek_key",
-          "n": 50,
-          "observed_agreement": 0.54,
-          "observed_agreement_percent": 54.0,
-          "expected_agreement": 0.34400000000000003,
-          "expected_agreement_percent": 34.4,
-          "cohen_kappa": 0.2988,
-          "agreement_count": 27,
-          "distribution_a": {
-            "strong": 15,
-            "usable": 20,
-            "weak": 15
-          },
-          "distribution_b": {
-            "usable": 22,
-            "weak": 28
-          },
-          "percent_interpretation": "moderate agreement",
-          "kappa_interpretation": "fair agreement"
         }
       ]
     }
@@ -514,30 +298,6 @@
         "percent_interpretation": "moderate agreement",
         "kappa_interpretation": "fair agreement"
       },
-      "annotator1__vs__deepseek_key": {
-        "pair": "annotator1__vs__deepseek_key",
-        "left": "annotator1",
-        "right": "deepseek_key",
-        "n": 100,
-        "observed_agreement": 0.42,
-        "observed_agreement_percent": 42.0,
-        "expected_agreement": 0.31,
-        "expected_agreement_percent": 31.0,
-        "cohen_kappa": 0.1594,
-        "agreement_count": 42,
-        "distribution_a": {
-          "strong": 40,
-          "usable": 40,
-          "weak": 20
-        },
-        "distribution_b": {
-          "strong": 20,
-          "usable": 35,
-          "weak": 45
-        },
-        "percent_interpretation": "low agreement",
-        "kappa_interpretation": "slight agreement"
-      },
       "annotator2__vs__gemini_key": {
         "pair": "annotator2__vs__gemini_key",
         "left": "annotator2",
@@ -558,54 +318,6 @@
           "strong": 50,
           "usable": 35,
           "weak": 15
-        },
-        "percent_interpretation": "moderate agreement",
-        "kappa_interpretation": "fair agreement"
-      },
-      "annotator2__vs__deepseek_key": {
-        "pair": "annotator2__vs__deepseek_key",
-        "left": "annotator2",
-        "right": "deepseek_key",
-        "n": 100,
-        "observed_agreement": 0.51,
-        "observed_agreement_percent": 51.0,
-        "expected_agreement": 0.33199999999999996,
-        "expected_agreement_percent": 33.2,
-        "cohen_kappa": 0.2665,
-        "agreement_count": 51,
-        "distribution_a": {
-          "strong": 28,
-          "usable": 48,
-          "weak": 24
-        },
-        "distribution_b": {
-          "strong": 20,
-          "usable": 35,
-          "weak": 45
-        },
-        "percent_interpretation": "moderate agreement",
-        "kappa_interpretation": "fair agreement"
-      },
-      "gemini_key__vs__deepseek_key": {
-        "pair": "gemini_key__vs__deepseek_key",
-        "left": "gemini_key",
-        "right": "deepseek_key",
-        "n": 100,
-        "observed_agreement": 0.5,
-        "observed_agreement_percent": 50.0,
-        "expected_agreement": 0.29,
-        "expected_agreement_percent": 29.0,
-        "cohen_kappa": 0.2958,
-        "agreement_count": 50,
-        "distribution_a": {
-          "strong": 50,
-          "usable": 35,
-          "weak": 15
-        },
-        "distribution_b": {
-          "strong": 20,
-          "usable": 35,
-          "weak": 45
         },
         "percent_interpretation": "moderate agreement",
         "kappa_interpretation": "fair agreement"
@@ -660,30 +372,6 @@
         "percent_interpretation": "moderate agreement",
         "kappa_interpretation": "fair agreement"
       },
-      "annotator1__vs__deepseek_key": {
-        "pair": "annotator1__vs__deepseek_key",
-        "left": "annotator1",
-        "right": "deepseek_key",
-        "n": 100,
-        "observed_agreement": 0.36,
-        "observed_agreement_percent": 36.0,
-        "expected_agreement": 0.3333,
-        "expected_agreement_percent": 33.33,
-        "cohen_kappa": 0.04,
-        "agreement_count": 36,
-        "distribution_a": {
-          "easy": 32,
-          "hard": 25,
-          "medium": 43
-        },
-        "distribution_b": {
-          "easy": 83,
-          "hard": 3,
-          "medium": 14
-        },
-        "percent_interpretation": "low agreement",
-        "kappa_interpretation": "slight agreement"
-      },
       "annotator2__vs__gemini_key": {
         "pair": "annotator2__vs__gemini_key",
         "left": "annotator2",
@@ -707,54 +395,6 @@
         },
         "percent_interpretation": "strong agreement",
         "kappa_interpretation": "moderate agreement"
-      },
-      "annotator2__vs__deepseek_key": {
-        "pair": "annotator2__vs__deepseek_key",
-        "left": "annotator2",
-        "right": "deepseek_key",
-        "n": 100,
-        "observed_agreement": 0.5,
-        "observed_agreement_percent": 50.0,
-        "expected_agreement": 0.4743,
-        "expected_agreement_percent": 47.43,
-        "cohen_kappa": 0.0489,
-        "agreement_count": 50,
-        "distribution_a": {
-          "easy": 51,
-          "hard": 16,
-          "medium": 33
-        },
-        "distribution_b": {
-          "easy": 83,
-          "hard": 3,
-          "medium": 14
-        },
-        "percent_interpretation": "moderate agreement",
-        "kappa_interpretation": "slight agreement"
-      },
-      "gemini_key__vs__deepseek_key": {
-        "pair": "gemini_key__vs__deepseek_key",
-        "left": "gemini_key",
-        "right": "deepseek_key",
-        "n": 100,
-        "observed_agreement": 0.44,
-        "observed_agreement_percent": 44.0,
-        "expected_agreement": 0.46349999999999997,
-        "expected_agreement_percent": 46.35,
-        "cohen_kappa": -0.0438,
-        "agreement_count": 44,
-        "distribution_a": {
-          "easy": 48,
-          "hard": 7,
-          "medium": 45
-        },
-        "distribution_b": {
-          "easy": 83,
-          "hard": 3,
-          "medium": 14
-        },
-        "percent_interpretation": "low agreement",
-        "kappa_interpretation": "less than chance"
       }
     },
     "task2_inferential_validity::inferential_validity_band": {
@@ -806,29 +446,6 @@
         "percent_interpretation": "low agreement",
         "kappa_interpretation": "fair agreement"
       },
-      "annotator1__vs__deepseek_key": {
-        "pair": "annotator1__vs__deepseek_key",
-        "left": "annotator1",
-        "right": "deepseek_key",
-        "n": 50,
-        "observed_agreement": 0.62,
-        "observed_agreement_percent": 62.0,
-        "expected_agreement": 0.4648,
-        "expected_agreement_percent": 46.48,
-        "cohen_kappa": 0.29,
-        "agreement_count": 31,
-        "distribution_a": {
-          "strong": 4,
-          "usable": 21,
-          "weak": 25
-        },
-        "distribution_b": {
-          "usable": 22,
-          "weak": 28
-        },
-        "percent_interpretation": "moderate agreement",
-        "kappa_interpretation": "fair agreement"
-      },
       "annotator2__vs__gemini_key": {
         "pair": "annotator2__vs__gemini_key",
         "left": "annotator2",
@@ -852,52 +469,6 @@
         },
         "percent_interpretation": "low agreement",
         "kappa_interpretation": "slight agreement"
-      },
-      "annotator2__vs__deepseek_key": {
-        "pair": "annotator2__vs__deepseek_key",
-        "left": "annotator2",
-        "right": "deepseek_key",
-        "n": 50,
-        "observed_agreement": 0.44,
-        "observed_agreement_percent": 44.0,
-        "expected_agreement": 0.44000000000000006,
-        "expected_agreement_percent": 44.0,
-        "cohen_kappa": -0.0,
-        "agreement_count": 22,
-        "distribution_a": {
-          "strong": 6,
-          "usable": 22,
-          "weak": 22
-        },
-        "distribution_b": {
-          "usable": 22,
-          "weak": 28
-        },
-        "percent_interpretation": "low agreement",
-        "kappa_interpretation": "less than chance"
-      },
-      "gemini_key__vs__deepseek_key": {
-        "pair": "gemini_key__vs__deepseek_key",
-        "left": "gemini_key",
-        "right": "deepseek_key",
-        "n": 50,
-        "observed_agreement": 0.54,
-        "observed_agreement_percent": 54.0,
-        "expected_agreement": 0.34400000000000003,
-        "expected_agreement_percent": 34.4,
-        "cohen_kappa": 0.2988,
-        "agreement_count": 27,
-        "distribution_a": {
-          "strong": 15,
-          "usable": 20,
-          "weak": 15
-        },
-        "distribution_b": {
-          "usable": 22,
-          "weak": 28
-        },
-        "percent_interpretation": "moderate agreement",
-        "kappa_interpretation": "fair agreement"
       }
     }
   }
