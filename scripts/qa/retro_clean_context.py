@@ -1,4 +1,4 @@
-"""Retro-clean canonical QA datasets after generation and judging."""
+"""Retro-clean canonical QA datasets after generation and annotation."""
 
 from __future__ import annotations
 
@@ -14,11 +14,11 @@ if str(ROOT) not in sys.path:
 
 from src.config import (  # noqa: E402
     QA_CANONICAL,
+    QA_CANONICAL_ANNOTATED,
+    QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED,
+    QA_CANONICAL_ANNOTATED_CONTEXT_CLEANING_REJECTS,
     QA_CANONICAL_CONTEXT_CLEANED,
     QA_CANONICAL_CONTEXT_CLEANING_REJECTS,
-    QA_CANONICAL_JUDGED,
-    QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
-    QA_CANONICAL_JUDGED_CONTEXT_CLEANING_REJECTS,
     QA_CONTEXT_CLEANING_REPORT,
     ensure_dirs,
 )
@@ -227,11 +227,11 @@ def main() -> None:
             output_path=QA_CANONICAL_CONTEXT_CLEANED,
             rejects_path=QA_CANONICAL_CONTEXT_CLEANING_REJECTS,
         ),
-        "judged": clean_dataset(
-            name="judged",
-            input_path=QA_CANONICAL_JUDGED,
-            output_path=QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
-            rejects_path=QA_CANONICAL_JUDGED_CONTEXT_CLEANING_REJECTS,
+        "annotated": clean_dataset(
+            name="annotated",
+            input_path=QA_CANONICAL_ANNOTATED,
+            output_path=QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED,
+            rejects_path=QA_CANONICAL_ANNOTATED_CONTEXT_CLEANING_REJECTS,
         ),
     }
     QA_CONTEXT_CLEANING_REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

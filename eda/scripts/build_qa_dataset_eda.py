@@ -23,7 +23,7 @@ from eda.utils.plot_utils import (  # noqa: E402
 )
 from src.config import (  # noqa: E402
     FIGURES_DIR,
-    QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
+    QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED,
     QA_THREE_WAY_ANALYSIS,
     QA_THREE_WAY_READY,
     ensure_dirs,
@@ -260,7 +260,7 @@ def draw_length_boxplots(df: pd.DataFrame) -> str:
 
 def build_summary_markdown(
     release_df: pd.DataFrame,
-    judged_df: pd.DataFrame,
+    annotated_df: pd.DataFrame,
     figures: list[str],
     table_md: str,
 ) -> None:
@@ -271,7 +271,7 @@ def build_summary_markdown(
         * 100
     )
     quality_reasoning = percent_table(
-        judged_df,
+        annotated_df,
         "reasoning_type",
         "quality_band",
         column_order=["weak", "usable", "strong"],
@@ -284,7 +284,7 @@ def build_summary_markdown(
         "difficulty_band",
         column_order=["easy", "medium", "hard"],
     ).reindex(["extraction", "bridge", "multi-sentence"])
-    domain_quality = percent_table(judged_df, "domain", "quality_band", column_order=["weak", "usable", "strong"])
+    domain_quality = percent_table(annotated_df, "domain", "quality_band", column_order=["weak", "usable", "strong"])
     weakest_domain = domain_quality["weak"].sort_values(ascending=False).index[0]
 
     lines = [
@@ -292,7 +292,7 @@ def build_summary_markdown(
         "",
         "## Dataset Scope",
         f"- Public final release dataset: `{len(release_df):,}` QA pairs mirrored from the analysis source `qa_pairs_three_way_analysis.jsonl` into `qa_pairs_three_way_ready.jsonl`.",
-        f"- External-Gemini diagnostic dataset: `{len(judged_df):,}` QA pairs from `qa_pairs_canonical_judged_context_cleaned.jsonl`.",
+        f"- External-Gemini diagnostic dataset: `{len(annotated_df):,}` QA pairs from `qa_pairs_canonical_annotated_context_cleaned.jsonl`.",
         "",
         "## Key Findings",
         f"- Extraction remains the dominant bucket ({reason_share['extraction']:.1f}%), while bridge ({reason_share['bridge']:.1f}%) captures the transitional reasoning region between literal extraction and fully multi-sentence inference ({reason_share['multi-sentence']:.1f}%).",
@@ -320,8 +320,8 @@ def main() -> None:
         QA_THREE_WAY_ANALYSIS,
         required_columns={"final_reasoning_bucket", "quality_band", "difficulty_band", "inferential_validity_band"},
     )
-    judged_df = load_qa_dataset(
-        QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
+    annotated_df = load_qa_dataset(
+        QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED,
         required_columns={"reasoning_type", "quality_band", "difficulty_band", "inferential_validity_band"},
     )
     figures: list[str] = []
@@ -355,7 +355,7 @@ def main() -> None:
     )
 
     quality_reasoning = percent_table(
-        judged_df,
+        annotated_df,
         "reasoning_type",
         "quality_band",
         column_order=["weak", "usable", "strong"],
@@ -374,7 +374,7 @@ def main() -> None:
     )
 
     quality_domain = percent_table(
-        judged_df,
+        annotated_df,
         "domain",
         "quality_band",
         column_order=["weak", "usable", "strong"],
@@ -401,12 +401,12 @@ def main() -> None:
 
     figures.append(draw_length_boxplots(release_df))
     table_csv, table_md = build_length_statistics(release_df)
-    build_summary_markdown(release_df, judged_df, figures, table_md)
+    build_summary_markdown(release_df, annotated_df, figures, table_md)
 
     report = {
         "release_dataset": repo_rel(QA_THREE_WAY_READY),
         "analysis_dataset": repo_rel(QA_THREE_WAY_ANALYSIS),
-        "gemini_annotated_dataset": repo_rel(QA_CANONICAL_JUDGED_CONTEXT_CLEANED),
+        "gemini_annotated_dataset": repo_rel(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED),
         "figure_dir": repo_rel(FIGURE_DIR),
         "table_dir": repo_rel(TABLE_DIR),
         "figures": figures,

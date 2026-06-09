@@ -2,7 +2,7 @@
 
 ## Dataset Scope
 - Public final release dataset: `7,592` QA pairs mirrored from the analysis source `qa_pairs_three_way_analysis.jsonl` into `qa_pairs_three_way_ready.jsonl`.
-- External-Gemini diagnostic dataset: `8,005` QA pairs from `qa_pairs_canonical_judged_context_cleaned.jsonl`.
+- External-Gemini diagnostic dataset: `8,005` QA pairs from `qa_pairs_canonical_annotated_context_cleaned.jsonl`.
 
 ## Key Findings
 - Extraction remains the dominant bucket (72.3%), while bridge (18.0%) captures the transitional reasoning region between literal extraction and fully multi-sentence inference (9.7%).

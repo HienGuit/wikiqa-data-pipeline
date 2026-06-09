@@ -13,7 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.config import (  # noqa: E402
-    QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
+    QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED,
     QA_REPORTS_DIR,
     QA_THREE_WAY_ANALYSIS,
     QA_THREE_WAY_BRIDGE,
@@ -87,7 +87,7 @@ def to_release_rows(row: Dict[str, Any], bucket: str) -> tuple[Dict[str, Any], D
 
 def main() -> None:
     ensure_dirs()
-    rows = load_jsonl(QA_CANONICAL_JUDGED_CONTEXT_CLEANED)
+    rows = load_jsonl(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED)
 
     public_rows: List[Dict[str, Any]] = []
     analysis_rows: List[Dict[str, Any]] = []
@@ -146,7 +146,7 @@ def main() -> None:
     write_jsonl(QA_THREE_WAY_MULTI_SENTENCE, multi_rows)
 
     report = {
-        "input_path": str(QA_CANONICAL_JUDGED_CONTEXT_CLEANED),
+        "input_path": str(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED),
         "output_path": str(QA_THREE_WAY_READY),
         "analysis_output_path": str(QA_THREE_WAY_ANALYSIS),
         "bucket_outputs": {

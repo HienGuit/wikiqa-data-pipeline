@@ -14,17 +14,16 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.config import (  # noqa: E402
+    FEATURE_MATRIX_EDA_REPORT,
     FEATURE_MATRIX_FINAL,
     FEATURE_MATRIX_FULL,
     FEATURE_PHASE1_PROVENANCE_JSON,
     FEATURE_PHASE1_PROVENANCE_MD,
-    FEATURE_MATRIX_EDA_REPORT,
     FINAL_RELEASE_MANIFEST_JSON,
     FINAL_RELEASE_MANIFEST_MD,
-    QA_CANONICAL_JUDGED,
-    QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
-    QA_CANONICAL_JUDGED_RELEASE,
-    QA_REPORTS_DIR,
+    QA_CANONICAL_ANNOTATED,
+    QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED,
+    QA_CANONICAL_ANNOTATED_RELEASE,
     QA_THREE_WAY_ANALYSIS,
     QA_THREE_WAY_FINAL_VALIDATION_REPORT,
     QA_THREE_WAY_READY,
@@ -166,8 +165,8 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
     eda2_report = _load_json(FEATURE_MATRIX_EDA_REPORT)
     public_rows = _count_jsonl_rows(QA_THREE_WAY_READY)
     analysis_rows = _count_jsonl_rows(QA_THREE_WAY_ANALYSIS)
-    canonical_rows = _count_jsonl_rows(QA_CANONICAL_JUDGED)
-    canonical_cleaned_rows = _count_jsonl_rows(QA_CANONICAL_JUDGED_CONTEXT_CLEANED)
+    canonical_rows = _count_jsonl_rows(QA_CANONICAL_ANNOTATED)
+    canonical_cleaned_rows = _count_jsonl_rows(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED)
     task1_rows = _count_json_array_rows(HV_TASK1_JSON)
     task2_rows = _count_json_array_rows(HV_TASK2_JSON)
     train_rows = _count_jsonl_rows(ROOT / "data" / "final" / "train.jsonl")
@@ -181,11 +180,11 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
             "external_annotator_model": "Gemini",
             "decision_rationale": ANNOTATION_RATIONALE,
             "external_annotation_policy": "Official annotation labels come from Gemini and are audited with human verification.",
-            "gemini_annotated_source": _repo_rel(QA_CANONICAL_JUDGED),
+            "gemini_annotated_source": _repo_rel(QA_CANONICAL_ANNOTATED),
             "gemini_annotated_source_rows": canonical_rows,
-            "gemini_annotated_context_cleaned": _repo_rel(QA_CANONICAL_JUDGED_CONTEXT_CLEANED),
+            "gemini_annotated_context_cleaned": _repo_rel(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED),
             "gemini_annotated_context_cleaned_rows": canonical_cleaned_rows,
-            "gemini_annotated_release_normalized": _repo_rel(QA_CANONICAL_JUDGED_RELEASE),
+            "gemini_annotated_release_normalized": _repo_rel(QA_CANONICAL_ANNOTATED_RELEASE),
         },
         "release_datasets": {
             "public_final": _repo_rel(QA_THREE_WAY_READY),
@@ -255,8 +254,8 @@ def build_final_release_manifest(feature_payload: dict[str, Any]) -> dict[str, A
         "- External automatic annotator: `Gemini`",
         f"- Rationale: {ANNOTATION_RATIONALE}",
         "- Official annotation labels come from Gemini and are audited with human verification.",
-        f"- Gemini-annotated source: `data/processed/datasets/{QA_CANONICAL_JUDGED.name}` ({canonical_rows:,} rows)",
-        f"- Gemini-annotated, context-cleaned: `data/processed/datasets/{QA_CANONICAL_JUDGED_CONTEXT_CLEANED.name}` ({canonical_cleaned_rows:,} rows)",
+        f"- Gemini-annotated source: `data/processed/datasets/{QA_CANONICAL_ANNOTATED.name}` ({canonical_rows:,} rows)",
+        f"- Gemini-annotated, context-cleaned: `data/processed/datasets/{QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED.name}` ({canonical_cleaned_rows:,} rows)",
         "",
         "## Release Datasets",
         f"- Public final dataset: `{_repo_rel(QA_THREE_WAY_READY)}` ({public_rows:,} rows)",

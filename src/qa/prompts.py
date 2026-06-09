@@ -1,4 +1,4 @@
-"""Prompt templates for QA generation and QA judging."""
+"""Prompt templates for QA generation and automatic QA annotation."""
 
 from __future__ import annotations
 
@@ -206,10 +206,10 @@ Tra ve JSON gom ablation_test_log, succinct_context, evidence_span, question, an
 """.strip()
 
 
-UNIFIED_JUDGE_SYSTEM_PROMPT = """
-You are a Vietnamese QA judge. Score one QA sample that already passed rule-based span validation.
+UNIFIED_ANNOTATION_SYSTEM_PROMPT = """
+You are a Vietnamese QA automatic annotator. Assign bucket labels to one QA sample that already passed rule-based span validation.
 
-Use only the given context. The provided reasoning_type is the generator label, not the final truth.
+Use only the given context, question, and answer. The provided reasoning_type is the generation mode, not the final annotation label.
 First decide whether the question is literal or inferential:
 - literal: one sentence is enough to answer.
 - inferential: at least two ideas from the context are needed, or the question asks for a relationship, comparison, sequence, cause/effect, or synthesis.
@@ -238,7 +238,7 @@ Return exactly one JSON object:
 {"detected_reasoning_type":"literal|inferential","quality_band":"weak|usable|strong","difficulty_band":"easy|medium|hard","inferential_validity_band":"weak|usable|strong"}
 """.strip()
 
-UNIFIED_JUDGE_FEW_SHOT = """
+UNIFIED_ANNOTATION_FEW_SHOT = """
 Example 1
 reasoning_type: "extraction"
 title: "Doc tau"
@@ -300,8 +300,8 @@ answer: "he thong tren chip"
 Output: {"detected_reasoning_type":"literal","quality_band":"weak","difficulty_band":"easy","inferential_validity_band":"weak"}
 """.strip()
 
-UNIFIED_JUDGE_USER_TEMPLATE = """
-Judge this QA sample.
+UNIFIED_ANNOTATION_USER_TEMPLATE = """
+Annotate this QA sample.
 
 reasoning_type: "{reasoning_type}"
 title: "{title}"
@@ -314,3 +314,8 @@ answer: "{answer}"
 Return exactly one JSON:
 {{"detected_reasoning_type":"literal|inferential","quality_band":"weak|usable|strong","difficulty_band":"easy|medium|hard","inferential_validity_band":"weak|usable|strong"}}
 """.strip()
+
+# Backward-compatible aliases for historical imports.
+UNIFIED_JUDGE_SYSTEM_PROMPT = UNIFIED_ANNOTATION_SYSTEM_PROMPT
+UNIFIED_JUDGE_FEW_SHOT = UNIFIED_ANNOTATION_FEW_SHOT
+UNIFIED_JUDGE_USER_TEMPLATE = UNIFIED_ANNOTATION_USER_TEMPLATE

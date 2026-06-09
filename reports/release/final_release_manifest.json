@@ -5,11 +5,11 @@
     "external_annotator_model": "Gemini",
     "decision_rationale": "Gemini is used as the external annotator because it is separate from the QA generation model.",
     "external_annotation_policy": "Official annotation labels come from Gemini and are audited with human verification.",
-    "gemini_annotated_source": "data/processed/datasets/qa_pairs_canonical_judged.jsonl",
+    "gemini_annotated_source": "data/processed/datasets/qa_pairs_canonical_annotated.jsonl",
     "gemini_annotated_source_rows": 8314,
-    "gemini_annotated_context_cleaned": "data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl",
+    "gemini_annotated_context_cleaned": "data/processed/datasets/qa_pairs_canonical_annotated_context_cleaned.jsonl",
     "gemini_annotated_context_cleaned_rows": 8005,
-    "gemini_annotated_release_normalized": "data/processed/datasets/qa_pairs_canonical_judged_release.jsonl"
+    "gemini_annotated_release_normalized": "data/processed/datasets/qa_pairs_canonical_annotated_release.jsonl"
   },
   "release_datasets": {
     "public_final": "data/processed/datasets/qa_pairs_three_way_ready.jsonl",
@@ -92,11 +92,11 @@
   "eda": {
     "eda1_dir": "eda/figures/02_qa_dataset_eda",
     "eda1_report": "eda/figures/02_qa_dataset_eda/eda_report.json",
-    "eda1_timestamp": "2026-06-06T02:11:29+07:00",
+    "eda1_timestamp": "2026-06-10T00:07:50+07:00",
     "eda1_figure_count": 7,
     "eda2_dir": "eda/figures/03_feature_engineering_eda",
     "eda2_report": "eda/figures/03_feature_engineering_eda/feature_engineering_eda_report.json",
-    "eda2_timestamp": "2026-06-06T02:11:34+07:00",
+    "eda2_timestamp": "2026-06-06T02:29:33+07:00",
     "eda2_figure_count": 6
   },
   "human_verification": {
@@ -106,10 +106,10 @@
     "iaa_summary": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_summary.md"
   },
   "timestamps": {
-    "public_final_dataset": "2026-06-02T17:13:37+07:00",
-    "analysis_source_dataset": "2026-06-02T17:13:37+07:00",
+    "public_final_dataset": "2026-06-10T00:07:35+07:00",
+    "analysis_source_dataset": "2026-06-10T00:07:35+07:00",
     "feature_matrix_full": "2026-06-02T17:51:52+07:00",
     "feature_matrix_final": "2026-06-02T17:51:53+07:00",
-    "manifest_built_at": "2026-06-06T02:11:37+07:00"
+    "manifest_built_at": "2026-06-10T00:36:31+07:00"
   }
 }

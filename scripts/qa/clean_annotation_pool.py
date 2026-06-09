@@ -1,7 +1,7 @@
 """Compatibility wrapper for the annotation pool artifact.
 
 This script keeps the historical `qa_pairs_canonical_judged_cleaned.jsonl`
-artifact in sync with the canonical context-cleaned judged dataset so older
+artifact in sync with the canonical context-cleaned annotated dataset so older
 notebooks and ad-hoc exports do not break.
 """
 

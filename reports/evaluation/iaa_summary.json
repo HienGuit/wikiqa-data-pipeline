@@ -3,8 +3,8 @@
   "manifest_path": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/manifest.json",
   "pair_definitions": [
     "annotator1__vs__annotator2",
-    "annotator1__vs__gemini_key",
-    "annotator2__vs__gemini_key"
+    "annotator1__vs__gemini_annotation",
+    "annotator2__vs__gemini_annotation"
   ],
   "dimensions": [
     {
@@ -38,9 +38,9 @@
           "kappa_interpretation": "moderate agreement"
         },
         {
-          "pair": "annotator1__vs__gemini_key",
+          "pair": "annotator1__vs__gemini_annotation",
           "left": "annotator1",
-          "right": "gemini_key",
+          "right": "gemini_annotation",
           "n": 100,
           "observed_agreement": 0.62,
           "observed_agreement_percent": 62.0,
@@ -62,9 +62,9 @@
           "kappa_interpretation": "fair agreement"
         },
         {
-          "pair": "annotator2__vs__gemini_key",
+          "pair": "annotator2__vs__gemini_annotation",
           "left": "annotator2",
-          "right": "gemini_key",
+          "right": "gemini_annotation",
           "n": 100,
           "observed_agreement": 0.55,
           "observed_agreement_percent": 55.0,
@@ -118,9 +118,9 @@
           "kappa_interpretation": "moderate agreement"
         },
         {
-          "pair": "annotator1__vs__gemini_key",
+          "pair": "annotator1__vs__gemini_annotation",
           "left": "annotator1",
-          "right": "gemini_key",
+          "right": "gemini_annotation",
           "n": 100,
           "observed_agreement": 0.58,
           "observed_agreement_percent": 58.0,
@@ -142,9 +142,9 @@
           "kappa_interpretation": "fair agreement"
         },
         {
-          "pair": "annotator2__vs__gemini_key",
+          "pair": "annotator2__vs__gemini_annotation",
           "left": "annotator2",
-          "right": "gemini_key",
+          "right": "gemini_annotation",
           "n": 100,
           "observed_agreement": 0.69,
           "observed_agreement_percent": 69.0,
@@ -198,9 +198,9 @@
           "kappa_interpretation": "substantial agreement"
         },
         {
-          "pair": "annotator1__vs__gemini_key",
+          "pair": "annotator1__vs__gemini_annotation",
           "left": "annotator1",
-          "right": "gemini_key",
+          "right": "gemini_annotation",
           "n": 50,
           "observed_agreement": 0.48,
           "observed_agreement_percent": 48.0,
@@ -222,9 +222,9 @@
           "kappa_interpretation": "fair agreement"
         },
         {
-          "pair": "annotator2__vs__gemini_key",
+          "pair": "annotator2__vs__gemini_annotation",
           "left": "annotator2",
-          "right": "gemini_key",
+          "right": "gemini_annotation",
           "n": 50,
           "observed_agreement": 0.4,
           "observed_agreement_percent": 40.0,
@@ -274,10 +274,10 @@
         "percent_interpretation": "strong agreement",
         "kappa_interpretation": "moderate agreement"
       },
-      "annotator1__vs__gemini_key": {
-        "pair": "annotator1__vs__gemini_key",
+      "annotator1__vs__gemini_annotation": {
+        "pair": "annotator1__vs__gemini_annotation",
         "left": "annotator1",
-        "right": "gemini_key",
+        "right": "gemini_annotation",
         "n": 100,
         "observed_agreement": 0.62,
         "observed_agreement_percent": 62.0,
@@ -298,10 +298,10 @@
         "percent_interpretation": "moderate agreement",
         "kappa_interpretation": "fair agreement"
       },
-      "annotator2__vs__gemini_key": {
-        "pair": "annotator2__vs__gemini_key",
+      "annotator2__vs__gemini_annotation": {
+        "pair": "annotator2__vs__gemini_annotation",
         "left": "annotator2",
-        "right": "gemini_key",
+        "right": "gemini_annotation",
         "n": 100,
         "observed_agreement": 0.55,
         "observed_agreement_percent": 55.0,
@@ -348,10 +348,10 @@
         "percent_interpretation": "strong agreement",
         "kappa_interpretation": "moderate agreement"
       },
-      "annotator1__vs__gemini_key": {
-        "pair": "annotator1__vs__gemini_key",
+      "annotator1__vs__gemini_annotation": {
+        "pair": "annotator1__vs__gemini_annotation",
         "left": "annotator1",
-        "right": "gemini_key",
+        "right": "gemini_annotation",
         "n": 100,
         "observed_agreement": 0.58,
         "observed_agreement_percent": 58.0,
@@ -372,10 +372,10 @@
         "percent_interpretation": "moderate agreement",
         "kappa_interpretation": "fair agreement"
       },
-      "annotator2__vs__gemini_key": {
-        "pair": "annotator2__vs__gemini_key",
+      "annotator2__vs__gemini_annotation": {
+        "pair": "annotator2__vs__gemini_annotation",
         "left": "annotator2",
-        "right": "gemini_key",
+        "right": "gemini_annotation",
         "n": 100,
         "observed_agreement": 0.69,
         "observed_agreement_percent": 69.0,
@@ -422,10 +422,10 @@
         "percent_interpretation": "strong agreement",
         "kappa_interpretation": "substantial agreement"
       },
-      "annotator1__vs__gemini_key": {
-        "pair": "annotator1__vs__gemini_key",
+      "annotator1__vs__gemini_annotation": {
+        "pair": "annotator1__vs__gemini_annotation",
         "left": "annotator1",
-        "right": "gemini_key",
+        "right": "gemini_annotation",
         "n": 50,
         "observed_agreement": 0.48,
         "observed_agreement_percent": 48.0,
@@ -446,10 +446,10 @@
         "percent_interpretation": "low agreement",
         "kappa_interpretation": "fair agreement"
       },
-      "annotator2__vs__gemini_key": {
-        "pair": "annotator2__vs__gemini_key",
+      "annotator2__vs__gemini_annotation": {
+        "pair": "annotator2__vs__gemini_annotation",
         "left": "annotator2",
-        "right": "gemini_key",
+        "right": "gemini_annotation",
         "n": 50,
         "observed_agreement": 0.4,
         "observed_agreement_percent": 40.0,

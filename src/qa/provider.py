@@ -1,4 +1,4 @@
-"""Provider layer for QA generation and judging."""
+"""Provider layer for QA generation and automatic annotation."""
 
 from __future__ import annotations
 

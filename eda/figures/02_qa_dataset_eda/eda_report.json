@@ -1,7 +1,7 @@
 {
   "release_dataset": "data/processed/datasets/qa_pairs_three_way_ready.jsonl",
   "analysis_dataset": "data/processed/datasets/qa_pairs_three_way_analysis.jsonl",
-  "gemini_annotated_dataset": "data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl",
+  "gemini_annotated_dataset": "data/processed/datasets/qa_pairs_canonical_annotated_context_cleaned.jsonl",
   "figure_dir": "eda/figures/02_qa_dataset_eda/figures",
   "table_dir": "eda/figures/02_qa_dataset_eda/tables",
   "figures": [
