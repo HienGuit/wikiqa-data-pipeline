@@ -18,9 +18,9 @@ from src.config import (  # noqa: E402
     QA_CANONICAL_ANNOTATED_RELEASE,
     ensure_dirs,
 )
+from src.qa.release_schema import INTRO_SECTION_LABEL  # noqa: E402
 from src.qa.release_validation import validate_release_row  # noqa: E402
 
-INTRO_SECTION_LABEL = "Giá»›i thiá»‡u"
 DROP_FIELDS = {
     "succinct_context",
     "reasoning_log",

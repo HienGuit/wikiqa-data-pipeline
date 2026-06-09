@@ -1,4 +1,4 @@
-"""Assemble a reproducible human-verification bundle with tasks, keys, and annotator outputs."""
+"""Assemble a reproducible human-verification bundle with automatic and human annotations."""
 
 from __future__ import annotations
 
@@ -28,8 +28,8 @@ from src.qa.human_verification import (  # noqa: E402
 
 BUNDLE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_bundle_external_gemini_20260605"
 TASKS_DIR = BUNDLE_DIR / "tasks"
-KEYS_DIR = BUNDLE_DIR / "keys"
 ANNOTATIONS_DIR = BUNDLE_DIR / "annotations"
+GEMINI_ANNOTATIONS_DIR = ANNOTATIONS_DIR / "gemini"
 REPORTS_DIR = BUNDLE_DIR / "reports"
 SOURCE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_external_gemini_20260602"
 
@@ -72,10 +72,11 @@ def build_manifest(report: dict) -> dict:
         "source_annotation_version": "2026-06-02",
         "structure": {
             "tasks": {"task1": "tasks/task1.json", "task2": "tasks/task2.json"},
-            "keys": {
-                "gemini": {"task1": "keys/gemini/task1.json", "task2": "keys/gemini/task2.json"},
-            },
             "annotations": {
+                "gemini": {
+                    "task1": "annotations/gemini/task1.json",
+                    "task2": "annotations/gemini/task2.json",
+                },
                 "annotator1": {
                     "task1": "annotations/annotator1/task1.json",
                     "task2": "annotations/annotator1/task2.json",
@@ -88,8 +89,8 @@ def build_manifest(report: dict) -> dict:
             "reports": {"assembly": "reports/assembly_report.json"},
         },
         "notes": [
-            "Tasks and Gemini reference labels are copied from the external-Gemini human-verification set.",
-            "The bundle includes only task payloads, Gemini reference labels, and human annotator outputs.",
+            "Tasks and Gemini annotation labels are copied from the external-Gemini human-verification set.",
+            "The bundle includes only task payloads, Gemini annotation labels, and human annotator outputs.",
             "Annotations are normalized into JSON arrays for easier downstream processing.",
             "Task 2 annotator 1 source contained a malformed final line; the bundle repairs it deterministically by trimming trailing garbage after the first valid JSON object.",
             "Task 1 now comes directly from the external annotation export with two annotations embedded per sample.",
@@ -107,7 +108,7 @@ def main() -> None:
     ensure_dirs()
     for directory in (
         TASKS_DIR,
-        KEYS_DIR / "gemini",
+        GEMINI_ANNOTATIONS_DIR,
         ANNOTATIONS_DIR / "annotator1",
         ANNOTATIONS_DIR / "annotator2",
         REPORTS_DIR,
@@ -162,8 +163,8 @@ def main() -> None:
     )
 
     for subdir, name, payload in [
-        (KEYS_DIR / "gemini", "task1.json", task1_gemini_annotation),
-        (KEYS_DIR / "gemini", "task2.json", task2_gemini_annotation),
+        (GEMINI_ANNOTATIONS_DIR, "task1.json", task1_gemini_annotation),
+        (GEMINI_ANNOTATIONS_DIR, "task2.json", task2_gemini_annotation),
         (ANNOTATIONS_DIR / "annotator1", "task1.json", task1_annotator1),
         (ANNOTATIONS_DIR / "annotator1", "task2.json", task2_annotator1),
         (ANNOTATIONS_DIR / "annotator2", "task1.json", task1_annotator2),
@@ -218,14 +219,14 @@ def main() -> None:
             [
                 "# Human Verification Bundle",
                 "",
-                "This bundle packages human-verification tasks, Gemini reference labels,",
+                "This bundle packages human-verification tasks, Gemini annotation labels,",
                 "and two human annotator result sets.",
                 "",
                 "## Structure",
                 "",
-                "- `tasks/task1.json`: combined Task 1 payload with Gemini key, annotator1, annotator2",
-                "- `tasks/task2.json`: combined Task 2 payload with Gemini key, annotator1, annotator2",
-                "- `keys/gemini/*.json`: Gemini reference labels",
+                "- `tasks/task1.json`: combined Task 1 payload with Gemini annotation, annotator1, annotator2",
+                "- `tasks/task2.json`: combined Task 2 payload with Gemini annotation, annotator1, annotator2",
+                "- `annotations/gemini/*.json`: Gemini annotation labels",
                 "- `annotations/annotator1/*.json`: annotator 1 labels",
                 "- `annotations/annotator2/*.json`: annotator 2 labels",
                 "- `reports/assembly_report.json`: provenance, alignment, and repair details",

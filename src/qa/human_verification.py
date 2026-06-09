@@ -183,7 +183,7 @@ def strip_task2_annotation_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def strip_task1_key_fields(row: Dict[str, Any]) -> Dict[str, Any]:
+def strip_task1_gemini_annotation_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "annotator_model": row.get("annotator_model", row.get("judge_model", "")),
         "status": row.get("status", ""),
@@ -192,7 +192,7 @@ def strip_task1_key_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def strip_task2_key_fields(row: Dict[str, Any]) -> Dict[str, Any]:
+def strip_task2_gemini_annotation_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "annotator_model": row.get("annotator_model", row.get("judge_model", "")),
         "status": row.get("status", ""),
@@ -214,7 +214,9 @@ def build_combined_task1_rows(
     return [
         {
             **strip_task_payload_fields(row),
-            "gemini_annotation": strip_task1_key_fields(gemini_by_id[str(row.get("sample_id", ""))]),
+            "gemini_annotation": strip_task1_gemini_annotation_fields(
+                gemini_by_id[str(row.get("sample_id", ""))]
+            ),
             "annotator1": strip_task1_annotation_fields(annotator1_by_id[str(row.get("sample_id", ""))]),
             "annotator2": strip_task1_annotation_fields(annotator2_by_id[str(row.get("sample_id", ""))]),
         }
@@ -236,7 +238,9 @@ def build_combined_task2_rows(
     return [
         {
             **strip_task_payload_fields(row),
-            "gemini_annotation": strip_task2_key_fields(gemini_by_id[str(row.get("sample_id", ""))]),
+            "gemini_annotation": strip_task2_gemini_annotation_fields(
+                gemini_by_id[str(row.get("sample_id", ""))]
+            ),
             "annotator1": strip_task2_annotation_fields(annotator1_by_id[str(row.get("sample_id", ""))]),
             "annotator2": strip_task2_annotation_fields(annotator2_by_id[str(row.get("sample_id", ""))]),
         }

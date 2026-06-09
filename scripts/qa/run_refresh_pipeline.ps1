@@ -1,12 +1,17 @@
 param(
     [string]$CanonicalInput = "data/processed/datasets/qa_pairs_canonical.jsonl",
     [string]$AnnotatedPath = "data/processed/datasets/qa_pairs_canonical_annotated.jsonl",
+    [string]$JudgedPath = "",
     [string]$FilteredPath = "data/processed/datasets/qa_pairs_split_ready.jsonl",
     [string]$InferentialPath = "data/processed/datasets/qa_inferential_usable_only.jsonl",
     [string]$ReportOutput = "data/processed/reports/qa/qa_refresh_derived_report.json"
 )
 
 $ErrorActionPreference = "Stop"
+
+if ($JudgedPath -ne "") {
+    $AnnotatedPath = $JudgedPath
+}
 
 $repoRoot = (Resolve-Path ".").Path
 Set-Location $repoRoot

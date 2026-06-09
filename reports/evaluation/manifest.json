@@ -7,13 +7,11 @@
       "task1": "tasks/task1.json",
       "task2": "tasks/task2.json"
     },
-    "keys": {
-      "gemini": {
-        "task1": "keys/gemini/task1.json",
-        "task2": "keys/gemini/task2.json"
-      }
-    },
     "annotations": {
+      "gemini": {
+        "task1": "annotations/gemini/task1.json",
+        "task2": "annotations/gemini/task2.json"
+      },
       "annotator1": {
         "task1": "annotations/annotator1/task1.json",
         "task2": "annotations/annotator1/task2.json"
@@ -28,8 +26,8 @@
     }
   },
   "notes": [
-    "Tasks and Gemini reference labels are copied from the external-Gemini human-verification set.",
-    "The bundle includes only task payloads, Gemini reference labels, and human annotator outputs.",
+    "Tasks and Gemini annotation labels are copied from the external-Gemini human-verification set.",
+    "The bundle includes only task payloads, Gemini annotation labels, and human annotator outputs.",
     "Annotations are normalized into JSON arrays for easier downstream processing.",
     "Task 2 annotator 1 source contained a malformed final line; the bundle repairs it deterministically by trimming trailing garbage after the first valid JSON object.",
     "Task 1 now comes directly from the external annotation export with two annotations embedded per sample."

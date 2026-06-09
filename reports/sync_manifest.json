@@ -35,7 +35,7 @@
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/manifest.json",
       "destination": "reports/evaluation/manifest.json",
-      "size_bytes": 2156
+      "size_bytes": 2144
     },
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/assembly_report.json",
