@@ -25,7 +25,7 @@ ACTOR_ORDER = ["annotator1", "annotator2", "gemini_annotation"]
 ACTOR_LABELS = {
     "annotator1": "A1",
     "annotator2": "A2",
-    "gemini_annotation": "Gemini",
+    "gemini_annotation": "Gemini annotation",
 }
 DIMENSION_TITLES = {
     "quality_band": "Task 1: Quality Band",
@@ -369,11 +369,11 @@ def create_heatmap_figure(summary: Dict[str, Any], output_path: Path) -> None:
     cbar.set_label("Cohen's kappa", rotation=90, labelpad=12)
     cbar.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8])
     cbar.set_ticklabels(["0.0\nPoor", "0.2\nSlight", "0.4\nFair", "0.6\nModerate", "0.8+\nSubstantial"])
-    fig.suptitle("Human Verification and External Gemini Agreement", fontweight="bold")
+    fig.suptitle("Human Verification and Gemini Automatic Annotation", fontweight="bold")
     fig.text(
         0.5,
         0.02,
-        "Upper-triangular heatmaps summarize Cohen's kappa for Annotator 1, Annotator 2, and the external Gemini annotator across the three evaluation dimensions.",
+        "Pairwise agreement analysis between human annotators and Gemini automatic annotation across QA bucket labels.",
         ha="center",
         fontsize=10,
         color="#444444",

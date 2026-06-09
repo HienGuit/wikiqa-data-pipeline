@@ -50,7 +50,7 @@ The dataset is split by title to avoid leakage across train, validation, and tes
 
 ### Annotation Provenance
 
-QA candidates were generated with DeepSeek V4 Flash. Automatic labels were assigned by Gemini as an external LLM annotator and audited with human verification.
+QA candidates were generated with DeepSeek V4 Flash. Automatic bucket labels were assigned by Gemini as an external automatic annotator after rule-based validation and audited with human verification.
 
 The official pipeline is:
 
@@ -62,7 +62,7 @@ The official pipeline is:
 6. Audit sampled cases with two human annotators.
 7. Release the final three-way dataset.
 
-Human verification computes agreement for Annotator 1 vs Annotator 2, Annotator 1 vs Gemini, and Annotator 2 vs Gemini.
+Human verification computes pairwise agreement for Annotator 1 vs Annotator 2, Annotator 1 vs Gemini annotation, and Annotator 2 vs Gemini annotation.
 
 ## Considerations for Using the Data
 

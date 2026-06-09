@@ -30,7 +30,7 @@
     {
       "source": "generated",
       "destination": "reports/evaluation/README.md",
-      "size_bytes": 878
+      "size_bytes": 933
     },
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/manifest.json",
@@ -60,7 +60,7 @@
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_kappa_heatmap_matrix.png",
       "destination": "reports/evaluation/iaa_kappa_heatmap_matrix.png",
-      "size_bytes": 187640
+      "size_bytes": 186999
     },
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/task1_a1_vs_a2_confusion.png",

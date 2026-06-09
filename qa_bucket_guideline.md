@@ -119,8 +119,8 @@ Human verification audits the reliability of the rubric and the external annotat
 Before broad use, sampled cases should be labeled independently by two human annotators. Agreement is reported for:
 
 - Annotator 1 vs Annotator 2
-- Annotator 1 vs Gemini
-- Annotator 2 vs Gemini
+- Annotator 1 vs Gemini annotation
+- Annotator 2 vs Gemini annotation
 
 Low agreement should be discussed as a limitation and used to refine the guideline.
 

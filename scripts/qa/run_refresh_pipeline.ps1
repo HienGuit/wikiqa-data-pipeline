@@ -9,6 +9,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Backward-compatible parameter for older invocations. Prefer AnnotatedPath.
 if ($JudgedPath -ne "") {
     $AnnotatedPath = $JudgedPath
 }

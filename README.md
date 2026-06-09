@@ -1,6 +1,6 @@
 # Vietnamese WikiQA Data Pipeline
 
-This repository builds a Vietnamese question-answering dataset from Vietnamese Wikipedia and packages the full evaluation stack around it: external Gemini annotation, human verification, inter-annotator agreement, release normalization, and feature-engineering analysis.
+This repository builds a Vietnamese question-answering dataset from Vietnamese Wikipedia and packages the full evaluation stack around it: external Gemini annotation, human verification, pairwise agreement analysis, release normalization, and feature-engineering analysis.
 
 ## Documentation
 
@@ -50,20 +50,24 @@ This repository builds a Vietnamese question-answering dataset from Vietnamese W
 
 The dataset is created in six stages:
 
-1. Crawl Vietnamese Wikipedia pages and metadata from a curated taxonomy.
-2. Clean raw page text and split pages into section-aware chunks.
-3. Generate QA candidates with DeepSeek V4 Flash using two reasoning styles:
+1. Collect Vietnamese Wikipedia pages and metadata from a curated taxonomy, then clean and split them into section-aware chunks.
+2. Generate QA candidates with DeepSeek V4 Flash using two reasoning styles:
    - `extraction`
    - `multi-sentence`
-4. Validate QA candidates with rule-based checks:
+3. Validate QA candidates with rule-based checks:
    - exact answer span
    - evidence span for multi-sentence QA
    - single-target question constraint
-5. Assign automatic bucket labels with Gemini as an external LLM annotator.
-6. Audit the annotation protocol with human verification and release the final three-way dataset:
+4. Assign automatic bucket labels with Gemini as an external automatic annotator.
+5. Audit the annotation protocol with human verification through pairwise agreement analysis.
+6. Normalize the final three-way release and construct the feature matrix:
    - `extraction`
    - `bridge`
    - `multi-sentence`
+
+DeepSeek V4 Flash is used to generate QA candidates. Gemini is used as an external automatic annotator to assign bucket labels after rule-based validation.
+
+Human verification is used to audit the annotation protocol through pairwise agreement analysis.
 
 ## Final Artifacts
 
@@ -82,8 +86,8 @@ The dataset is created in six stages:
 - GitHub-tracked IAA visualizations: `reports/evaluation/`
 - Agreement is computed for:
   - Annotator 1 vs Annotator 2
-  - Annotator 1 vs Gemini
-  - Annotator 2 vs Gemini
+  - Annotator 1 vs Gemini annotation
+  - Annotator 2 vs Gemini annotation
 - Guideline used for bucket-based external annotation and human verification: `qa_bucket_guideline.md`
 
 ### EDA
@@ -221,4 +225,4 @@ python scripts/qa/sync_repo_reports.py
 - Human verification manifest: `reports/evaluation/manifest.json`
 - IAA summary: `reports/evaluation/iaa_summary.md`
 
-These files are the main entry points for checking which dataset is public, which dataset is internal, how external annotation was audited, which features were kept or excluded, and how inter-annotator agreement was measured. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.
+These files are the main entry points for checking which dataset is public, which dataset is internal, how external annotation was audited, which features were kept or excluded, and how pairwise agreement was measured. The train/validation/test artifacts intended for direct downstream use live under `data/final/`.
