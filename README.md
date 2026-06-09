@@ -72,9 +72,9 @@ The dataset is created in six stages:
 - External automatic annotator: `Gemini`
 - Human verification: two human annotators on sampled audit tasks
 - Official annotation labels come from the external Gemini annotation pass and are audited with human verification.
-- Gemini-annotated source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl`
-- Gemini-annotated, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl`
-- Gemini-annotated, release-normalized: `data/processed/datasets/qa_pairs_canonical_judged_release.jsonl`
+- Gemini-annotated source: `data/processed/datasets/qa_pairs_canonical_annotated.jsonl`
+- Gemini-annotated, context-cleaned: `data/processed/datasets/qa_pairs_canonical_annotated_context_cleaned.jsonl`
+- Gemini-annotated, release-normalized: `data/processed/datasets/qa_pairs_canonical_annotated_release.jsonl`
 
 ### Human Verification
 - Internal bundle source: `data/processed/datasets/human_verification_bundle_external_gemini_20260605/`
@@ -131,7 +131,7 @@ wikiqa-data-pipeline/
 │   ├── raw/                     # raw Wikipedia pages and metadata
 │   ├── interim/                 # chunks and intermediate artifacts
 │   ├── processed/
-│   │   ├── datasets/            # judged, release, and annotation datasets
+│   │   ├── datasets/            # annotation, release, and analysis datasets
 │   │   ├── features/            # feature matrices and build reports
 │   │   ├── final/               # final selected feature matrices
 │   │   ├── reports/qa/          # provenance, validation, and release manifests
@@ -142,7 +142,7 @@ wikiqa-data-pipeline/
 │   └── utils/                   # EDA loading and plotting helpers
 ├── scripts/
 │   ├── features/                # feature engineering pipeline
-│   └── qa/                      # QA release, judging, verification, metadata
+│   └── qa/                      # QA generation, annotation, verification, release metadata
 └── src/
     ├── features/                # reusable feature logic
     ├── ingestion/               # crawling and raw ingestion
@@ -152,28 +152,34 @@ wikiqa-data-pipeline/
 
 ## How To Run The Pipeline
 
-### 1. Build the final three-way release
+### 1. Run external Gemini annotation
+```bash
+python -m src.qa.batch annotate ...
+python -m src.qa.dataset merge-annotation ...
+```
+
+### 2. Build the final three-way release
 ```bash
 python scripts/qa/build_three_way_dataset.py
 python scripts/qa/final_validate_release_dataset.py
 ```
 
-### 2. Build dataset-overview EDA
+### 3. Build dataset-overview EDA
 ```bash
 python eda/scripts/build_qa_dataset_eda.py
 ```
 
-### 3. Build the feature matrix
+### 4. Build the feature matrix
 ```bash
 python scripts/features/build_feature_matrix.py
 ```
 
-### 4. Build feature-engineering EDA
+### 5. Build feature-engineering EDA
 ```bash
 python eda/scripts/build_feature_engineering_eda.py
 ```
 
-### 5. Rebuild human verification and IAA reports
+### 6. Rebuild human verification and IAA reports
 Human annotation exports are not tracked publicly because they may contain annotator metadata. To rebuild the redacted external-Gemini verification bundle, provide local annotation export paths:
 
 ```bash
@@ -190,12 +196,12 @@ python scripts/qa/sync_repo_reports.py
 
 The public tracked reports are redacted and contain only repository-relative paths or `external_annotation_export_redacted`.
 
-### 6. Rebuild provenance and release metadata
+### 7. Rebuild provenance and release metadata
 ```bash
 python scripts/qa/build_release_metadata.py
 ```
 
-### 7. Sync GitHub-tracked final reports
+### 8. Sync GitHub-tracked final reports
 ```bash
 python scripts/qa/sync_repo_reports.py
 ```

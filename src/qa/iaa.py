@@ -17,15 +17,15 @@ ROOT = Path(__file__).resolve().parents[2]
 
 PAIR_SPECS = [
     ("annotator1", "annotator2"),
-    ("annotator1", "gemini_key"),
-    ("annotator2", "gemini_key"),
+    ("annotator1", "gemini_annotation"),
+    ("annotator2", "gemini_annotation"),
 ]
 
-ACTOR_ORDER = ["annotator1", "annotator2", "gemini_key"]
+ACTOR_ORDER = ["annotator1", "annotator2", "gemini_annotation"]
 ACTOR_LABELS = {
     "annotator1": "A1",
     "annotator2": "A2",
-    "gemini_key": "Gemini",
+    "gemini_annotation": "Gemini",
 }
 DIMENSION_TITLES = {
     "quality_band": "Task 1: Quality Band",
@@ -176,6 +176,10 @@ def compute_bundle_iaa(bundle_dir: Path) -> Dict[str, Any]:
         "task1.json": load_json(tasks_dir / "task1.json"),
         "task2.json": load_json(tasks_dir / "task2.json"),
     }
+    for rows in task_cache.values():
+        for row in rows:
+            if "gemini_annotation" not in row and "gemini_key" in row:
+                row["gemini_annotation"] = row["gemini_key"]
 
     dimensions_report: List[Dict[str, Any]] = []
     matrix: Dict[str, Dict[str, Dict[str, Any]]] = {}

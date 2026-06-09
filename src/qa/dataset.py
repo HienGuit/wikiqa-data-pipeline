@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,15 +15,15 @@ from src.config import (
     CHUNKS_TOPUP_MANIFEST,
     FILTERED_CHUNKS,
     INTERIM_DIR,
+    QA_ANNOTATED_FLASH,
+    QA_ANNOTATED_FLASH_REJECTS,
+    QA_ANNOTATION_FLASH_EXTRACTION_DIR,
+    QA_ANNOTATION_FLASH_MULTI_DIR,
+    QA_ANNOTATION_FULL_FLASH_SUMMARY,
     QA_CANONICAL,
-    QA_CANONICAL_JUDGED,
+    QA_CANONICAL_ANNOTATED,
     QA_FULL_RUN_SUMMARY,
     QA_INFERENTIAL_USABLE_ONLY,
-    QA_JUDGE_FLASH_EXTRACTION_DIR,
-    QA_JUDGE_FLASH_MULTI_DIR,
-    QA_JUDGE_FULL_FLASH_SUMMARY,
-    QA_JUDGED_FLASH_LEGACY,
-    QA_JUDGED_FLASH_LEGACY_REJECTS,
     QA_RAW,
     QA_RAW_REJECTS,
     QA_REPORTS_DIR,
@@ -558,7 +559,7 @@ def run_merge_topup(args: argparse.Namespace) -> None:
     print(f"Summary         -> {summary_output}")
 
 
-def run_merge_judge(args: argparse.Namespace) -> None:
+def run_merge_annotation(args: argparse.Namespace) -> None:
     ensure_dirs()
 
     input_dirs = [Path(value) for value in args.input_dirs]
@@ -583,16 +584,25 @@ def run_merge_judge(args: argparse.Namespace) -> None:
         batch_reject = 0
         per_shard: Dict[str, Dict[str, Any]] = {}
 
-        for report_path in sorted(input_dir.glob("qa_judge_*_report.json")):
-            shard_key = report_path.stem.replace("qa_judge_", "").replace("_report", "")
-            accepted_path = input_dir / f"qa_judge_{shard_key}.jsonl"
-            rejected_path = input_dir / f"qa_judge_{shard_key}_rejects.jsonl"
+        report_paths = sorted(input_dir.glob("qa_annotation_*_report.json"))
+        if not report_paths:
+            report_paths = sorted(input_dir.glob("qa_judge_*_report.json"))
+        for report_path in report_paths:
+            prefix = "qa_annotation_" if report_path.name.startswith("qa_annotation_") else "qa_judge_"
+            shard_key = report_path.stem.replace(prefix, "").replace("_report", "")
+            accepted_path = input_dir / f"{prefix}{shard_key}.jsonl"
+            rejected_path = input_dir / f"{prefix}{shard_key}_rejects.jsonl"
 
             report = json.loads(report_path.read_text(encoding="utf-8"))
             accepted = load_jsonl(accepted_path)
             rejected = load_jsonl(rejected_path)
 
-            extend_unique_pairs(accepted_rows, accepted, seen_pairs, "Duplicate judge pair detected during merge")
+            extend_unique_pairs(
+                accepted_rows,
+                accepted,
+                seen_pairs,
+                "Duplicate annotation pair detected during merge",
+            )
             rejected_rows.extend(rejected)
             batch_accept += len(accepted)
             batch_reject += len(rejected)
@@ -642,9 +652,9 @@ def run_merge_judge(args: argparse.Namespace) -> None:
     }
     write_summary(summary_output, summary)
 
-    print(f"Merged judge accepted -> {merged_output}")
-    print(f"Merged judge rejects  -> {reject_output}")
-    print(f"Judge summary         -> {summary_output}")
+    print(f"Merged annotation accepted -> {merged_output}")
+    print(f"Merged annotation rejects  -> {reject_output}")
+    print(f"Annotation summary         -> {summary_output}")
 
 
 def run_refresh_derived(args: argparse.Namespace) -> None:
@@ -671,7 +681,7 @@ def run_refresh_derived(args: argparse.Namespace) -> None:
     )
 
     targets = [
-        ("judged", Path(args.judged_path)),
+        ("annotated", Path(args.annotated_path)),
         ("filtered", Path(args.filtered_path)),
         ("inferential_usable_only", Path(args.inferential_path)),
     ]
@@ -764,34 +774,40 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     merge_topup.set_defaults(handler=run_merge_topup)
 
-    merge_judge = subparsers.add_parser(
-        "merge-judge", help="Merge judge shard outputs into one consolidated artifact."
+    merge_annotation = subparsers.add_parser(
+        "merge-annotation",
+        help="Merge external annotation shard outputs into one consolidated artifact.",
     )
-    merge_judge.add_argument(
+    merge_annotation.add_argument(
         "--input-dirs",
         nargs="+",
         default=[
-            str(QA_JUDGE_FLASH_EXTRACTION_DIR),
-            str(QA_JUDGE_FLASH_MULTI_DIR),
+            str(QA_ANNOTATION_FLASH_EXTRACTION_DIR),
+            str(QA_ANNOTATION_FLASH_MULTI_DIR),
         ],
-        help="One or more directories containing judge shard outputs.",
+        help="One or more directories containing annotation shard outputs.",
     )
-    merge_judge.add_argument(
-        "--merged-output", default=str(QA_JUDGED_FLASH_LEGACY), help="Merged accepted judge output."
+    merge_annotation.add_argument(
+        "--merged-output", default=str(QA_ANNOTATED_FLASH), help="Merged accepted annotation output."
     )
-    merge_judge.add_argument(
-        "--reject-output", default=str(QA_JUDGED_FLASH_LEGACY_REJECTS), help="Merged rejected judge output."
+    merge_annotation.add_argument(
+        "--reject-output", default=str(QA_ANNOTATED_FLASH_REJECTS), help="Merged rejected annotation output."
     )
-    merge_judge.add_argument(
-        "--summary-output", default=str(QA_JUDGE_FULL_FLASH_SUMMARY), help="Merged judge summary output."
+    merge_annotation.add_argument(
+        "--summary-output", default=str(QA_ANNOTATION_FULL_FLASH_SUMMARY), help="Merged annotation summary output."
     )
-    merge_judge.set_defaults(handler=run_merge_judge)
+    merge_annotation.set_defaults(handler=run_merge_annotation)
 
     refresh = subparsers.add_parser(
-        "refresh-derived", help="Refresh judged/filtered downstream artifacts from the canonical QA dataset."
+        "refresh-derived", help="Refresh annotated/filtered downstream artifacts from the canonical QA dataset."
     )
     refresh.add_argument("--canonical-input", default=str(QA_CANONICAL), help="Canonical QA dataset after repairs.")
-    refresh.add_argument("--judged-path", default=str(QA_CANONICAL_JUDGED), help="Judged dataset to refresh in place.")
+    refresh.add_argument(
+        "--annotated-path",
+        default=str(QA_CANONICAL_ANNOTATED),
+        help="Annotated dataset to refresh in place.",
+    )
+    refresh.add_argument("--judged-path", dest="annotated_path", help=argparse.SUPPRESS)
     refresh.add_argument(
         "--filtered-path", default=str(QA_SPLIT_READY), help="Filtered-for-split dataset to refresh in place."
     )
@@ -810,7 +826,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
+# Backward-compatible alias for historical imports.
+run_merge_judge = run_merge_annotation
+
+
 def main() -> None:
+    if len(sys.argv) > 1 and sys.argv[1] == "merge-judge":
+        sys.argv[1] = "merge-annotation"
     args = build_arg_parser().parse_args()
     args.handler(args)
 

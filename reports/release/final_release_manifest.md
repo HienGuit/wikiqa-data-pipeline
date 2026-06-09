@@ -5,8 +5,8 @@
 - External automatic annotator: `Gemini`
 - Rationale: Gemini is used as the external annotator because it is separate from the QA generation model.
 - Official annotation labels come from Gemini and are audited with human verification.
-- Gemini-annotated source: `data/processed/datasets/qa_pairs_canonical_judged.jsonl` (8,314 rows)
-- Gemini-annotated, context-cleaned: `data/processed/datasets/qa_pairs_canonical_judged_context_cleaned.jsonl` (8,005 rows)
+- Gemini-annotated source: `data/processed/datasets/qa_pairs_canonical_annotated.jsonl` (8,314 rows)
+- Gemini-annotated, context-cleaned: `data/processed/datasets/qa_pairs_canonical_annotated_context_cleaned.jsonl` (8,005 rows)
 
 ## Release Datasets
 - Public final dataset: `data/processed/datasets/qa_pairs_three_way_ready.jsonl` (7,592 rows)

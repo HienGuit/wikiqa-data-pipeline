@@ -29,7 +29,7 @@ QA_RUNS_DIR = PROCESSED_RUNS_DIR / "qa"
 QA_REPORTS_DIR = PROCESSED_REPORTS_DIR / "qa"
 QA_ARCHIVE_DIR = PROCESSED_ARCHIVE_DIR / "qa"
 QA_LEGACY_DATASETS_DIR = QA_ARCHIVE_DIR / "legacy_datasets"
-QA_JUDGE_EXPORTS_DIR = QA_ARCHIVE_DIR / "judge_exports"
+QA_ANNOTATION_EXPORTS_DIR = QA_ARCHIVE_DIR / "annotation_exports"
 FEATURE_ENGINEERING_FIGURES_DIR = FIGURES_DIR / "03_feature_engineering_eda"
 
 # Raw layer
@@ -47,19 +47,19 @@ TOPUP_CHUNKS_ROUND2 = INTERIM_DIR / "chunks_topup_inferential_round2.jsonl"
 # Canonical processed datasets
 QA_CANONICAL = PROCESSED_DATASETS_DIR / "qa_pairs_canonical.jsonl"
 QA_CANONICAL_REJECTS = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_generation_rejects.jsonl"
-QA_CANONICAL_JUDGED = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged.jsonl"
-QA_CANONICAL_JUDGED_GEMINI31_FLASH_LITE = (
-    PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_gemini31_flash_lite.jsonl"
+QA_CANONICAL_ANNOTATED = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_annotated.jsonl"
+QA_CANONICAL_ANNOTATED_GEMINI31_FLASH_LITE = (
+    PROCESSED_DATASETS_DIR / "qa_pairs_canonical_annotated_gemini31_flash_lite.jsonl"
 )
 QA_CANONICAL_CONTEXT_CLEANED = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_context_cleaned.jsonl"
 QA_CANONICAL_CONTEXT_CLEANING_REJECTS = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_context_cleaning_rejects.jsonl"
-QA_CANONICAL_JUDGED_CONTEXT_CLEANED = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_context_cleaned.jsonl"
-QA_CANONICAL_JUDGED_GEMINI31_FLASH_LITE_CONTEXT_CLEANED = (
-    PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_gemini31_flash_lite_context_cleaned.jsonl"
+QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_annotated_context_cleaned.jsonl"
+QA_CANONICAL_ANNOTATED_GEMINI31_FLASH_LITE_CONTEXT_CLEANED = (
+    PROCESSED_DATASETS_DIR / "qa_pairs_canonical_annotated_gemini31_flash_lite_context_cleaned.jsonl"
 )
-QA_CANONICAL_JUDGED_RELEASE = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_release.jsonl"
-QA_CANONICAL_JUDGED_CONTEXT_CLEANING_REJECTS = (
-    PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_context_cleaning_rejects.jsonl"
+QA_CANONICAL_ANNOTATED_RELEASE = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_annotated_release.jsonl"
+QA_CANONICAL_ANNOTATED_CONTEXT_CLEANING_REJECTS = (
+    PROCESSED_DATASETS_DIR / "qa_pairs_canonical_annotated_context_cleaning_rejects.jsonl"
 )
 QA_SPLIT_READY = PROCESSED_DATASETS_DIR / "qa_pairs_split_ready.jsonl"
 QA_INFERENTIAL_USABLE_ONLY = PROCESSED_DATASETS_DIR / "qa_inferential_usable_only.jsonl"
@@ -68,7 +68,7 @@ QA_THREE_WAY_READY = PROCESSED_DATASETS_DIR / "qa_pairs_three_way_ready.jsonl"
 QA_THREE_WAY_EXTRACTION = PROCESSED_DATASETS_DIR / "qa_pairs_three_way_extraction.jsonl"
 QA_THREE_WAY_BRIDGE = PROCESSED_DATASETS_DIR / "qa_pairs_three_way_bridge.jsonl"
 QA_THREE_WAY_MULTI_SENTENCE = PROCESSED_DATASETS_DIR / "qa_pairs_three_way_multi_sentence.jsonl"
-QA_ANNOTATION_POOL = QA_CANONICAL_JUDGED_CONTEXT_CLEANED
+QA_ANNOTATION_POOL = QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED
 QA_ANNOTATION_POOL_LEGACY = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_cleaned.jsonl"
 QA_ANNOTATION_POOL_LEGACY_REJECTS = PROCESSED_DATASETS_DIR / "qa_pairs_canonical_judged_cleaning_rejects.jsonl"
 
@@ -97,32 +97,56 @@ QA_RAW_REJECTS = QA_LEGACY_DATASETS_DIR / "qa_pairs_raw_rejects.jsonl"
 QA_WITH_TOPUP = QA_LEGACY_DATASETS_DIR / "qa_pairs_with_topup.jsonl"
 QA_WITH_TOPUP_REJECTS = QA_LEGACY_DATASETS_DIR / "qa_pairs_with_topup_rejects.jsonl"
 
-# Judge label exports
-QA_JUDGED_GEMINI31_FLASH_LITE = QA_JUDGE_EXPORTS_DIR / "qa_judge_openrouter_gemini31_flash_lite_flex_full.jsonl"
-QA_JUDGED_GEMINI31_FLASH_LITE_REJECTS = (
-    QA_JUDGE_EXPORTS_DIR / "qa_judge_openrouter_gemini31_flash_lite_flex_full_rejects.jsonl"
+# Annotation label exports
+QA_ANNOTATED_GEMINI31_FLASH_LITE = (
+    QA_ANNOTATION_EXPORTS_DIR / "qa_annotation_openrouter_gemini31_flash_lite_flex_full.jsonl"
 )
-QA_JUDGED_FLASH_LEGACY = QA_JUDGE_EXPORTS_DIR / "qa_judge_full_flash.jsonl"
-QA_JUDGED_FLASH_LEGACY_REJECTS = QA_JUDGE_EXPORTS_DIR / "qa_judge_full_flash_rejects.jsonl"
+QA_ANNOTATED_GEMINI31_FLASH_LITE_REJECTS = (
+    QA_ANNOTATION_EXPORTS_DIR / "qa_annotation_openrouter_gemini31_flash_lite_flex_full_rejects.jsonl"
+)
+QA_ANNOTATED_FLASH = QA_ANNOTATION_EXPORTS_DIR / "qa_annotation_full_flash.jsonl"
+QA_ANNOTATED_FLASH_REJECTS = QA_ANNOTATION_EXPORTS_DIR / "qa_annotation_full_flash_rejects.jsonl"
 
 # Backward-compatible aliases used by existing code
 QA_WITH_TOPUP_ROUND2 = QA_CANONICAL
 QA_WITH_TOPUP_ROUND2_REJECTS = QA_CANONICAL_REJECTS
-QA_WITH_TOPUP_ROUND2_JUDGED = QA_CANONICAL_JUDGED
+QA_WITH_TOPUP_ROUND2_ANNOTATED = QA_CANONICAL_ANNOTATED
 QA_WITH_TOPUP_ROUND2_FILTERED = QA_SPLIT_READY
-QA_JUDGED = QA_CANONICAL_JUDGED
+QA_ANNOTATED = QA_CANONICAL_ANNOTATED
 QA_VERIFIED = PROCESSED_DATASETS_DIR / "qa_pairs_verified.jsonl"
 QA_FINAL = PROCESSED_DATASETS_DIR / "qa_dataset_final.jsonl"
+
+# Backward-compatible aliases for historical imports.
+QA_JUDGE_EXPORTS_DIR = QA_ANNOTATION_EXPORTS_DIR
+QA_CANONICAL_JUDGED = QA_CANONICAL_ANNOTATED
+QA_CANONICAL_JUDGED_GEMINI31_FLASH_LITE = QA_CANONICAL_ANNOTATED_GEMINI31_FLASH_LITE
+QA_CANONICAL_JUDGED_CONTEXT_CLEANED = QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED
+QA_CANONICAL_JUDGED_GEMINI31_FLASH_LITE_CONTEXT_CLEANED = (
+    QA_CANONICAL_ANNOTATED_GEMINI31_FLASH_LITE_CONTEXT_CLEANED
+)
+QA_CANONICAL_JUDGED_RELEASE = QA_CANONICAL_ANNOTATED_RELEASE
+QA_CANONICAL_JUDGED_CONTEXT_CLEANING_REJECTS = QA_CANONICAL_ANNOTATED_CONTEXT_CLEANING_REJECTS
+QA_JUDGED_GEMINI31_FLASH_LITE = QA_ANNOTATED_GEMINI31_FLASH_LITE
+QA_JUDGED_GEMINI31_FLASH_LITE_REJECTS = QA_ANNOTATED_GEMINI31_FLASH_LITE_REJECTS
+QA_JUDGED_FLASH_LEGACY = QA_ANNOTATED_FLASH
+QA_JUDGED_FLASH_LEGACY_REJECTS = QA_ANNOTATED_FLASH_REJECTS
+QA_WITH_TOPUP_ROUND2_JUDGED = QA_WITH_TOPUP_ROUND2_ANNOTATED
+QA_JUDGED = QA_ANNOTATED
 
 # Processed run directories
 QA_SHARDS_DIR = QA_RUNS_DIR / "shards"
 QA_TOPUP_RUN_DIR = QA_RUNS_DIR / "topup_round1"
 QA_TOPUP_RUN_DIR_ROUND2 = QA_RUNS_DIR / "topup_round2"
-QA_JUDGE_RUN_DIR = QA_RUNS_DIR / "judge_default"
-QA_JUDGE_FLASH_MULTI_DIR = QA_RUNS_DIR / "judge_full_flash_multi"
-QA_JUDGE_FLASH_EXTRACTION_DIR = QA_RUNS_DIR / "judge_full_flash_extraction"
-QA_JUDGE_GEMINI31_FLASH_LITE_FULL_DIR = QA_RUNS_DIR / "judge_openrouter_gemini31_flash_lite_flex_full"
+QA_ANNOTATION_RUN_DIR = QA_RUNS_DIR / "annotation_default"
+QA_ANNOTATION_FLASH_MULTI_DIR = QA_RUNS_DIR / "annotation_full_flash_multi"
+QA_ANNOTATION_FLASH_EXTRACTION_DIR = QA_RUNS_DIR / "annotation_full_flash_extraction"
+QA_ANNOTATION_GEMINI31_FLASH_LITE_FULL_DIR = QA_RUNS_DIR / "annotation_openrouter_gemini31_flash_lite_flex_full"
 QA_REPAIR_SUCCINCT_DIR = QA_RUNS_DIR / "repair_succinct"
+
+QA_JUDGE_RUN_DIR = QA_ANNOTATION_RUN_DIR
+QA_JUDGE_FLASH_MULTI_DIR = QA_ANNOTATION_FLASH_MULTI_DIR
+QA_JUDGE_FLASH_EXTRACTION_DIR = QA_ANNOTATION_FLASH_EXTRACTION_DIR
+QA_JUDGE_GEMINI31_FLASH_LITE_FULL_DIR = QA_ANNOTATION_GEMINI31_FLASH_LITE_FULL_DIR
 
 # Processed reports
 CHUNKS_TOPUP_MANIFEST = QA_REPORTS_DIR / "chunks_topup_inferential_manifest.json"
@@ -131,9 +155,9 @@ QA_FULL_RUN_SUMMARY = QA_REPORTS_DIR / "qa_full_run_summary.json"
 QA_WITH_TOPUP_SUMMARY = QA_REPORTS_DIR / "qa_with_topup_summary.json"
 QA_WITH_TOPUP_ROUND2_SUMMARY = QA_REPORTS_DIR / "qa_with_topup_round2_summary.json"
 QA_INFERENTIAL_USABLE_ONLY_SUMMARY = QA_REPORTS_DIR / "qa_inferential_usable_only_summary.json"
-QA_JUDGE_FULL_FLASH_SUMMARY = QA_REPORTS_DIR / "qa_judge_full_flash_summary.json"
-QA_JUDGED_GEMINI31_FLASH_LITE_SUMMARY = (
-    QA_REPORTS_DIR / "qa_judge_openrouter_gemini31_flash_lite_flex_full_summary.json"
+QA_ANNOTATION_FULL_FLASH_SUMMARY = QA_REPORTS_DIR / "qa_annotation_full_flash_summary.json"
+QA_ANNOTATED_GEMINI31_FLASH_LITE_SUMMARY = (
+    QA_REPORTS_DIR / "qa_annotation_openrouter_gemini31_flash_lite_flex_full_summary.json"
 )
 QA_SUCCINCT_REPAIR_MERGE_MANIFEST = QA_REPORTS_DIR / "qa_pairs_canonical_succinct_repair_merge_manifest.json"
 QA_REFRESH_DERIVED_REPORT = QA_REPORTS_DIR / "qa_refresh_derived_report.json"
@@ -145,12 +169,16 @@ QA_HUMAN_VERIFICATION_SAMPLING_REPORT = QA_REPORTS_DIR / "human_verification_sam
 QA_ANNOTATION_POOL_COMPAT_REPORT = QA_REPORTS_DIR / "qa_annotation_pool_compat_report.json"
 QA_THREE_WAY_REPORT = QA_REPORTS_DIR / "qa_three_way_split_report.json"
 QA_THREE_WAY_FINAL_VALIDATION_REPORT = QA_REPORTS_DIR / "qa_three_way_final_validation_report.json"
-QA_JUDGED_RELEASE_NORMALIZATION_REPORT = QA_REPORTS_DIR / "qa_judged_release_normalization_report.json"
+QA_ANNOTATED_RELEASE_NORMALIZATION_REPORT = QA_REPORTS_DIR / "qa_annotated_release_normalization_report.json"
 QA_SPLIT_DISTRIBUTION_REPORT = QA_REPORTS_DIR / "qa_split_distribution_report.json"
 FEATURE_PHASE1_PROVENANCE_JSON = QA_REPORTS_DIR / "feature_phase1_provenance.json"
 FEATURE_PHASE1_PROVENANCE_MD = QA_REPORTS_DIR / "feature_phase1_provenance.md"
 FINAL_RELEASE_MANIFEST_JSON = QA_REPORTS_DIR / "final_release_manifest.json"
 FINAL_RELEASE_MANIFEST_MD = QA_REPORTS_DIR / "final_release_manifest.md"
+
+QA_JUDGE_FULL_FLASH_SUMMARY = QA_ANNOTATION_FULL_FLASH_SUMMARY
+QA_JUDGED_GEMINI31_FLASH_LITE_SUMMARY = QA_ANNOTATED_GEMINI31_FLASH_LITE_SUMMARY
+QA_JUDGED_RELEASE_NORMALIZATION_REPORT = QA_ANNOTATED_RELEASE_NORMALIZATION_REPORT
 
 # Archive / backups
 QA_WITH_TOPUP_ROUND2_BACKUP = QA_ARCHIVE_DIR / "qa_pairs_canonical.before_succinct_repair_20260601.jsonl"
@@ -211,14 +239,14 @@ def ensure_dirs() -> None:
         QA_REPORTS_DIR,
         QA_ARCHIVE_DIR,
         QA_LEGACY_DATASETS_DIR,
-        QA_JUDGE_EXPORTS_DIR,
+        QA_ANNOTATION_EXPORTS_DIR,
         QA_SHARDS_DIR,
         QA_TOPUP_RUN_DIR,
         QA_TOPUP_RUN_DIR_ROUND2,
-        QA_JUDGE_RUN_DIR,
-        QA_JUDGE_FLASH_MULTI_DIR,
-        QA_JUDGE_FLASH_EXTRACTION_DIR,
-        QA_JUDGE_GEMINI31_FLASH_LITE_FULL_DIR,
+        QA_ANNOTATION_RUN_DIR,
+        QA_ANNOTATION_FLASH_MULTI_DIR,
+        QA_ANNOTATION_FLASH_EXTRACTION_DIR,
+        QA_ANNOTATION_GEMINI31_FLASH_LITE_FULL_DIR,
         QA_REPAIR_SUCCINCT_DIR,
         FIGURES_DIR,
         FEATURE_ENGINEERING_FIGURES_DIR,

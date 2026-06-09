@@ -3,12 +3,12 @@
     {
       "source": "data/processed/reports/qa/final_release_manifest.json",
       "destination": "reports/release/final_release_manifest.json",
-      "size_bytes": 4362
+      "size_bytes": 4371
     },
     {
       "source": "data/processed/reports/qa/final_release_manifest.md",
       "destination": "reports/release/final_release_manifest.md",
-      "size_bytes": 3017
+      "size_bytes": 3023
     },
     {
       "source": "data/processed/reports/qa/feature_phase1_provenance.json",
@@ -40,17 +40,17 @@
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/assembly_report.json",
       "destination": "reports/evaluation/assembly_report.json",
-      "size_bytes": 2742
+      "size_bytes": 2779
     },
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_summary.json",
       "destination": "reports/evaluation/iaa_summary.json",
-      "size_bytes": 14639
+      "size_bytes": 14863
     },
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_summary.md",
       "destination": "reports/evaluation/iaa_summary.md",
-      "size_bytes": 1401
+      "size_bytes": 1443
     },
     {
       "source": "data/processed/datasets/human_verification_bundle_external_gemini_20260605/reports/iaa_visualization_report.json",

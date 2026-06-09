@@ -39,13 +39,17 @@ def _clean_text(value: Any) -> str:
     return str(value or "").strip()
 
 
-def _normalize_optional_band(value: Any) -> str | None:
-    cleaned = _clean_text(value).lower()
-    return cleaned or None
-
-
 def _normalize_required_band(value: Any) -> str:
     return _clean_text(value).lower()
+
+
+def _normalize_inferential_band(row: Dict[str, Any]) -> str:
+    cleaned = _clean_text(row.get("inferential_validity_band")).lower()
+    if cleaned:
+        return cleaned
+    if _clean_text(row.get("reasoning_type")) == "extraction":
+        return "weak"
+    return ""
 
 
 def build_release_base_row(row: Dict[str, Any], *, context: str, section: str, bucket: str) -> Dict[str, Any]:
@@ -62,7 +66,7 @@ def build_release_base_row(row: Dict[str, Any], *, context: str, section: str, b
         "answer": _clean_text(row.get("answer")),
         "quality_band": _normalize_required_band(row.get("quality_band")),
         "difficulty_band": _normalize_required_band(row.get("difficulty_band")),
-        "inferential_validity_band": _normalize_optional_band(row.get("inferential_validity_band")),
+        "inferential_validity_band": _normalize_inferential_band(row),
         "final_reasoning_bucket": _clean_text(bucket),
     }
 

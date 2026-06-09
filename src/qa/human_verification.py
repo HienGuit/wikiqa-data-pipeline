@@ -130,23 +130,23 @@ def validate_bundle_alignment(
     *,
     label: str,
     task_rows: List[Dict[str, Any]],
-    gemini_key_rows: List[Dict[str, Any]],
+    gemini_annotation_rows: List[Dict[str, Any]],
     annotator1_rows: List[Dict[str, Any]],
     annotator2_rows: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
     task_ids = sample_id_set(task_rows)
-    gemini_ids = sample_id_set(gemini_key_rows)
+    gemini_ids = sample_id_set(gemini_annotation_rows)
     annotator1_ids = sample_id_set(annotator1_rows)
     annotator2_ids = sample_id_set(annotator2_rows)
 
     return {
         "task": label,
         "task_rows": len(task_rows),
-        "gemini_key_rows": len(gemini_key_rows),
+        "gemini_annotation_rows": len(gemini_annotation_rows),
         "annotator1_rows": len(annotator1_rows),
         "annotator2_rows": len(annotator2_rows),
         "all_ids_match": task_ids == gemini_ids == annotator1_ids == annotator2_ids,
-        "missing_in_gemini_key": sorted(task_ids - gemini_ids),
+        "missing_in_gemini_annotation": sorted(task_ids - gemini_ids),
         "missing_in_annotator1": sorted(task_ids - annotator1_ids),
         "missing_in_annotator2": sorted(task_ids - annotator2_ids),
     }
@@ -185,7 +185,7 @@ def strip_task2_annotation_fields(row: Dict[str, Any]) -> Dict[str, Any]:
 
 def strip_task1_key_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     return {
-        "judge_model": row.get("judge_model", ""),
+        "annotator_model": row.get("annotator_model", row.get("judge_model", "")),
         "status": row.get("status", ""),
         "quality_band_ref": row.get("quality_band_ref", ""),
         "difficulty_band_ref": row.get("difficulty_band_ref", ""),
@@ -194,7 +194,7 @@ def strip_task1_key_fields(row: Dict[str, Any]) -> Dict[str, Any]:
 
 def strip_task2_key_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     return {
-        "judge_model": row.get("judge_model", ""),
+        "annotator_model": row.get("annotator_model", row.get("judge_model", "")),
         "status": row.get("status", ""),
         "inferential_validity_band_ref": row.get("inferential_validity_band_ref", ""),
     }
@@ -203,18 +203,18 @@ def strip_task2_key_fields(row: Dict[str, Any]) -> Dict[str, Any]:
 def build_combined_task1_rows(
     *,
     task_rows: List[Dict[str, Any]],
-    gemini_key_rows: List[Dict[str, Any]],
+    gemini_annotation_rows: List[Dict[str, Any]],
     annotator1_rows: List[Dict[str, Any]],
     annotator2_rows: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
-    gemini_by_id = rows_by_sample_id(gemini_key_rows)
+    gemini_by_id = rows_by_sample_id(gemini_annotation_rows)
     annotator1_by_id = rows_by_sample_id(annotator1_rows)
     annotator2_by_id = rows_by_sample_id(annotator2_rows)
 
     return [
         {
             **strip_task_payload_fields(row),
-            "gemini_key": strip_task1_key_fields(gemini_by_id[str(row.get("sample_id", ""))]),
+            "gemini_annotation": strip_task1_key_fields(gemini_by_id[str(row.get("sample_id", ""))]),
             "annotator1": strip_task1_annotation_fields(annotator1_by_id[str(row.get("sample_id", ""))]),
             "annotator2": strip_task1_annotation_fields(annotator2_by_id[str(row.get("sample_id", ""))]),
         }
@@ -225,18 +225,18 @@ def build_combined_task1_rows(
 def build_combined_task2_rows(
     *,
     task_rows: List[Dict[str, Any]],
-    gemini_key_rows: List[Dict[str, Any]],
+    gemini_annotation_rows: List[Dict[str, Any]],
     annotator1_rows: List[Dict[str, Any]],
     annotator2_rows: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
-    gemini_by_id = rows_by_sample_id(gemini_key_rows)
+    gemini_by_id = rows_by_sample_id(gemini_annotation_rows)
     annotator1_by_id = rows_by_sample_id(annotator1_rows)
     annotator2_by_id = rows_by_sample_id(annotator2_rows)
 
     return [
         {
             **strip_task_payload_fields(row),
-            "gemini_key": strip_task2_key_fields(gemini_by_id[str(row.get("sample_id", ""))]),
+            "gemini_annotation": strip_task2_key_fields(gemini_by_id[str(row.get("sample_id", ""))]),
             "annotator1": strip_task2_annotation_fields(annotator1_by_id[str(row.get("sample_id", ""))]),
             "annotator2": strip_task2_annotation_fields(annotator2_by_id[str(row.get("sample_id", ""))]),
         }

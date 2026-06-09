@@ -15,11 +15,11 @@ if str(ROOT) not in sys.path:
 from src.config import (  # noqa: E402
     QA_ARCHIVE_DIR,
     QA_CANONICAL,
+    QA_CANONICAL_ANNOTATED,
+    QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED,
+    QA_CANONICAL_ANNOTATED_CONTEXT_CLEANING_REJECTS,
     QA_CANONICAL_CONTEXT_CLEANED,
     QA_CANONICAL_CONTEXT_CLEANING_REJECTS,
-    QA_CANONICAL_JUDGED,
-    QA_CANONICAL_JUDGED_CONTEXT_CLEANED,
-    QA_CANONICAL_JUDGED_CONTEXT_CLEANING_REJECTS,
     QA_CONTEXT_CLEANED_SYNC_REPORT,
     QA_CONTEXT_CLEANING_REPORT,
     QA_DATASET_FINALIZATION_REPORT,
@@ -50,8 +50,8 @@ def backup_file(path: Path, archive_dir: Path, suffix: str) -> str:
     return str(backup_path)
 
 
-def sync_split_from_judged_cleaned() -> dict:
-    rows = load_rows(QA_CANONICAL_JUDGED_CONTEXT_CLEANED)
+def sync_split_from_annotated_cleaned() -> dict:
+    rows = load_rows(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED)
     split_ready_rows = []
     inferential_rows = []
 
@@ -72,7 +72,7 @@ def sync_split_from_judged_cleaned() -> dict:
     write_jsonl(QA_INFERENTIAL_USABLE_ONLY, inferential_rows)
 
     report = {
-        "synced_from": str(QA_CANONICAL_JUDGED_CONTEXT_CLEANED),
+        "synced_from": str(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED),
         "split_ready_path": str(QA_SPLIT_READY),
         "inferential_usable_only_path": str(QA_INFERENTIAL_USABLE_ONLY),
         "backup_split_ready": backup_split,
@@ -93,10 +93,10 @@ def sync_split_from_judged_cleaned() -> dict:
 def build_finalization_report(sync_report: dict) -> dict:
     canonical_rows = len(load_rows(QA_CANONICAL))
     canonical_cleaned_rows = len(load_rows(QA_CANONICAL_CONTEXT_CLEANED))
-    judged_rows = len(load_rows(QA_CANONICAL_JUDGED))
-    judged_cleaned_rows = len(load_rows(QA_CANONICAL_JUDGED_CONTEXT_CLEANED))
+    annotated_rows = len(load_rows(QA_CANONICAL_ANNOTATED))
+    annotated_cleaned_rows = len(load_rows(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED))
     canonical_rejects = len(load_rows(QA_CANONICAL_CONTEXT_CLEANING_REJECTS))
-    judged_rejects = len(load_rows(QA_CANONICAL_JUDGED_CONTEXT_CLEANING_REJECTS))
+    annotated_rejects = len(load_rows(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANING_REJECTS))
     split_ready_rows = len(load_rows(QA_SPLIT_READY))
     inferential_rows = len(load_rows(QA_INFERENTIAL_USABLE_ONLY))
 
@@ -105,8 +105,8 @@ def build_finalization_report(sync_report: dict) -> dict:
         "artifacts": {
             "canonical": str(QA_CANONICAL),
             "canonical_context_cleaned": str(QA_CANONICAL_CONTEXT_CLEANED),
-            "canonical_judged": str(QA_CANONICAL_JUDGED),
-            "canonical_judged_context_cleaned": str(QA_CANONICAL_JUDGED_CONTEXT_CLEANED),
+            "canonical_annotated": str(QA_CANONICAL_ANNOTATED),
+            "canonical_annotated_context_cleaned": str(QA_CANONICAL_ANNOTATED_CONTEXT_CLEANED),
             "split_ready": str(QA_SPLIT_READY),
             "inferential_usable_only": str(QA_INFERENTIAL_USABLE_ONLY),
         },
@@ -114,9 +114,9 @@ def build_finalization_report(sync_report: dict) -> dict:
             "canonical_rows": canonical_rows,
             "canonical_context_cleaned_rows": canonical_cleaned_rows,
             "canonical_context_cleaning_rejects": canonical_rejects,
-            "canonical_judged_rows": judged_rows,
-            "canonical_judged_context_cleaned_rows": judged_cleaned_rows,
-            "canonical_judged_context_cleaning_rejects": judged_rejects,
+            "canonical_annotated_rows": annotated_rows,
+            "canonical_annotated_context_cleaned_rows": annotated_cleaned_rows,
+            "canonical_annotated_context_cleaning_rejects": annotated_rejects,
             "split_ready_rows": split_ready_rows,
             "inferential_usable_only_rows": inferential_rows,
         },
@@ -131,7 +131,7 @@ def build_finalization_report(sync_report: dict) -> dict:
 
 def main() -> None:
     ensure_dirs()
-    sync_report = sync_split_from_judged_cleaned()
+    sync_report = sync_split_from_annotated_cleaned()
     final_report = build_finalization_report(sync_report)
     QA_DATASET_FINALIZATION_REPORT.write_text(json.dumps(final_report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(final_report, ensure_ascii=False, indent=2))

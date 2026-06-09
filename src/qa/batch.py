@@ -1,4 +1,4 @@
-"""Batch runners for smoke, full generation, inferential top-up, and judge."""
+"""Batch runners for smoke tests, QA generation, inferential top-up, and external annotation."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Set, Tuple
 
 from src.config import (
-    QA_JUDGE_RUN_DIR,
+    QA_ANNOTATION_RUN_DIR,
     QA_REPAIR_SUCCINCT_DIR,
     QA_SHARDS_DIR,
     QA_TOPUP_RUN_DIR,
@@ -25,7 +25,11 @@ from src.config import (
     ensure_dirs,
 )
 from src.qa.generator import QAGenerator
-from src.qa.prompts import UNIFIED_JUDGE_FEW_SHOT, UNIFIED_JUDGE_SYSTEM_PROMPT, UNIFIED_JUDGE_USER_TEMPLATE
+from src.qa.prompts import (
+    UNIFIED_ANNOTATION_FEW_SHOT,
+    UNIFIED_ANNOTATION_SYSTEM_PROMPT,
+    UNIFIED_ANNOTATION_USER_TEMPLATE,
+)
 from src.qa.provider import OpenRouterJSONProvider
 from src.qa.validators import validate_succinct_context
 
@@ -36,13 +40,13 @@ DEFAULT_OPENROUTER_MODEL = "google/gemini-3-flash-preview"
 DEFAULT_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_OPENROUTER_APP_TITLE = "wikiqa-data-pipeline"
 
-JUDGE_BUCKET_FIELDS = {
+ANNOTATION_BUCKET_FIELDS = {
     "detected_reasoning_type": {"literal", "inferential"},
     "quality_band": {"weak", "usable", "strong"},
     "difficulty_band": {"easy", "medium", "hard"},
     "inferential_validity_band": {"weak", "usable", "strong"},
 }
-JUDGE_SCORE_BUCKET_KEYS = (
+ANNOTATION_BUCKET_KEYS = (
     ("detected_reasoning_type", "detected_reasoning"),
     ("quality_band", "quality"),
     ("difficulty_band", "difficulty"),
@@ -136,7 +140,7 @@ def load_processed_chunk_ids(*paths: Path) -> Set[str]:
     return load_processed_values(*paths, extractor=lambda row: str(row.get("chunk_id", "")))
 
 
-def load_processed_judge_pairs(*paths: Path) -> Set[Tuple[str, str]]:
+def load_processed_annotation_pairs(*paths: Path) -> Set[Tuple[str, str]]:
     return load_processed_values(*paths, extractor=sample_pair)
 
 
@@ -240,15 +244,15 @@ def collect_valid_samples(
     return accepted, rejected
 
 
-def judge_sort_key(row: Dict[str, Any]) -> Tuple[int, str]:
+def annotation_sort_key(row: Dict[str, Any]) -> Tuple[int, str]:
     reasoning = str(row.get("reasoning_type", ""))
     chunk_id = str(row.get("chunk_id", ""))
     inferential_first = 0 if reasoning == "multi-sentence" else 1
     return (inferential_first, chunk_id)
 
 
-def validate_judge_buckets(raw: Dict[str, Any]) -> Tuple[bool, str]:
-    for field, allowed_values in JUDGE_BUCKET_FIELDS.items():
+def validate_annotation_buckets(raw: Dict[str, Any]) -> Tuple[bool, str]:
+    for field, allowed_values in ANNOTATION_BUCKET_FIELDS.items():
         value = raw.get(field)
         if not isinstance(value, str):
             return False, f"invalid_{field}_type"
@@ -257,10 +261,10 @@ def validate_judge_buckets(raw: Dict[str, Any]) -> Tuple[bool, str]:
     return True, ""
 
 
-def build_judge_prompt(row: Dict[str, Any]) -> Tuple[str, str]:
+def build_annotation_prompt(row: Dict[str, Any]) -> Tuple[str, str]:
     return (
-        UNIFIED_JUDGE_SYSTEM_PROMPT,
-        UNIFIED_JUDGE_USER_TEMPLATE.format(
+        UNIFIED_ANNOTATION_SYSTEM_PROMPT,
+        UNIFIED_ANNOTATION_USER_TEMPLATE.format(
             reasoning_type=str(row.get("reasoning_type", "")),
             title=row.get("title", ""),
             succinct_context=row.get("succinct_context", ""),
@@ -270,19 +274,19 @@ def build_judge_prompt(row: Dict[str, Any]) -> Tuple[str, str]:
             answer=row.get("answer", ""),
         )
         + "\n\n"
-        + UNIFIED_JUDGE_FEW_SHOT,
+        + UNIFIED_ANNOTATION_FEW_SHOT,
     )
 
 
-def resolve_judge_api_key(args: argparse.Namespace) -> str:
+def resolve_annotation_api_key(args: argparse.Namespace) -> str:
     return ensure_api_key(args.api_key, "OPENROUTER_API_KEY")
 
 
-def resolve_judge_model(args: argparse.Namespace) -> str:
+def resolve_annotation_model(args: argparse.Namespace) -> str:
     return args.model or DEFAULT_OPENROUTER_MODEL
 
 
-def build_judge_provider(args: argparse.Namespace):
+def build_annotation_provider(args: argparse.Namespace):
     return OpenRouterJSONProvider(
         api_key=args.api_key,
         model_name=args.model,
@@ -295,17 +299,20 @@ def build_judge_provider(args: argparse.Namespace):
     )
 
 
-def build_judge_bucket_counts(score_buckets: Dict[str, List[str]]) -> Dict[str, Dict[str, int]]:
-    return {field_name: dict(Counter(score_buckets[bucket_key])) for field_name, bucket_key in JUDGE_SCORE_BUCKET_KEYS}
+def build_annotation_bucket_counts(score_buckets: Dict[str, List[str]]) -> Dict[str, Dict[str, int]]:
+    return {
+        field_name: dict(Counter(score_buckets[bucket_key]))
+        for field_name, bucket_key in ANNOTATION_BUCKET_KEYS
+    }
 
 
-def load_existing_judge_state(valid_path: Path, reject_path: Path) -> Tuple[int, Counter, Dict[str, List[str]]]:
+def load_existing_annotation_state(valid_path: Path, reject_path: Path) -> Tuple[int, Counter, Dict[str, List[str]]]:
     accepted_rows = load_chunks(valid_path) if valid_path.exists() else []
     rejected_rows = load_chunks(reject_path) if reject_path.exists() else []
     rejected = Counter(str(row.get("error", "unknown")) for row in rejected_rows)
-    score_buckets: Dict[str, List[str]] = {bucket_key: [] for _, bucket_key in JUDGE_SCORE_BUCKET_KEYS}
+    score_buckets: Dict[str, List[str]] = {bucket_key: [] for _, bucket_key in ANNOTATION_BUCKET_KEYS}
     for row in accepted_rows:
-        for field_name, bucket_key in JUDGE_SCORE_BUCKET_KEYS:
+        for field_name, bucket_key in ANNOTATION_BUCKET_KEYS:
             if row.get(field_name):
                 score_buckets[bucket_key].append(str(row[field_name]))
     return len(accepted_rows), rejected, score_buckets
@@ -536,11 +543,11 @@ def run_generation_batch(
     print("Done.")
 
 
-def run_judge(args: argparse.Namespace) -> None:
+def run_annotate(args: argparse.Namespace) -> None:
     configure_stdout()
     ensure_dirs()
-    args.api_key = resolve_judge_api_key(args)
-    args.model = resolve_judge_model(args)
+    args.api_key = resolve_annotation_api_key(args)
+    args.model = resolve_annotation_model(args)
     require_positive_int(args.shard_index, "--shard-index", minimum=0)
     require_positive_int(args.shard_size, "--shard-size")
     require_positive_int(args.flush_every, "--flush-every")
@@ -549,26 +556,26 @@ def run_judge(args: argparse.Namespace) -> None:
     rows = load_chunks(args.input)
     if args.reasoning_type != "all":
         rows = [row for row in rows if str(row.get("reasoning_type", "")) == args.reasoning_type]
-    rows = sorted(rows, key=judge_sort_key)
+    rows = sorted(rows, key=annotation_sort_key)
     shard = shard_rows(rows, args.shard_index, args.shard_size)
     if not shard:
-        raise SystemExit("Judge shard is empty. Check filters, --shard-index, and --shard-size.")
+        raise SystemExit("Annotation shard is empty. Check filters, --shard-index, and --shard-size.")
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    valid_path, reject_path, report_path = build_batch_paths(output_dir, "qa_judge", args.shard_index)
-    processed_pairs = load_processed_judge_pairs(valid_path, reject_path)
-    provider = build_judge_provider(args)
+    valid_path, reject_path, report_path = build_batch_paths(output_dir, "qa_annotation", args.shard_index)
+    processed_pairs = load_processed_annotation_pairs(valid_path, reject_path)
+    provider = build_annotation_provider(args)
 
     print(f"Loaded {len(rows):,} QA sample(s) from {args.input} after filter={args.reasoning_type}")
     print(
-        f"Running judge shard {args.shard_index + 1} with {len(shard)} sample(s); already processed pairs={len(processed_pairs)}"
+        f"Running annotation shard {args.shard_index + 1} with {len(shard)} sample(s); already processed pairs={len(processed_pairs)}"
     )
     print(f"Valid output : {valid_path}")
     print(f"Reject output: {reject_path}")
     print(f"Report file  : {report_path}")
 
-    accepted, rejected, score_buckets = load_existing_judge_state(valid_path, reject_path)
+    accepted, rejected, score_buckets = load_existing_annotation_state(valid_path, reject_path)
     valid_buffer: List[Dict[str, Any]] = []
     reject_buffer: List[Dict[str, Any]] = []
 
@@ -578,10 +585,10 @@ def run_judge(args: argparse.Namespace) -> None:
             continue
         processed_pairs.add(pair)
 
-        system_prompt, user_prompt = build_judge_prompt(row)
+        system_prompt, user_prompt = build_annotation_prompt(row)
         try:
             raw = provider.generate_json(system_prompt, user_prompt)
-            is_valid, error = validate_judge_buckets(raw)
+            is_valid, error = validate_annotation_buckets(raw)
             if not is_valid:
                 rejected[error] += 1
                 reject_buffer.append(
@@ -646,7 +653,7 @@ def run_judge(args: argparse.Namespace) -> None:
         "accepted_samples": accepted,
         "rejected_samples": sum(rejected.values()),
         "rejected_by_error": dict(rejected),
-        "bucket_counts": build_judge_bucket_counts(score_buckets),
+        "bucket_counts": build_annotation_bucket_counts(score_buckets),
         "started_at_utc": started_at,
         "finished_at_utc": utc_now_iso(),
     }
@@ -903,44 +910,66 @@ def build_arg_parser() -> argparse.ArgumentParser:
     repair.add_argument("--flush-every", type=int, default=20, help="Flush files every N targets.")
     repair.set_defaults(handler=run_repair_succinct)
 
-    judge = subparsers.add_parser("judge", help="Run external Gemini annotation on generated QA samples.")
-    judge.add_argument("--input", default=str(QA_WITH_TOPUP_ROUND2), help="Accepted QA JSONL input.")
-    judge.add_argument(
-        "--provider", choices=["openrouter"], default="openrouter", help="External judge API provider."
+    annotate = subparsers.add_parser(
+        "annotate",
+        help="Run external Gemini annotation on generated QA samples.",
     )
-    judge.add_argument(
+    annotate.add_argument("--input", default=str(QA_WITH_TOPUP_ROUND2), help="Accepted QA JSONL input.")
+    annotate.add_argument(
+        "--provider", choices=["openrouter"], default="openrouter", help="External annotation API provider."
+    )
+    annotate.add_argument(
         "--api-key", default="", help="API key. Defaults to OPENROUTER_API_KEY."
     )
-    judge.add_argument("--model", default=DEFAULT_OPENROUTER_MODEL, help="External annotator model name.")
-    judge.add_argument("--base-url", default=DEFAULT_OPENROUTER_BASE_URL, help="OpenRouter-compatible base URL.")
-    judge.add_argument(
+    annotate.add_argument("--model", default=DEFAULT_OPENROUTER_MODEL, help="External annotator model name.")
+    annotate.add_argument("--base-url", default=DEFAULT_OPENROUTER_BASE_URL, help="OpenRouter-compatible base URL.")
+    annotate.add_argument(
         "--service-tier",
         choices=["auto", "default", "flex", "priority", "scale"],
         default=None,
         help="OpenRouter service tier.",
     )
-    judge.add_argument("--http-referer", default="", help="Optional OpenRouter HTTP-Referer header.")
-    judge.add_argument(
+    annotate.add_argument("--http-referer", default="", help="Optional OpenRouter HTTP-Referer header.")
+    annotate.add_argument(
         "--app-title", default=DEFAULT_OPENROUTER_APP_TITLE, help="Optional OpenRouter app title header."
     )
-    judge.add_argument("--rpm-limit", type=int, default=120, help="Soft throttle for local client.")
-    judge.add_argument("--timeout", type=int, default=120, help="HTTP timeout in seconds.")
-    judge.add_argument(
+    annotate.add_argument("--rpm-limit", type=int, default=120, help="Soft throttle for local client.")
+    annotate.add_argument("--timeout", type=int, default=120, help="HTTP timeout in seconds.")
+    annotate.add_argument(
         "--reasoning-type",
         choices=["all", "extraction", "multi-sentence"],
         default="multi-sentence",
-        help="Judge all QA or only one reasoning type.",
+        help="Annotate all QA or only one reasoning type.",
     )
-    judge.add_argument("--shard-index", type=int, default=0, help="0-based shard index.")
-    judge.add_argument("--shard-size", type=int, default=400, help="Samples per shard.")
-    judge.add_argument("--output-dir", default=str(QA_JUDGE_RUN_DIR), help="Directory for judge outputs.")
-    judge.add_argument("--flush-every", type=int, default=20, help="Flush files every N samples.")
-    judge.set_defaults(handler=run_judge)
+    annotate.add_argument("--shard-index", type=int, default=0, help="0-based shard index.")
+    annotate.add_argument("--shard-size", type=int, default=400, help="Samples per shard.")
+    annotate.add_argument(
+        "--output-dir", default=str(QA_ANNOTATION_RUN_DIR), help="Directory for annotation outputs."
+    )
+    annotate.add_argument("--flush-every", type=int, default=20, help="Flush files every N samples.")
+    annotate.set_defaults(handler=run_annotate)
 
     return parser
 
 
+# Backward-compatible aliases for historical imports.
+JUDGE_BUCKET_FIELDS = ANNOTATION_BUCKET_FIELDS
+JUDGE_SCORE_BUCKET_KEYS = ANNOTATION_BUCKET_KEYS
+load_processed_judge_pairs = load_processed_annotation_pairs
+judge_sort_key = annotation_sort_key
+validate_judge_buckets = validate_annotation_buckets
+build_judge_prompt = build_annotation_prompt
+resolve_judge_api_key = resolve_annotation_api_key
+resolve_judge_model = resolve_annotation_model
+build_judge_provider = build_annotation_provider
+build_judge_bucket_counts = build_annotation_bucket_counts
+load_existing_judge_state = load_existing_annotation_state
+run_judge = run_annotate
+
+
 def main() -> None:
+    if len(sys.argv) > 1 and sys.argv[1] == "judge":
+        sys.argv[1] = "annotate"
     args = build_arg_parser().parse_args()
     args.handler(args)
 

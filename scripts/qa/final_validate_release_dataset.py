@@ -20,8 +20,6 @@ from src.config import (  # noqa: E402
 )
 from src.qa.release_validation import validate_release_row  # noqa: E402
 
-ALLOWED_FINAL_BUCKETS = {"extraction", "bridge", "multi-sentence"}
-
 
 def repo_rel(path: Path) -> str:
     try:
@@ -70,7 +68,7 @@ def main() -> None:
     error_counts = Counter()
 
     for index, row in enumerate(rows, start=1):
-        is_valid, error = validate_release_row(row, allowed_final_buckets=ALLOWED_FINAL_BUCKETS)
+        is_valid, error = validate_release_row(row)
         if not is_valid:
             error_counts[error] += 1
             invalid_rows.append(

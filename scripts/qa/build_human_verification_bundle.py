@@ -36,8 +36,8 @@ SOURCE_DIR = ROOT / "data" / "processed" / "datasets" / "human_verification_exte
 TASK1_SOURCE = SOURCE_DIR / "task1_quality_difficulty_100.jsonl"
 TASK2_SOURCE = SOURCE_DIR / "task2_inferential_validity_50.jsonl"
 
-TASK1_GEMINI_KEY_SOURCE = SOURCE_DIR / "task1_quality_difficulty_100_key_gemini31_flash_lite.jsonl"
-TASK2_GEMINI_KEY_SOURCE = SOURCE_DIR / "task2_inferential_validity_50_key_gemini31_flash_lite.jsonl"
+TASK1_GEMINI_ANNOTATION_SOURCE = SOURCE_DIR / "task1_quality_difficulty_100_key_gemini31_flash_lite.jsonl"
+TASK2_GEMINI_ANNOTATION_SOURCE = SOURCE_DIR / "task2_inferential_validity_50_key_gemini31_flash_lite.jsonl"
 
 EXTERNAL_SOURCE_REDACTED = "external_annotation_export_redacted"
 
@@ -116,8 +116,8 @@ def main() -> None:
 
     task1_rows = load_jsonl(TASK1_SOURCE)
     task2_rows = load_jsonl(TASK2_SOURCE)
-    task1_gemini_key = load_jsonl(TASK1_GEMINI_KEY_SOURCE)
-    task2_gemini_key = load_jsonl(TASK2_GEMINI_KEY_SOURCE)
+    task1_gemini_annotation = load_jsonl(TASK1_GEMINI_ANNOTATION_SOURCE)
+    task2_gemini_annotation = load_jsonl(TASK2_GEMINI_ANNOTATION_SOURCE)
 
     task1_annotator1, task1_annotator2, task1_export_meta = load_task1_from_export(task1_export_source)
     task2_annotator1, task2_annotator1_repairs = load_jsonl_robust(task2_annotator1_source)
@@ -126,14 +126,14 @@ def main() -> None:
     task1_alignment = validate_bundle_alignment(
         label="task1",
         task_rows=task1_rows,
-        gemini_key_rows=task1_gemini_key,
+        gemini_annotation_rows=task1_gemini_annotation,
         annotator1_rows=task1_annotator1,
         annotator2_rows=task1_annotator2,
     )
     task2_alignment = validate_bundle_alignment(
         label="task2",
         task_rows=task2_rows,
-        gemini_key_rows=task2_gemini_key,
+        gemini_annotation_rows=task2_gemini_annotation,
         annotator1_rows=task2_annotator1,
         annotator2_rows=task2_annotator2,
     )
@@ -146,7 +146,7 @@ def main() -> None:
         TASKS_DIR / "task1.json",
         build_combined_task1_rows(
             task_rows=task1_rows,
-            gemini_key_rows=task1_gemini_key,
+            gemini_annotation_rows=task1_gemini_annotation,
             annotator1_rows=task1_annotator1,
             annotator2_rows=task1_annotator2,
         ),
@@ -155,15 +155,15 @@ def main() -> None:
         TASKS_DIR / "task2.json",
         build_combined_task2_rows(
             task_rows=task2_rows,
-            gemini_key_rows=task2_gemini_key,
+            gemini_annotation_rows=task2_gemini_annotation,
             annotator1_rows=task2_annotator1,
             annotator2_rows=task2_annotator2,
         ),
     )
 
     for subdir, name, payload in [
-        (KEYS_DIR / "gemini", "task1.json", task1_gemini_key),
-        (KEYS_DIR / "gemini", "task2.json", task2_gemini_key),
+        (KEYS_DIR / "gemini", "task1.json", task1_gemini_annotation),
+        (KEYS_DIR / "gemini", "task2.json", task2_gemini_annotation),
         (ANNOTATIONS_DIR / "annotator1", "task1.json", task1_annotator1),
         (ANNOTATIONS_DIR / "annotator1", "task2.json", task2_annotator1),
         (ANNOTATIONS_DIR / "annotator2", "task1.json", task1_annotator2),
@@ -176,8 +176,8 @@ def main() -> None:
         "sources": {
             "task1": _repo_rel(TASK1_SOURCE),
             "task2": _repo_rel(TASK2_SOURCE),
-            "task1_gemini_key": _repo_rel(TASK1_GEMINI_KEY_SOURCE),
-            "task2_gemini_key": _repo_rel(TASK2_GEMINI_KEY_SOURCE),
+            "task1_gemini_annotation": _repo_rel(TASK1_GEMINI_ANNOTATION_SOURCE),
+            "task2_gemini_annotation": _repo_rel(TASK2_GEMINI_ANNOTATION_SOURCE),
             "task1_export": _repo_rel(task1_export_source),
             "task2_annotator1": _repo_rel(task2_annotator1_source),
             "task2_annotator2": _repo_rel(task2_annotator2_source),

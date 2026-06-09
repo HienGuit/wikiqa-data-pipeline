@@ -1,4 +1,4 @@
-"""Build human-verification sample sets from the canonical cleaned judged pool."""
+"""Build human-verification sample sets from the canonical cleaned annotated pool."""
 
 from __future__ import annotations
 
